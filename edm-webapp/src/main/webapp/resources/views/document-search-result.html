@@ -1,0 +1,28 @@
+
+<div class="k-content col-md-12">
+	<form name="searchForm" class="navbar-form navbar-left" role="search">
+		<div class="form-group" style="width:250px;">
+			<input ng-model="searchedPattern" type="text" class="form-control" placeholder="Que voulez-vous chercher ?" ng-required="true" />
+		</div>
+		<button ng-click="searchSubmit()"  class="btn btn-default" ng-disabled="searchForm.$invalid">Rechercher !</button>
+	</form>
+</div>
+
+<br/><br/>
+<hr/>
+
+<div ng-repeat="searchResult in searchResults">
+    <a class="lead" href="#/node/?path={{searchResult.edmDocument.nodePath}}">
+        <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>
+    </a>
+    <br/>
+    <span class="text-muted">
+        <a href="#/node/?path={{searchResult.edmDocument.nodePath}}" class="text-muted" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedNodePath || searchResult.edmDocument.nodePath)"></a>
+        <small>&mdash; {{searchResult.edmDocument.date | date : 'dd/MM/yyyy'}}</small>
+    </span>
+    <br/>
+    <p ng-bind-html="getTrustedHtmlContent(searchResult.highlightedDescription || searchResult.edmDocument.description)"></p>
+    <pre ng-show="searchResult.highlightedFileContentMatching" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedFileContentMatching)">
+    </pre>
+    <hr/>
+</div>

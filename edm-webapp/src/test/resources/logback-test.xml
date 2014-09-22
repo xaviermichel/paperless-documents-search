@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} %-5level %logger{42} - %msg%n</Pattern>
+		</encoder>
+	</appender>
+
+
+	<!-- hibernate -->
+	<logger name="org.hibernate.type" level="WARN" />
+	<logger name="org.hibernate" level="WARN" />
+
+	<!-- bean utils -->
+	<logger name="org.apache" level="WARN" />
+
+    <!-- elastic search -->
+    <logger name="org.elasticsearch" level="WARN" />
+
+	<!-- spring -->
+	<logger name="org.springframework" level="WARN" />
+
+	<!-- others -->
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

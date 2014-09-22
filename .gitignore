@@ -1,0 +1,62 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+node_modules
+build
+bower_inc
+
+# eclipse
+.project
+.settings
+.classpath
+
+# idea
+.idea
+*.iml
+
+# maven
+target
+
+# elastic search
+es
+*/data
+
+
+# from simple ged
+*.profile
+*.sqlite
+*.sqlite-journal
+directory_icons
+
+# others
+*.swp
+
+# windows dependencies
+*.dll
+
+# logs
+*.log
+*.log.zip
+
+# temp dir for releases
+files-to-release
+
+# edm dir ! Do not uncomment this because edm is also the package name
+#edm
+
+# logback
+logback.xml
+
+# do not release my data !
+*.pdf
+*.jpg
+*.jpeg
+*.doc
+*.docx
+*.zip
+*.lnk
+*.appref-ms
+*.xlsx

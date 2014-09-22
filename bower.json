@@ -1,0 +1,8 @@
+{
+	"name": "simple-edm",
+	"dependencies": {
+		"blueimp-file-upload"	: "9.7.1",
+		"html5shiv"				: "3.7.2",
+		"angular-kendo"			: "1.0.3"
+	}
+}

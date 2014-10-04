@@ -23,7 +23,7 @@ public class EdmSourceController {
 	@Inject
 	private EdmSourceMapper edmSourceMapper;
 	
-    @RequestMapping(method=RequestMethod.POST, value="/directory", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method=RequestMethod.POST, value="/source", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmSourceDto create(@RequestBody EdmSourceDto edmDirectoryDto) {
         return edmSourceMapper.boToDto(edmSourceService.save(edmSourceMapper.dtoToBo(edmDirectoryDto)));
     }

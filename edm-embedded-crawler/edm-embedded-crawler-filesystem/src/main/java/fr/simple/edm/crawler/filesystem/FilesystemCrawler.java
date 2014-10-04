@@ -29,16 +29,20 @@ public class FilesystemCrawler {
 	 *                             For example : 
 	 * @throws IOException 
 	 */
-	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName) throws IOException {
-		edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
-		String sourceId = edmConnector.getIdFromSourceBySourceName(edmServerHttpAddress, sourceName);
+	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName, final String categoryName) throws IOException {
+		// create parents
+		String categoryId = edmConnector.getIdFromCategoryByCategoryName(edmServerHttpAddress, categoryName);
+		String sourceId = edmConnector.getIdFromSourceBySourceName(edmServerHttpAddress, sourceName, categoryId);
+		
+		// index
 		logger.debug("The source ID is {}", sourceId);
-		_importFilesInDir(filePath, edmServerHttpAddress, sourceId);
+		edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
+		importFilesInDir(filePath, edmServerHttpAddress, sourceId);
 		edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
 	}
 	
 	
-	private static void _importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId) throws ClientProtocolException {
+	private static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId) throws ClientProtocolException {
 		
 		logger.info("Embedded crawler looks for : " + filePath);
 		
@@ -48,7 +52,7 @@ public class FilesystemCrawler {
 		if (file.isDirectory()) {
 		    logger.debug("... is a directory !");
 			for (File subFile : file.listFiles()) {
-			    _importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId);
+			    importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId);
 			}
 		}
 		

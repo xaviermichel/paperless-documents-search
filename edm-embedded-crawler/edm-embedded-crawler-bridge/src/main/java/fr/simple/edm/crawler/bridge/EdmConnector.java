@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import fr.simple.edm.common.dto.EdmCategoryDto;
 import fr.simple.edm.common.dto.EdmDocumentFileDto;
 import fr.simple.edm.common.dto.EdmSourceDto;
 
@@ -99,7 +100,7 @@ public class EdmConnector {
     	return sourceName.replaceAll(" ", "-");
     }
     
-    public String getIdFromSourceBySourceName(String server, String sourceName) {
+    public String getIdFromSourceBySourceName(String server, String sourceName, String categoryId) {
     	// get Node 
         RestTemplate restTemplate = new RestTemplate();
         EdmSourceDto result = restTemplate.getForObject("http://" + server + "/source/name/{sourceName}", EdmSourceDto.class, sourceName);
@@ -113,8 +114,26 @@ public class EdmConnector {
         EdmSourceDto directory = new EdmSourceDto();
         directory.setDescription("");
         directory.setName(sourceName);
-        //directory.setParentId(parentId);
-        ResponseEntity<EdmSourceDto> createdSource = restTemplate.postForEntity("http://" + server + "/directory", directory, EdmSourceDto.class);
+        directory.setParentId(categoryId);
+        ResponseEntity<EdmSourceDto> createdSource = restTemplate.postForEntity("http://" + server + "/source", directory, EdmSourceDto.class);
+        return createdSource.getBody().getId();
+    }
+    
+    public String getIdFromCategoryByCategoryName(String server, String categoryName) {
+    	// get Node 
+        RestTemplate restTemplate = new RestTemplate();
+        EdmCategoryDto result = restTemplate.getForObject("http://" + server + "/category/name/{categoryName}", EdmCategoryDto.class, categoryName);
+        
+        // if exits, nothing to do !
+        if (result.getId() != null && ! result.getId().isEmpty()) {
+            return result.getId();
+        }
+        
+        // else, we have to create it
+        EdmCategoryDto category = new EdmCategoryDto();
+        category.setDescription("");
+        category.setName(categoryName);
+        ResponseEntity<EdmCategoryDto> createdSource = restTemplate.postForEntity("http://" + server + "/category", category, EdmCategoryDto.class);
         return createdSource.getBody().getId();
     }
 }

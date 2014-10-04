@@ -52,8 +52,8 @@ java -jar target/edm-webapp-*.jar
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
 ```
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files
-// or with source name :
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files&sourceName=Mes documents
+// or with more informations (see EdmCrawlingController) :
+http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files&sourceName=Mes documents&categoryName=Documents
 ```
 
 **Deployment**

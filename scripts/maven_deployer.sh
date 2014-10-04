@@ -22,7 +22,7 @@ fi
 
 cd ..
 
-for subProject in edm-contracts  edm-mapping-migration
+for subProject in edm-contracts edm-mapping-migration edm-embedded-crawler
 do
 	cd ${subProject}
 	mvn -DaltDeploymentRepository=${deployement}-repo::default::file:../${REPO_LOCATION}/${deployment}s deploy -Dmaven.test.skip=true

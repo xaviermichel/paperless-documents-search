@@ -7,7 +7,7 @@
 TMP_RELEASE_DIR=./simple-edm
 
 # the final zip file, which is to release
-RELEASE_FINAL_FILE=./simple-edm-{{VERSION}}.zip
+RELEASE_FINAL_FILE=./simple-data-search-{{VERSION}}.zip
 
 # always skip tests
 MAVEN_TEST=-Dmaven.test.skip=true

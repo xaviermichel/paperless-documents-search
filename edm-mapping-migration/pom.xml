@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>simple-edm</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<edm.version>1.0-SNAPSHOT</edm.version>
+		<edm.version>1.1-SNAPSHOT</edm.version>
 
 		<javax.persistence.persistence-api.version>1.0.2</javax.persistence.persistence-api.version>
 

@@ -19,19 +19,19 @@ import fr.simple.edm.service.EdmCategoryService;
 public class EdmCategoryController {
 
 	@Inject
-	private EdmCategoryService edmLibraryService;
+	private EdmCategoryService edmCategoryService;
 	
 	@Inject
-	private EdmCategoryMapper edmLibraryMapper;
+	private EdmCategoryMapper edmCategoryMapper;
 	
 	
     @RequestMapping(value = "/library", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<EdmCategoryDto> list() {
-        return edmLibraryMapper.boToDto(edmLibraryService.getEdmLibraries());
+        return edmCategoryMapper.boToDto(edmCategoryService.getEdmLibraries());
     }
     
     @RequestMapping(method=RequestMethod.POST, value="/library", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmCategoryDto create(@RequestBody EdmCategoryDto edmLibraryDto) {
-        return edmLibraryMapper.boToDto(edmLibraryService.save(edmLibraryMapper.dtoToBo(edmLibraryDto)));
+        return edmCategoryMapper.boToDto(edmCategoryService.save(edmCategoryMapper.dtoToBo(edmLibraryDto)));
     }
 }

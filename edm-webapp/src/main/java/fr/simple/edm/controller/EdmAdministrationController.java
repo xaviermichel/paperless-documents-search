@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fr.simple.edm.model.EdmCategory;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmSource;
-import fr.simple.edm.model.tmp.TmpEdmDirectory;
+import fr.simple.edm.model.tmp.TmpEdmSource;
 import fr.simple.edm.model.tmp.TmpEdmDocument;
-import fr.simple.edm.model.tmp.TmpEdmLibrary;
+import fr.simple.edm.model.tmp.TmpEdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import fr.simple.edm.repository.EdmSourceRepository;
-import fr.simple.edm.repository.tmp.TmpEdmDirectoryRepository;
+import fr.simple.edm.repository.tmp.TmpEdmSourceRepository;
 import fr.simple.edm.repository.tmp.TmpEdmDocumentRepository;
-import fr.simple.edm.repository.tmp.TmpEdmLibraryRepository;
+import fr.simple.edm.repository.tmp.TmpEdmCategoryRepository;
 
 @Controller
 public class EdmAdministrationController {
@@ -28,16 +28,16 @@ public class EdmAdministrationController {
     private final Logger logger = LoggerFactory.getLogger(EdmAdministrationController.class);
     
     @Inject
-    private EdmCategoryRepository edmLibraryRepository;
+    private EdmCategoryRepository edmCategoryRepository;
     
     @Inject
-    private TmpEdmLibraryRepository tmpEdmLibraryRepository;
+    private TmpEdmCategoryRepository tmpEdmCategoryRepository;
     
     @Inject 
-    private EdmSourceRepository edmDirectoryRepository;
+    private EdmSourceRepository edmSourceRepository;
     
     @Inject 
-    private TmpEdmDirectoryRepository tmpEdmDirectoryRepository;
+    private TmpEdmSourceRepository tmpEdmSourceRepository;
     
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
@@ -86,17 +86,17 @@ public class EdmAdministrationController {
                 logger.info("main-to-tmp starts !");
                 
                 // copy lib
-                for (EdmCategory edmLibrary : edmLibraryRepository.findAll()) {
-                    TmpEdmLibrary tmpEdmLibrary = new TmpEdmLibrary();
+                for (EdmCategory edmLibrary : edmCategoryRepository.findAll()) {
+                    TmpEdmCategory tmpEdmLibrary = new TmpEdmCategory();
                     BeanUtils.copyProperties(edmLibrary, tmpEdmLibrary);
-                    tmpEdmLibraryRepository.save(tmpEdmLibrary);
+                    tmpEdmCategoryRepository.save(tmpEdmLibrary);
                 }
                 
                 // copy rep
-                for (EdmSource edmDirectory : edmDirectoryRepository.findAll()) {
-                    TmpEdmDirectory tmpEdmDirectory = new TmpEdmDirectory();
+                for (EdmSource edmDirectory : edmSourceRepository.findAll()) {
+                    TmpEdmSource tmpEdmDirectory = new TmpEdmSource();
                     BeanUtils.copyProperties(edmDirectory, tmpEdmDirectory);
-                    tmpEdmDirectoryRepository.save(tmpEdmDirectory);
+                    tmpEdmSourceRepository.save(tmpEdmDirectory);
                 }
                 
                 // copy doc

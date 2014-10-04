@@ -15,10 +15,10 @@ import fr.simple.edm.model.EdmNode;
 public class EdmNodeMapper extends AbstractMapper<EdmNode, EdmNodeDto> {
 
     @Inject
-    private EdmCategoryMapper edmLibraryMapper;
+    private EdmCategoryMapper edmCategoryMapper;
 
     @Inject
-    private EdmSourceMapper edmDirectoryMapper;
+    private EdmSourceMapper edmSourceMapper;
     
     @Inject
     private EdmDocumentMapper edmDocumentMapper;
@@ -30,8 +30,8 @@ public class EdmNodeMapper extends AbstractMapper<EdmNode, EdmNodeDto> {
     @Override
     public EdmNode dtoToBo(EdmNodeDto dto) {
         return ObjectUtils.firstNonNull(
-                edmLibraryMapper.dtoToBoOrNull(dto),
-                edmDirectoryMapper.dtoToBoOrNull(dto),
+                edmCategoryMapper.dtoToBoOrNull(dto),
+                edmSourceMapper.dtoToBoOrNull(dto),
                 edmDocumentMapper.dtoToBoOrNull(dto),
                 new EdmNode()
         );
@@ -40,8 +40,8 @@ public class EdmNodeMapper extends AbstractMapper<EdmNode, EdmNodeDto> {
     @Override
     public EdmNodeDto boToDto(EdmNode bo) {
         return ObjectUtils.firstNonNull(
-                edmLibraryMapper.boToDtoOrNull(bo),
-                edmDirectoryMapper.boToDtoOrNull(bo),
+                edmCategoryMapper.boToDtoOrNull(bo),
+                edmSourceMapper.boToDtoOrNull(bo),
                 edmDocumentMapper.boToDtoOrNull(bo),
                 new EdmNodeDto()
         );

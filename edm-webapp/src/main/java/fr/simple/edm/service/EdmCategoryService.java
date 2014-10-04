@@ -19,29 +19,29 @@ import fr.simple.edm.repository.EdmCategoryRepository;
 public class EdmCategoryService {
 
     @Inject
-    private EdmCategoryRepository edmLibraryRepository;
+    private EdmCategoryRepository edmCategoryRepository;
     
     public EdmCategory findOne(String id) {
-        return edmLibraryRepository.findOne(id);
+        return edmCategoryRepository.findOne(id);
     }
 
     public List<EdmCategory> getEdmLibraries() {
         List<EdmCategory> edmLibraries = new ArrayList<>();
-        for (EdmCategory l : edmLibraryRepository.findAll()) {
+        for (EdmCategory l : edmCategoryRepository.findAll()) {
             edmLibraries.add(l);
         }
         return edmLibraries;
     }
 
     public EdmCategory save(EdmCategory edmLibrary) {
-        return edmLibraryRepository.index(edmLibrary);
+        return edmCategoryRepository.index(edmLibrary);
     }
 
     public List<EdmCategory> findByName(String name) {
-        return edmLibraryRepository.findByName(name);
+        return edmCategoryRepository.findByName(name);
     }
     
     public void delete(EdmCategory edmLibrary) {
-        edmLibraryRepository.delete(edmLibrary);
+        edmCategoryRepository.delete(edmLibrary);
     }
 }

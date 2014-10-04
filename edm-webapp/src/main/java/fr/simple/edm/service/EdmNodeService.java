@@ -21,16 +21,16 @@ import fr.simple.edm.model.EdmSource;
 public class EdmNodeService {
 
     @Inject
-    private EdmCategoryService edmLibraryService;
+    private EdmCategoryService edmCategoryService;
 
     @Inject
     private EdmDocumentService edmDocumentService;
 
     @Inject
-    private EdmSourceService edmDirectoryService;
+    private EdmSourceService edmSourceService;
 
     public EdmNode findOne(String nodeid) {
-        return ObjectUtils.firstNonNull(edmLibraryService.findOne(nodeid), edmDirectoryService.findOne(nodeid), edmDocumentService.findOne(nodeid));
+        return ObjectUtils.firstNonNull(edmCategoryService.findOne(nodeid), edmSourceService.findOne(nodeid), edmDocumentService.findOne(nodeid));
     }
 
     public EdmNode findOneByPath(String path) {
@@ -48,7 +48,7 @@ public class EdmNodeService {
         String nodeName = fragmentedPath[index];
 
         // candidates have the right name
-        List<EdmNode> candidates = ListUtils.union(ListUtils.union(edmLibraryService.findByName(nodeName), edmDirectoryService.findByName(nodeName)), edmDocumentService.findByName(nodeName));
+        List<EdmNode> candidates = ListUtils.union(ListUtils.union(edmCategoryService.findByName(nodeName), edmSourceService.findByName(nodeName)), edmDocumentService.findByName(nodeName));
 
         // the winner is the one which has the right path
         for (EdmNode node : candidates) {
@@ -76,9 +76,9 @@ public class EdmNodeService {
         if (node instanceof EdmDocumentFile) {
             edmDocumentService.delete((EdmDocumentFile) node);
         } else if (node instanceof EdmSource) {
-            edmDirectoryService.delete((EdmSource) node);
+            edmSourceService.delete((EdmSource) node);
         } else if (node instanceof EdmCategory) {
-            edmLibraryService.delete((EdmCategory) node);
+            edmCategoryService.delete((EdmCategory) node);
         }
     }
 
@@ -99,7 +99,7 @@ public class EdmNodeService {
     }
     
     public List<EdmNode> getChildren(String nodeid) {
-        return ListUtils.union(edmDocumentService.findByParent(nodeid), edmDirectoryService.findByParent(nodeid));
+        return ListUtils.union(edmDocumentService.findByParent(nodeid), edmSourceService.findByParent(nodeid));
     }
 
     public EdmNode save(EdmNode node) {
@@ -107,9 +107,9 @@ public class EdmNodeService {
         if (edmNode instanceof EdmDocumentFile) {
             edmNode = edmDocumentService.save((EdmDocumentFile) node);
         } else if (edmNode instanceof EdmSource) {
-            edmNode = edmDirectoryService.save((EdmSource) node);
+            edmNode = edmSourceService.save((EdmSource) node);
         } else if (edmNode instanceof EdmCategory) {
-            edmNode = edmLibraryService.save((EdmCategory) node);
+            edmNode = edmCategoryService.save((EdmCategory) node);
         }
         return edmNode;
     }

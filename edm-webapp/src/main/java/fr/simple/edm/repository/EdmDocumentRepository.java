@@ -17,4 +17,5 @@ public interface EdmDocumentRepository extends ElasticsearchRepository<EdmDocume
 
 	List<EdmDocumentFile> findByName(String name);
 	
+	EdmDocumentFile findByUniqueIdentifier(String uniqueIdentifier);
 }

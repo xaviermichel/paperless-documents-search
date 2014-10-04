@@ -16,26 +16,31 @@ import fr.simple.edm.repository.EdmSourceRepository;
 public class EdmSourceService {
 
     @Inject
-	private EdmSourceRepository edmDirectoryRepository;
+	private EdmSourceRepository edmSourceRepository;
     
     public EdmSource findOne(String id) {
-    	return edmDirectoryRepository.findOne(id);
+    	return edmSourceRepository.findOne(id);
     }
     
 	public EdmSource save(EdmSource edmDirectory) {
-        return edmDirectoryRepository.index(edmDirectory);
+        return edmSourceRepository.index(edmDirectory);
 	}
 	
 	public List<EdmSource> findByParent(String parentId) {
-	    Page<EdmSource> page = edmDirectoryRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
+	    Page<EdmSource> page = edmSourceRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
 		return page.getContent();
 	}
 
 	public List<EdmSource> findByName(String name) {
-	    return edmDirectoryRepository.findByName(name);
+	    return edmSourceRepository.findByName(name);
 	}
 	
 	public void delete(EdmSource edmDirectory) {
-	    edmDirectoryRepository.delete(edmDirectory);
+	    edmSourceRepository.delete(edmDirectory);
+	}
+
+	public EdmSource findOneByName(String sourceName) {
+		List<EdmSource> candidates = edmSourceRepository.findByName(sourceName);
+		return candidates.size() > 0 ? candidates.get(0) : new EdmSource();
 	}
 }

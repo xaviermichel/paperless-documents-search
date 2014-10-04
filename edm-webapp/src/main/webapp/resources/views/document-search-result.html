@@ -1,4 +1,3 @@
-
 <div class="k-content col-md-12">
 	<form name="searchForm" class="navbar-form navbar-left" role="search">
 		<div class="form-group" style="width:250px;">
@@ -12,12 +11,12 @@
 <hr/>
 
 <div ng-repeat="searchResult in searchResults">
-    <a class="lead" href="#/node/?path={{searchResult.edmDocument.nodePath}}">
+    <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">
         <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>
     </a>
     <br/>
     <span class="text-muted">
-        <a href="#/node/?path={{searchResult.edmDocument.nodePath}}" class="text-muted" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedNodePath || searchResult.edmDocument.nodePath)"></a>
+        <a ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}" class="text-muted" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedNodePath || searchResult.edmDocument.nodePath)"></a>
         <small>&mdash; {{searchResult.edmDocument.date | date : 'dd/MM/yyyy'}}</small>
     </span>
     <br/>

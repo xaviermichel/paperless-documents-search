@@ -1,6 +1,7 @@
 package fr.simple.edm.crawler.filesystem;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.http.client.ClientProtocolException;
@@ -18,7 +19,6 @@ public class FilesystemCrawler {
     
 	private static final EdmConnector edmConnector = new EdmConnector();
 	
-	
 	/**
 	 * 
 	 * @param filePath             The path of the directory to crawl
@@ -27,11 +27,20 @@ public class FilesystemCrawler {
 	 *                             For example : 127.0.0.1:8053
 	 * @param sourceName           A unique name for this source of documents
 	 *                             For example : 
-	 * @throws ClientProtocolException 
+	 * @throws IOException 
 	 */
-	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName) throws ClientProtocolException {
+	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName) throws IOException {
+		edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
+		String sourceId = edmConnector.getIdFromSourceBySourceName(edmServerHttpAddress, sourceName);
+		logger.debug("The source ID is {}", sourceId);
+		_importFilesInDir(filePath, edmServerHttpAddress, sourceId);
+		edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
+	}
+	
+	
+	private static void _importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId) throws ClientProtocolException {
 		
-		logger.info("Looking at : " + filePath);
+		logger.info("Embedded crawler looks for : " + filePath);
 		
 		File file = new File(filePath);
 		
@@ -39,7 +48,7 @@ public class FilesystemCrawler {
 		if (file.isDirectory()) {
 		    logger.debug("... is a directory !");
 			for (File subFile : file.listFiles()) {
-			    importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceName);
+			    _importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId);
 			}
 		}
 		
@@ -53,11 +62,14 @@ public class FilesystemCrawler {
 	        // construct DTO
 	        EdmDocumentFileDto document = new EdmDocumentFileDto();
 	        document.setDate(new Date(file.lastModified()));
-	        document.setNodePath(filePath);
+	        document.setNodePath(filePath.replaceAll("\\\\", "/"));
 	        document.setEdmNodeType(EdmNodeType.DOCUMENT);
 	        document.setName(file.getName().replaceFirst("[.][^.]+$", "")); // without extension (http://stackoverflow.com/questions/924394/how-to-get-file-name-without-the-extension)
-	        document.setParentId(sourceName);
+	        document.setParentId(sourceId);
 	        document.setTemporaryFileToken(fileToken);
+	        
+	        // unique identifier for updating
+	        document.setUniqueIdentifier(org.apache.commons.codec.digest.DigestUtils.md5Hex(document.getNodePath()) + "@" + sourceId);
 	        
 	        // save DTO
 	        edmConnector.saveEdmDocument(edmServerHttpAddress, document);

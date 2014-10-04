@@ -22,8 +22,8 @@ public class EdmSourceService {
     	return edmSourceRepository.findOne(id);
     }
     
-	public EdmSource save(EdmSource edmDirectory) {
-        return edmSourceRepository.index(edmDirectory);
+	public EdmSource save(EdmSource edmSource) {
+        return edmSourceRepository.index(edmSource);
 	}
 	
 	public List<EdmSource> findByParent(String parentId) {
@@ -35,8 +35,8 @@ public class EdmSourceService {
 	    return edmSourceRepository.findByName(name);
 	}
 	
-	public void delete(EdmSource edmDirectory) {
-	    edmSourceRepository.delete(edmDirectory);
+	public void delete(EdmSource edmSource) {
+	    edmSourceRepository.delete(edmSource);
 	}
 
 	public EdmSource findOneByName(String sourceName) {

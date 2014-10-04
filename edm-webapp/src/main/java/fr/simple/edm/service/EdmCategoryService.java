@@ -25,7 +25,7 @@ public class EdmCategoryService {
         return edmCategoryRepository.findOne(id);
     }
 
-    public List<EdmCategory> getEdmLibraries() {
+    public List<EdmCategory> getEdmCategories() {
         List<EdmCategory> edmLibraries = new ArrayList<>();
         for (EdmCategory l : edmCategoryRepository.findAll()) {
             edmLibraries.add(l);
@@ -33,15 +33,15 @@ public class EdmCategoryService {
         return edmLibraries;
     }
 
-    public EdmCategory save(EdmCategory edmLibrary) {
-        return edmCategoryRepository.index(edmLibrary);
+    public EdmCategory save(EdmCategory edmCategory) {
+        return edmCategoryRepository.index(edmCategory);
     }
 
     public List<EdmCategory> findByName(String name) {
         return edmCategoryRepository.findByName(name);
     }
     
-    public void delete(EdmCategory edmLibrary) {
-        edmCategoryRepository.delete(edmLibrary);
+    public void delete(EdmCategory edmCategory) {
+        edmCategoryRepository.delete(edmCategory);
     }
 }

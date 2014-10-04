@@ -238,7 +238,7 @@ public class EdmDocumentServiceTest {
         
         EdmSource trololoDirectory = new EdmSource();
         trololoDirectory.setName("trololo");
-        trololoDirectory.setParentId(edmLibraryService.getEdmLibraries().get(0).getId());
+        trololoDirectory.setParentId(edmLibraryService.getEdmCategories().get(0).getId());
         trololoDirectory = edmDirectoryService.save(trololoDirectory);
         
         EdmSource yearDirectory = new EdmSource();

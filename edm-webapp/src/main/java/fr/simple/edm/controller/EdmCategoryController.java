@@ -27,7 +27,7 @@ public class EdmCategoryController {
 	
     @RequestMapping(value = "/library", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<EdmCategoryDto> list() {
-        return edmCategoryMapper.boToDto(edmCategoryService.getEdmLibraries());
+        return edmCategoryMapper.boToDto(edmCategoryService.getEdmCategories());
     }
     
     @RequestMapping(method=RequestMethod.POST, value="/library", consumes = MediaType.APPLICATION_JSON_VALUE)

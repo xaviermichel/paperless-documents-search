@@ -42,7 +42,7 @@ public class GedLibraryServiceTest {
 	
 	@Test
 	public void defaultLibraryIsCreatedAtStart() {
-		List<EdmCategory> librairies = edmLibraryService.getEdmLibraries();
+		List<EdmCategory> librairies = edmLibraryService.getEdmCategories();
 		
 		assertThat(librairies.size()).isEqualTo(1);
 		assertThat(librairies.get(0).getName()).isNotEmpty();

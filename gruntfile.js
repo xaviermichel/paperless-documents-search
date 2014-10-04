@@ -9,18 +9,6 @@ module.exports = function(grunt) {
 		concat: {
 			dist: {
 				src: [
-					// not uglified resources
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-canvas-to-blob/js/canvas-to-blob.min.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/vendor/jquery.ui.widget.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.iframe-transport.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-process.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-image.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-audio.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-video.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-validate.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/js/jquery.fileupload-angular.js',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/angular-kendo/build/angular-kendo.min.js',
 					// project resources
 					EDM_WEBAPP_DIR + '/resources/js/*.js'
 				],
@@ -36,9 +24,6 @@ module.exports = function(grunt) {
 		cssmin: {
 			dist: {
 				src: [
-					// not minimified resources
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/css/jquery.fileupload.css',
-					EDM_WEBAPP_DIR + '/resources/bower_inc/blueimp-file-upload/css/jquery.fileupload-ui.css',
 					// project resources
 					EDM_WEBAPP_DIR + '/resources/css/*.css'
 				],

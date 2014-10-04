@@ -26,6 +26,39 @@ angular.module('edmApp')
 		return "file:///" + documentLink;
 	}
 	
+	$scope.getDocumentNodeIcon = function(node) {
+		switch(node.fileExtension.toLowerCase()) {
+		    case "pdf":
+		        return "pdf";
+		        break;
+		    case "html":
+		        return "html";
+		        break;
+		    case "png":
+		    case "jpg":
+		    case "jpeg":
+		    case "gif":
+		        return "image";
+		        break;
+		    case "doc":
+		    case "docx":
+		        return "word";
+		        break;
+		    case "xls":
+		    case "xlsx":
+		        return "excel";
+		        break;
+		    case "ppt":
+		    case "pptx":
+		        return "power-point";
+		        break;
+		    case "txt":
+		    	return "text";
+		    	break;
+		}
+		return "unknown"; // default icon
+	}
+	
 	$http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 		$scope.searchResults = response;
 	});

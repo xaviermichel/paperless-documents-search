@@ -12,6 +12,7 @@
 
 <div ng-repeat="searchResult in searchResults">
     <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">
+    	<div ng-class="'icone-sprite ' + getDocumentNodeIcon(searchResult.edmDocument)"></div>
         <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>
     </a>
     <br/>

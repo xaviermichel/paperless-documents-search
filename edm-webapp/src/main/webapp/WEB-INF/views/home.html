@@ -25,6 +25,8 @@
 	<script th:if="${debug}"  src="/resources/build/js/production.js"></script>
 </span>
 <span th:if="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
+	<link rel="stylesheet" href="/resources/css/icons-sprite.css" />
+
 	<script src="/resources/js/application.js"></script>
 	<script src="/resources/js/controllers.document.js"></script>
 	<script src="/resources/js/services.js"></script>

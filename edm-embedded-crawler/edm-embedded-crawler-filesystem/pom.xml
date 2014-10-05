@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>edm-embedded-crawler</artifactId>
+		<artifactId>simple-data-search-embedded-crawler</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>edm-embedded-crawler-filesystem</artifactId>
+	<artifactId>simple-data-search-embedded-crawler-filesystem</artifactId>
 	<name>Filesystem crawler</name>
 
 	<properties>
@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>fr.simple.edm</groupId>
-			<artifactId>edm-embedded-crawler-bridge</artifactId>
+			<artifactId>simple-data-search-embedded-crawler-bridge</artifactId>
 			<version>${edm.version}</version>
 		</dependency>
 	</dependencies>

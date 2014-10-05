@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>simple-edm</artifactId>
+		<artifactId>simple-data-search</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>edm-embedded-crawler</artifactId>
+	<artifactId>simple-data-search-embedded-crawler</artifactId>
 	<name>Embedded crawler</name>
 	<packaging>pom</packaging>
 
@@ -21,9 +21,10 @@
 	</properties>
 
 	<dependencies>
+	
 		<dependency>
 			<groupId>fr.simple.edm</groupId>
-			<artifactId>edm-contracts</artifactId>
+			<artifactId>simple-data-search-contracts</artifactId>
 			<version>${edm.version}</version>
 		</dependency>
 		

@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<edm.version>1.0-SNAPSHOT</edm.version>
+		<edm.version>1.0</edm.version>
 		<start-class>fr.simple.edm.Application</start-class>
 
 		<org.slf4j.version>1.7.7</org.slf4j.version>
@@ -107,7 +107,7 @@
 
 		<dependency>
 			<groupId>fr.simple.edm</groupId>
-			<artifactId>edm-contracts</artifactId>
+			<artifactId>simple-data-search-contracts</artifactId>
 			<version>${edm.version}</version>
 		</dependency>
 
@@ -191,7 +191,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${org.springframework.boot.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>

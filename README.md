@@ -4,7 +4,8 @@
 Simple Data Search
 ==================
 
-A single entry point to search in your data (for now, data on your filesystem).
+This program is an only entry point to search in your files.
+You launch it, index one (or more) directory on your filesystem and you can search in the indexeds files.
 
 **Features (strongly based on simple-edm)**
 

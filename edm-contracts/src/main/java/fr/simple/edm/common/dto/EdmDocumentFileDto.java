@@ -20,8 +20,6 @@ public class EdmDocumentFileDto extends EdmNodeDto implements Serializable {
     
     private String nodePath = null;
     
-    private String uniqueIdentifier;
-    
     public EdmDocumentFileDto() {
         super(EdmNodeType.DOCUMENT);
     }
@@ -73,12 +71,4 @@ public class EdmDocumentFileDto extends EdmNodeDto implements Serializable {
     public void setNodePath(String nodePath) {
         this.nodePath = nodePath;
     }
-
-	public String getUniqueIdentifier() {
-		return uniqueIdentifier;
-	}
-
-	public void setUniqueIdentifier(String uniqueIdentifier) {
-		this.uniqueIdentifier = uniqueIdentifier;
-	}
 }

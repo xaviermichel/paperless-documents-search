@@ -38,10 +38,6 @@
 			"nodePath": {
 				"type": "string",
 				"analyzer":"french"
-			},
-			"uniqueIdentifier" : {
-				"type": "string",
-				"index": "not_analyzed"
 			}
         }
     }

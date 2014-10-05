@@ -19,10 +19,9 @@ public class EdmDocumentFile extends EdmNode {
 
     private Date date;
 
+    @NotNull
     private String nodePath;
     
-    private String uniqueIdentifier;
-
     public EdmDocumentFile() {
         super(EdmNodeType.DOCUMENT);
         filename = "";
@@ -67,13 +66,4 @@ public class EdmDocumentFile extends EdmNode {
     public void setNodePath(String nodePath) {
         this.nodePath = nodePath;
     }
-
-	public String getUniqueIdentifier() {
-		return uniqueIdentifier;
-	}
-
-	public void setUniqueIdentifier(String uniqueIdentifier) {
-		this.uniqueIdentifier = uniqueIdentifier;
-	}
-
 }

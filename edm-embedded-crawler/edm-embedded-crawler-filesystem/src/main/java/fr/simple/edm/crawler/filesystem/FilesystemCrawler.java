@@ -71,10 +71,7 @@ public class FilesystemCrawler {
 	        document.setName(file.getName().replaceFirst("[.][^.]+$", "")); // without extension (http://stackoverflow.com/questions/924394/how-to-get-file-name-without-the-extension)
 	        document.setParentId(sourceId);
 	        document.setTemporaryFileToken(fileToken);
-	        
-	        // unique identifier for updating
-	        document.setUniqueIdentifier(org.apache.commons.codec.digest.DigestUtils.md5Hex(document.getNodePath()) + "@" + sourceId);
-	        
+
 	        // save DTO
 	        edmConnector.saveEdmDocument(edmServerHttpAddress, document);
 		}

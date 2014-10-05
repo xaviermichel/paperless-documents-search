@@ -2,7 +2,6 @@ package fr.simple.edm.service;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -20,14 +19,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.common.EdmNodeType;
-import fr.simple.edm.model.EdmSource;
-import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmCategory;
+import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmNode;
-import fr.simple.edm.service.EdmSourceService;
-import fr.simple.edm.service.EdmDocumentService;
-import fr.simple.edm.service.EdmCategoryService;
-import fr.simple.edm.service.EdmNodeService;
+import fr.simple.edm.model.EdmSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -39,13 +34,13 @@ public class EdmNodeServiceTest {
     private EdmNodeService edmNodeService;
 
     @Autowired
-    private EdmCategoryService edmLibraryService;
+    private EdmCategoryService edmCategoryService;
 
     @Autowired
     private EdmDocumentService edmDocumentService;
 
     @Autowired
-    private EdmSourceService edmDirectoryService;
+    private EdmSourceService edmSourceService;
 
     @Autowired
     private ElasticsearchTestingHelper elasticsearchTestingHelper;
@@ -86,14 +81,14 @@ public class EdmNodeServiceTest {
         // building a fake environment
         edmLibrary = new EdmCategory();
         edmLibrary.setName("library");
-        edmLibrary = edmLibraryService.save(edmLibrary);
+        edmLibrary = edmCategoryService.save(edmLibrary);
 
         libraryId = edmLibrary.getId();
 
         edmDirectory = new EdmSource();
         edmDirectory.setName("directory");
         edmDirectory.setParentId(edmLibrary.getId());
-        edmDirectory = edmDirectoryService.save(edmDirectory);
+        edmDirectory = edmSourceService.save(edmDirectory);
 
         directoryId = edmDirectory.getId();
 
@@ -103,6 +98,7 @@ public class EdmNodeServiceTest {
         // make a copy because moving test file is not acceptable (someone may come after and require this file) ! 
         Files.copy(Paths.get(targetDirAbsolutePath + "demo_pdf.pdf"), Paths.get(targetDirAbsolutePath + "demo_pdf_tmp.pdf"));
         edmDocument.setFilename(targetDirAbsolutePath + "demo_pdf_tmp.pdf");
+        edmDocument.setNodePath("/documents/1");
         
         edmDocument = edmDocumentService.save(edmDocument);
 
@@ -111,7 +107,7 @@ public class EdmNodeServiceTest {
         directoryWithDirectoryParent = new EdmSource();
         directoryWithDirectoryParent.setName("subdirectory");
         directoryWithDirectoryParent.setParentId(edmDirectory.getId());
-        directoryWithDirectoryParent = edmDirectoryService.save(directoryWithDirectoryParent);
+        directoryWithDirectoryParent = edmSourceService.save(directoryWithDirectoryParent);
 
         directoryWithDirectoryParentId = directoryWithDirectoryParent.getId();
 
@@ -119,6 +115,7 @@ public class EdmNodeServiceTest {
         documentUnderLibrary.setName("document under library");
         documentUnderLibrary.setParentId(edmLibrary.getId());
         documentUnderLibrary = edmDocumentService.save(documentUnderLibrary);
+        documentUnderLibrary.setNodePath("/documents/2");
 
         documentUnderLibraryId = documentUnderLibrary.getId();
 
@@ -282,7 +279,7 @@ public class EdmNodeServiceTest {
         newDirectory.setName("new directory");
         newDirectory.setParentId(libraryId);
         newDirectory.setId("-azerty");
-        newDirectory = edmDirectoryService.save(newDirectory);
+        newDirectory = edmSourceService.save(newDirectory);
         
         EdmNode node = edmNodeService.findOne(newDirectory.getId());
         assertThat(node).isNotNull();
@@ -292,8 +289,4 @@ public class EdmNodeServiceTest {
         assertThat(nodes).isEmpty();
     }
    
-    @Test
-    public void documentPathIsWellComputed() {
-        assertThat(edmDocument.getNodePath()).isEqualTo("library/directory/document");
-    }
 }

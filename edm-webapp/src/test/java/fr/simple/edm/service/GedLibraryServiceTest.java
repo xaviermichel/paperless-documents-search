@@ -2,8 +2,6 @@ package fr.simple.edm.service;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +13,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
+import fr.simple.edm.common.EdmNodeType;
 import fr.simple.edm.model.EdmCategory;
+import fr.simple.edm.model.EdmNode;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,11 +25,12 @@ import fr.simple.edm.model.EdmCategory;
 public class GedLibraryServiceTest {
 
 	@Autowired
-	private EdmCategoryService edmLibraryService;
+	private EdmCategoryService edmCategoryService;
 
 	@Autowired
 	private ElasticsearchTestingHelper elasticsearchTestingHelper;
 	
+	private EdmCategory edmCategory;
 	
 	/**
 	 * Will destroy and rebuild ES_INDEX
@@ -38,15 +39,19 @@ public class GedLibraryServiceTest {
 	public void setUp() throws Exception {
 		elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 		elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+		
+		EdmCategory category = new EdmCategory();
+		category.setName("My category");
+		edmCategory = edmCategoryService.save(category);
+		
+		elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 	}
 	
-	@Test
-	public void defaultLibraryIsCreatedAtStart() {
-		List<EdmCategory> librairies = edmLibraryService.getEdmCategories();
-		
-		assertThat(librairies.size()).isEqualTo(1);
-		assertThat(librairies.get(0).getName()).isNotEmpty();
-		assertThat(librairies.get(0).getId()).isNotNull();
-	}
-
+    @Test
+    public void categoryCanBeFindByHisName() {
+        EdmNode node = edmCategoryService.findOneByName("My category");
+        assertThat(node).isNotNull();
+        assertThat(node.getId()).isEqualTo(edmCategory.getId());
+        assertThat(node.getEdmNodeType()).isEqualTo(EdmNodeType.CATEGORY);
+    }
 }

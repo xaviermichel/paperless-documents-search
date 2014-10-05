@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.Base64;
@@ -71,11 +72,11 @@ public class EdmDocumentService {
 	@Inject
 	ElasticsearchOperations elasticsearchTemplate;
 
-	// Map<source, List<UniqueIdentifier>>
-	private static Map<String, List<String>> sourceDocumentsUniqueIdentifiers;
+	// Map<source, List<documentId>>, is used to delete removed document at re-indexation
+	private static Map<String, List<String>> sourceDocumentsIds;
 
 	static {
-		sourceDocumentsUniqueIdentifiers = new HashMap<>();
+		sourceDocumentsIds = new HashMap<>();
 	}
 
 	public EdmDocumentFile findOne(String id) {
@@ -84,11 +85,10 @@ public class EdmDocumentService {
 
 	public EdmDocumentFile save(EdmDocumentFile edmDocument) {
 
-		// find if document already exists, it will update it
-		if (edmDocumentRepository.findByUniqueIdentifier(edmDocument.getUniqueIdentifier()) != null) {
-			edmDocument.setId(edmDocumentRepository.findByUniqueIdentifier(edmDocument.getUniqueIdentifier()).getId());
-		}
-		
+		// unique identifier for updating
+        String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getParentId());
+		edmDocument.setId(id);
+        
 		try {
 			// the document is build manually to
 			// have the possibility to add the binary file
@@ -153,8 +153,8 @@ public class EdmDocumentService {
 			logger.error("Failed to index document", e);
 		}
 
-		if (sourceDocumentsUniqueIdentifiers.get(edmDocument.getParentId()) != null) {
-			sourceDocumentsUniqueIdentifiers.get(edmDocument.getParentId()).remove(edmDocument.getUniqueIdentifier());
+		if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
+			sourceDocumentsIds.get(edmDocument.getParentId()).remove(edmDocument.getId());
 		}
 		
 		return edmDocument;
@@ -293,7 +293,7 @@ public class EdmDocumentService {
 			logger.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
 
 			for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
-				edmDocumentsIds.add(doc.getUniqueIdentifier());
+				edmDocumentsIds.add(doc.getId());
 			}
 
 			if (!edmDocumentPage.hasNext()) {
@@ -302,7 +302,7 @@ public class EdmDocumentService {
 			pageRequest = edmDocumentPage.nextPageable();
 			edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
 		}
-		sourceDocumentsUniqueIdentifiers.put(sourceId, edmDocumentsIds);
+		sourceDocumentsIds.put(sourceId, edmDocumentsIds);
 		
 		logger.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
 	}
@@ -314,18 +314,18 @@ public class EdmDocumentService {
 		}
 		String sourceId = source.getId();
 		
-		if (sourceDocumentsUniqueIdentifiers.get(sourceId) == null) {
+		if (sourceDocumentsIds.get(sourceId) == null) {
 			return;
 		}
 		
-		logger.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsUniqueIdentifiers.get(sourceId).size(), sourceId);
+		logger.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
 		// loop on removed documents
-		for (String documentIdentifier : sourceDocumentsUniqueIdentifiers.get(sourceId)) {
-			EdmDocumentFile edmDocumentFile = edmDocumentRepository.findByUniqueIdentifier(documentIdentifier);
-			logger.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getUniqueIdentifier());
+		for (String documentId : sourceDocumentsIds.get(sourceId)) {
+			EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
+			logger.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
 			delete(edmDocumentFile);
 		}
 		// reset map to be sur new ids won't be deleted
-		sourceDocumentsUniqueIdentifiers.put(sourceId, new ArrayList<String>());
+		sourceDocumentsIds.put(sourceId, new ArrayList<String>());
 	}
 }

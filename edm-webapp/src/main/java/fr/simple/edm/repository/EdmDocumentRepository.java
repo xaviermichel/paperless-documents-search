@@ -16,6 +16,5 @@ public interface EdmDocumentRepository extends ElasticsearchRepository<EdmDocume
     Page<EdmDocumentFile> findByParentId(String parentId, Pageable page);
 
 	List<EdmDocumentFile> findByName(String name);
-	
-	EdmDocumentFile findByUniqueIdentifier(String uniqueIdentifier);
+
 }

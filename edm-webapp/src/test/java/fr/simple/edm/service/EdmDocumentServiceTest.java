@@ -63,23 +63,27 @@ public class EdmDocumentServiceTest {
 		
         docBac = new EdmDocumentFile();
         docBac.setName("Diplome du bac");
+        docBac.setNodePath("/documents/1");
 
         docBrevet = new EdmDocumentFile();
         docBrevet.setName("Brevet");
+        docBrevet.setNodePath("/documents/2");
 
         docBacNotes = new EdmDocumentFile();
         docBacNotes.setName("Notes du bac");
+        docBacNotes.setNodePath("/documents/3");
 
         docLatex = new EdmDocumentFile();
         docLatex.setName("Un template de document");
         // make a copy because moving test file is not acceptable (someone may come after and require this file) ! 
         Files.copy(Paths.get(targetDirAbsolutePath + "demo_pdf.pdf"), Paths.get(targetDirAbsolutePath + "demo_pdf_tmp.pdf"));
         docLatex.setFilename(targetDirAbsolutePath + "demo_pdf_tmp.pdf");
+        docLatex.setNodePath("/documents/4");
         
-        edmDocumentService.save(docBac);
-        edmDocumentService.save(docBrevet);
-        edmDocumentService.save(docBacNotes);
-        edmDocumentService.save(docLatex);
+        docBac = edmDocumentService.save(docBac);
+        docBrevet = edmDocumentService.save(docBrevet);
+        docBacNotes = edmDocumentService.save(docBacNotes);
+        docLatex = edmDocumentService.save(docLatex);
         
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 	}
@@ -134,7 +138,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplômes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac, docBrevet
+                docBac
         });
 
         assertThat(docs).isNotNull();
@@ -146,11 +150,11 @@ public class EdmDocumentServiceTest {
      * Search test with ending 's' and accent
      */
     @Test
-    public void documentWithAccetAndSShouldBeReturned() throws Exception {
+    public void documentWithAccentAndSShouldBeReturned() throws Exception {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplomes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac, docBrevet
+                docBac
         });
 
         assertThat(docs).isNotNull();
@@ -221,34 +225,13 @@ public class EdmDocumentServiceTest {
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
     }
-
-    @Test
-    public void fileShouldFindHisDocumentPath() {
-        String filePath = "Documents/Bienvenue/GED.pdf";
-        String nodePath = edmDocumentService.filePathToNodePath(filePath);
-        
-        assertThat(nodePath).isNotNull();
-        assertThat(nodePath).isNotEmpty();
-        assertThat(nodePath).isEqualTo("Documents/Bienvenue/GED");
-    }
     
-    // issue #82
     @Test 
     public void documentWithKeywordInPathShouldBeSearchable() throws Exception {
         
-        EdmSource trololoDirectory = new EdmSource();
-        trololoDirectory.setName("trololo");
-        trololoDirectory.setParentId(edmLibraryService.getEdmCategories().get(0).getId());
-        trololoDirectory = edmDirectoryService.save(trololoDirectory);
-        
-        EdmSource yearDirectory = new EdmSource();
-        yearDirectory.setName("2014");
-        yearDirectory.setParentId(trololoDirectory.getId());
-        yearDirectory = edmDirectoryService.save(yearDirectory);
-        
         EdmDocumentFile document = new EdmDocumentFile();
         document.setName("echeancier 2014");
-        document.setParentId(yearDirectory.getId());
+        document.setNodePath("trololo/2014/echeancier 2014");
         document = edmDocumentService.save(document);
        
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);

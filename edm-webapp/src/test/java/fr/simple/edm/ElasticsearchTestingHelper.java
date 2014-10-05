@@ -29,12 +29,12 @@ public class ElasticsearchTestingHelper {
 	 * Will destroy and rebuild ES_INDEX_DOCUMENTS
 	 */
 	public void destroyAndRebuildIndex(String index) throws Exception {
-		Field clientField = ElasticsearchConfig.class.getDeclaredField("client");
+		Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
 		clientField.setAccessible(true);
 
 		Client client = (Client) clientField.get(elasticsearchConfig);
 		
-		Method rebuildEsMappingMethod = ElasticsearchConfig.class.getDeclaredMethod("buildEsMapping");
+		Method rebuildEsMappingMethod = ElasticsearchConfig.class.getDeclaredMethod("buildOrUpdateEsMapping");
 		rebuildEsMappingMethod.setAccessible(true);
 
 		flushIndexMethod = ElasticsearchConfig.class.getDeclaredMethod("flushIndex", String.class);

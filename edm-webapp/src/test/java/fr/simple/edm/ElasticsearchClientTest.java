@@ -41,7 +41,7 @@ public class ElasticsearchClientTest {
 	
 	@Test
 	public void localNodeShouldBeStartedAndWorking() throws Exception {
-		Field clientField = ElasticsearchConfig.class.getDeclaredField("client");
+		Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
 		clientField.setAccessible(true);
 
 		Client client = (Client) clientField.get(elasticsearchConfig);

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
-@EnableAutoConfiguration(exclude={ElasticsearchDataAutoConfiguration.class}) // let me configure ES myself
+@EnableAutoConfiguration
 @ComponentScan(basePackages = {"fr.simple.edm"})
 @PropertySources(value = {
 		@PropertySource("classpath:/properties/constants.properties"),
@@ -31,6 +31,13 @@ public class Application {
     @Inject
 	public void setEnv(Environment env) {
 		Application.env = env;
+	}
+    
+    private static ElasticsearchConfig elasticsearchConfig;
+    
+    @Inject
+	public void setElasticsearchConfig(ElasticsearchConfig elasticsearchConfig) {
+		Application.elasticsearchConfig = elasticsearchConfig;
 	}
 
 	public static void main(String[] args) {
@@ -58,8 +65,9 @@ public class Application {
         logger.info("os.name                    : " + System.getProperty("os.name"));
         logger.info("os.version                 : " + System.getProperty("os.version"));
         logger.info("==================================================================================");
-        logger.info("[CONFIGURATION] Embedded storage engine : {}", env.getProperty("edm.embedded-storage"));
 
+        elasticsearchConfig.updateMappingIfLocalNode();
+        
         // create temporary directory
         if (! new File(env.getProperty("edm.tmpdir")).mkdirs()) {
             logger.warn("Failed to create temporary directory ({}), may already exists ?", env.getProperty("edm.tmpdir"));

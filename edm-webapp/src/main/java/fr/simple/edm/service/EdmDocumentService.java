@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -32,6 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.data.elasticsearch.core.FacetedPageImpl;
 import org.springframework.data.elasticsearch.core.SearchResultMapper;
@@ -58,8 +60,8 @@ public class EdmDocumentService {
 	private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
 
 	@Inject
-	private ElasticsearchConfig elasticsearchConfig;
-
+	private Client elasticsearchClient;
+	
 	@Inject
 	private EdmDocumentRepository edmDocumentRepository;
 
@@ -144,7 +146,7 @@ public class EdmDocumentService {
 			contentBuilder.endObject();
 
 			// TODO : dynamise index and type with EdmDocument annotation !
-			IndexResponse ir = elasticsearchConfig.getClient().prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
+			IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
 
 			edmDocument.setId(ir.getId());
 

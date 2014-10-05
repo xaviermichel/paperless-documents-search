@@ -78,6 +78,11 @@ else
 	exit 2
 fi
 
+xlog INFO "Resolving web libs (bower/grunt)"
+bower install
+grunt
+
+
 cd edm-webapp
 echo "Maven packaging..."
 mvn package -Dmaven.test.skip=true > /dev/null
@@ -89,13 +94,8 @@ else
 	exit 3
 fi
 
-cd ..
-xlog INFO "Resolving web libs (bower/grunt)"
-bower install
-grunt
 
-
-cd scripts
+cd ../scripts
 
 xlog INFO "Preparing release directory"
 

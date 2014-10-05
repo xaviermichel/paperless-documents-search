@@ -1,6 +1,6 @@
 {
-	"name": "simple-edm",
-	"version": "5.4.0",
+	"name": "simple-data-search",
+	"version": "1.0.0",
 	"devDependencies": {
 		"grunt": "~0.4.1",
 		"glob": "~3.2.8",

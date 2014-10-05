@@ -104,14 +104,6 @@ mkdir -p ${TMP_RELEASE_DIR}
 # main jar
 cp ../edm-webapp/target/*.jar ${TMP_RELEASE_DIR}/simple-data-search.jar
 
-# webapp resources (exclude dev ressources)
-#mkdir -p ${TMP_RELEASE_DIR}/src/main/webapp
-#for directory in $(ls ../edm-webapp/src/main/webapp/resources) ; do
-#	if [ "${directory}" = "build" -o "${directory}" = "views" -o "${directory}" = "images" ] ; then
-#		cp -r ../edm-webapp/src/main/webapp/resources/${directory} ${TMP_RELEASE_DIR}/src/main/webapp/resources/
-#	fi
-#done
-
 # embedded scripts
 cp simple-data-search-windows-starter.cmd ${TMP_RELEASE_DIR}
 

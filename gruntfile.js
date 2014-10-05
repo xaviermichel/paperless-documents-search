@@ -1,6 +1,6 @@
 // see http://la-cascade.ghost.io/grunt-pour-ceux-qui-pensent-que-grunt-est-compliqu%C3%A9/
 
-var EDM_WEBAPP_DIR = 'edm-webapp/src/main/webapp';
+var EDM_WEBAPP_DIR = 'edm-webapp/src/main/resources/static/';
 
 module.exports = function(grunt) {
 	grunt.initConfig({
@@ -10,24 +10,24 @@ module.exports = function(grunt) {
 			dist: {
 				src: [
 					// project resources
-					EDM_WEBAPP_DIR + '/resources/js/*.js'
+					EDM_WEBAPP_DIR + '/js/*.js'
 				],
-				dest: EDM_WEBAPP_DIR + '/resources/build/js/production.js'
+				dest: EDM_WEBAPP_DIR + '/build/js/production.js'
 			}
 		},
 		uglify: {
 			build: {
-				src: EDM_WEBAPP_DIR + '/resources/build/js/production.js',
-				dest: EDM_WEBAPP_DIR + '/resources/build/js/production.min.js'
+				src: EDM_WEBAPP_DIR + '/build/js/production.js',
+				dest: EDM_WEBAPP_DIR + '/build/js/production.min.js'
 			}
 		},
 		cssmin: {
 			dist: {
 				src: [
 					// project resources
-					EDM_WEBAPP_DIR + '/resources/css/*.css'
+					EDM_WEBAPP_DIR + '/css/*.css'
 				],
-				dest: EDM_WEBAPP_DIR + '/resources/build/css/production.min.css'
+				dest: EDM_WEBAPP_DIR + '/build/css/production.min.css'
 			}
 		},
 	});

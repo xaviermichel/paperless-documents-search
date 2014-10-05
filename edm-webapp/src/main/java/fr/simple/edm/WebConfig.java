@@ -19,16 +19,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @EnableWebMvc
 @Configuration
@@ -43,58 +40,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-        localeChangeInterceptor.setParamName("lang");
-        registry.addInterceptor(localeChangeInterceptor);
-    }
-    
-    @Bean
-    public HttpMessageConverter<String> responseBodyConverter() {
-        return new StringHttpMessageConverter(Charset.forName("UTF-8"));
+        registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/static/");
     }
 
     @Bean
-    public LocaleResolver localeResolver() {
-        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
-        cookieLocaleResolver.setDefaultLocale(StringUtils.parseLocaleString("fr"));
-        return cookieLocaleResolver;
-    }
-
-    @Bean
-    public ServletContextTemplateResolver templateResolver() {
-        ServletContextTemplateResolver resolver = new ServletContextTemplateResolver();
-        resolver.setPrefix("/WEB-INF/views/");
+    public ClassLoaderTemplateResolver templateResolver() {
+    	ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setPrefix("/templates/");
         resolver.setSuffix(".html");
         // NB, selecting HTML5 as the template mode.
         resolver.setCharacterEncoding("UTF-8");
         resolver.setTemplateMode("HTML5");
         resolver.setCacheable(false);
+        resolver.setOrder(1);
         return resolver;
     }
-
-    public SpringTemplateEngine templateEngine() {
-        SpringTemplateEngine engine = new SpringTemplateEngine();
-        engine.setTemplateResolver(templateResolver());
-        return engine;
-    }
-
-    @Bean
-    public ViewResolver viewResolver() {
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
-        viewResolver.setTemplateEngine(templateEngine());
-        viewResolver.setOrder(1);
-        viewResolver.setCharacterEncoding("UTF-8");
-        viewResolver.setContentType("text/html;charset=UTF-8");
-        viewResolver.setViewNames(new String[] { "*" });
-        viewResolver.setCache(false);
-        return viewResolver;
-    }
-
+    
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

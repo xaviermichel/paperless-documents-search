@@ -1,7 +1,6 @@
 package fr.simple.edm;
 
 import java.io.File;
-import java.net.URL;
 
 import javax.inject.Inject;
 
@@ -9,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude={ElasticsearchDataAutoConfiguration.class}) // let me configure ES myself
 @ComponentScan(basePackages = {"fr.simple.edm"})
 @PropertySources(value = {
 		@PropertySource("classpath:/properties/constants.properties"),
@@ -40,10 +40,10 @@ public class Application {
         app.run(args);
         
         // Run this logs AFTER spring bean injection !
-        logger.info("==========================================================================");
+        logger.info("==================================================================================");
 		logger.info("Hi, this is {} version {}", env.getProperty("APPLICATION_NAME"), env.getProperty("APPLICATION_VERSION"));
 		logger.info("You can report issues on {}", env.getProperty("APPLICATION_ISSUES_URL"));
-        logger.info("--------------------------------------------------------------------------");
+        logger.info("----------------------------------------------------------------------------------");
         logger.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
         logger.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));
         logger.info("java.specification.name    : " + System.getProperty("java.specification.name"));
@@ -57,7 +57,7 @@ public class Application {
         logger.info("os.arch                    : " + System.getProperty("os.arch"));
         logger.info("os.name                    : " + System.getProperty("os.name"));
         logger.info("os.version                 : " + System.getProperty("os.version"));
-        logger.info("==========================================================================");
+        logger.info("==================================================================================");
         logger.info("[CONFIGURATION] Embedded storage engine : {}", env.getProperty("edm.embedded-storage"));
 
         // create temporary directory
@@ -65,17 +65,6 @@ public class Application {
             logger.warn("Failed to create temporary directory ({}), may already exists ?", env.getProperty("edm.tmpdir"));
         }
         
-        logger.info("Startup is finished ! Waiting for some user...");
-        
-        // full desktop mode, open browser
-        if ("true".equalsIgnoreCase(env.getProperty("edm.starter.web_browser"))) {
-            String location = "http://127.0.0.1:" + env.getProperty("server.port");
-            try {
-                java.awt.Desktop.getDesktop().browse(new URL(location).toURI());
-            }
-            catch (Exception e) {
-                logger.error("Failed to open browser for url : {}", location, e);
-            }
-        }
+        logger.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", env.getProperty("server.port"));
     }
 }

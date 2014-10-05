@@ -1,6 +1,8 @@
 package fr.simple.edm.controller;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -64,9 +66,11 @@ public class EdmDocumentController {
         String fileExtension = com.google.common.io.Files.getFileExtension(multipartFile.getOriginalFilename());
         String temporaryFileToken =  String.valueOf(System.currentTimeMillis()) + String.valueOf(Math.random() + "." + fileExtension);
         
-        File file = new File(env.getProperty("edm.tmpdir") + temporaryFileToken);
-        multipartFile.transferTo(file);
-        
+        byte[] bytes = multipartFile.getBytes();
+        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(env.getProperty("edm.tmpdir") + temporaryFileToken)));
+        stream.write(bytes);
+        stream.close();
+
         EdmDocumentUploadResponse uploadResponse = new EdmDocumentUploadResponse();
         uploadResponse.setTemporaryFileToken(temporaryFileToken);
         return uploadResponse;

@@ -2,10 +2,17 @@ package fr.simple.edm;
 
 import java.nio.charset.Charset;
 
+import javax.inject.Inject;
+import javax.servlet.MultipartConfigElement;
+
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.StringUtils;
@@ -19,14 +26,21 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring3.SpringTemplateEngine;
-import org.thymeleaf.spring3.view.ThymeleafViewResolver;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @EnableWebMvc
 @Configuration
+@PropertySources(value = {
+		@PropertySource("classpath:/edm-configuration.properties")
+	}
+)
 public class WebConfig extends WebMvcConfigurerAdapter {
 
+	@Inject
+	Environment env;
+	
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
@@ -98,5 +112,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public MultipartResolver multipartResolver() {
         MultipartResolver multipartResolver = new CommonsMultipartResolver();
         return multipartResolver;
+    }
+    
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize(env.getProperty("edm.upload.maxFileSize"));
+        factory.setMaxRequestSize(env.getProperty("edm.upload.maxRequestSize"));
+        return factory.createMultipartConfig();
     }
 }

@@ -57,22 +57,6 @@ http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\e
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files&sourceName=Mes documents&categoryName=Documents
 ```
 
-**Deployment**
-
-Example of deployment on my server :
-
-```bash
-xavier@server:~/bin% mkdir simple-edm
-xavier@server:~/bin% cd simple-edm
-xavier@server:~/bin/simple-edm% cp ~/work/simple-edm/scripts/simple-edm-*.zip .
-xavier@server:~/bin/simple-edm% unzip simple-edm-*.zip
-xavier@server:~/bin/simple-edm% cd simple-edm
-xavier@server:~/bin/simple-edm% java -jar simple-edm.jar
-```
-
-And access it by network (for me, it means `server:8053`) !
-
-
 Downloads
 ---------
 

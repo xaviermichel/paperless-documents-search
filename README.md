@@ -47,7 +47,7 @@ Now, you can compile the project core and run it
 mvn install -Dmaven.test.skip=true
 cd edm-webapp
 mvn package -Dmaven.test.skip=true
-java -jar target/edm-webapp-*.jar
+java -jar target/simple-data-search-webapp*.jar
 ```
 
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :

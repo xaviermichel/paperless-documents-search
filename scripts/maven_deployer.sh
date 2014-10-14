@@ -6,8 +6,13 @@
 
 . ./xlog.sh
 
-REPO_LOCATION=../maven-repo
+# make sur at least on build is done
+cd ..
+mvn clean install -Dmaven.test.skip=true
+cd -
 
+
+REPO_LOCATION=../maven-repo
 
 current_version=$(grep '<version>' ../pom.xml | head -1 | sed 's/^.*>\(.*\)<.*$/\1/')
 

@@ -10,6 +10,7 @@ Release
 - [ ] Add git tag (`git tag -a v5.3 -m 'Version 5.3'`)
 - [ ] Update pom for the next snapshot with `update_version.sh`
 - [ ] Deploy maven artifacts with `maven_deployer.sh`
+- [ ] Make the next snapshot commit
 - [ ] Push with tags (`git push --tags`)
 - [ ] Make the release on github (upload generated zip)
 - [ ] Close the current milestone and open the next one

@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>simple-data-search</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>1.1</version>
+		<version>1.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 

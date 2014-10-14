@@ -1,9 +1,14 @@
 #!/bin/bash
 
-. ./xlog.sh
+. ./xlog.sh ""
 
-OLD_VERSION=1.0
-NEW_VERSION=1.1-SNAPSHOT
+if [ $# -ne 2 ] ; then
+	echo "Usage : $0 OLD_VERSION NEW_VERSION"
+	exit 1
+fi
+
+OLD_VERSION=$1
+NEW_VERSION=$2
 
 VERSION_OCCURENCE_COUNT=9
 

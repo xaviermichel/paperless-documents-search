@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<edm.version>1.1-SNAPSHOT</edm.version>
+		<edm.version>1.1</edm.version>
 		<start-class>fr.simple.edm.Application</start-class>
 
 		<org.slf4j.version>1.7.7</org.slf4j.version>

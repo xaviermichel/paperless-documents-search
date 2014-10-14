@@ -105,7 +105,7 @@ mkdir -p ${TMP_RELEASE_DIR}
 cp ../edm-webapp/target/*.jar ${TMP_RELEASE_DIR}/simple-data-search.jar
 
 # embedded scripts
-cp simple-data-search.cmd ${TMP_RELEASE_DIR}
+cp simple-data-search.bat ${TMP_RELEASE_DIR}
 cp simple-data-search.sh ${TMP_RELEASE_DIR}
 
 # create release file

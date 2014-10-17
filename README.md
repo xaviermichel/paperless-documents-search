@@ -55,6 +55,8 @@ It's time to index your documents ! If you don't wan't to add a external crawler
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files
 // or with more informations (see EdmCrawlingController) :
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files&sourceName=Mes documents&categoryName=Documents
+// you can also exclude some pattern
+http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```
 
 Downloads

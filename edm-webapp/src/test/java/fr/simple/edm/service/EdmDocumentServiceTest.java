@@ -19,10 +19,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
-import fr.simple.edm.model.EdmSource;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
-import fr.simple.edm.service.EdmDocumentService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

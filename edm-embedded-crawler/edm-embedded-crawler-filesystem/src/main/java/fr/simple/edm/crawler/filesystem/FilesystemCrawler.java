@@ -3,6 +3,7 @@ package fr.simple.edm.crawler.filesystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -27,9 +28,11 @@ public class FilesystemCrawler {
 	 *                             For example : 127.0.0.1:8053
 	 * @param sourceName           A unique name for this source of documents
 	 *                             For example : 
+	 * @param exclusionRegex	   Documents names which match with this regex will be ignored
+	 * 
 	 * @throws IOException 
 	 */
-	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName, final String categoryName) throws IOException {
+	public static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceName, final String categoryName, final String exclusionRegex) throws IOException {
 		// create parents
 		String categoryId = edmConnector.getIdFromCategoryByCategoryName(edmServerHttpAddress, categoryName);
 		String sourceId = edmConnector.getIdFromSourceBySourceName(edmServerHttpAddress, sourceName, categoryId);
@@ -37,27 +40,34 @@ public class FilesystemCrawler {
 		// index
 		logger.debug("The source ID is {}", sourceId);
 		edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
-		importFilesInDir(filePath, edmServerHttpAddress, sourceId);
+		importFilesInDir(filePath, edmServerHttpAddress, sourceId, exclusionRegex);
 		edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
 	}
 	
 	
-	private static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId) throws ClientProtocolException {
+	public static boolean isExcluded(String filePath, String exclusionPattern) {
+		boolean toExclude = ! exclusionPattern.isEmpty() && Pattern.compile(exclusionPattern).matcher(filePath).find();
+		logger.warn("Check if '{}' match with '{}' : {}", filePath, exclusionPattern, toExclude);
+		return toExclude;
+	}
+	
+	private static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId, final String exclusionRegex) throws ClientProtocolException {
 		
 		logger.info("Embedded crawler looks for : " + filePath);
 		
-		//try {
-		//	Thread.sleep(500);
-		//} catch (Exception e) {
-		//}
-		
+		// exclusion pattern
+		if (isExcluded(filePath, exclusionRegex)) {
+			logger.info("File excluded because it matches with exclusion regex");
+			return;
+		}
+
 		File file = new File(filePath);
-				
+		
 		// recursive crawling
 		if (file != null && file.isDirectory()) {
 		    logger.debug("... is a directory !");
 			for (File subFile : file.listFiles()) {
-			    importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId);
+			    importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId, exclusionRegex);
 			}
 			
 			// release memory

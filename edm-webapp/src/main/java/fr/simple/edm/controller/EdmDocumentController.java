@@ -59,6 +59,12 @@ public class EdmDocumentController {
         return edmDocumentSearchResultMapper.boToDto(edmDocumentService.search(pattern));
     }
     
+    @RequestMapping(value = "/document/suggest", method = RequestMethod.GET, params = {"q"})
+    public @ResponseBody List<EdmDocumentFileDto> getSuggestions(@RequestParam(value = "q") String pattern) {
+        logger.debug("Suggestions pattern : '{}'", pattern);
+        return edmDocumentMapper.boToDto(edmDocumentService.getSuggestions(pattern));
+    }
+    
     @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")
     @ResponseStatus(value=HttpStatus.OK)
     public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) throws Exception {

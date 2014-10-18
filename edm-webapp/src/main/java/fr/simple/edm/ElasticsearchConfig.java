@@ -8,7 +8,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.io.Charsets;
+import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
+import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.indices.IndexAlreadyExistsException;
@@ -41,6 +44,21 @@ public class ElasticsearchConfig {
 		elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
 	}
 
+	/**
+	 * @warning returns null if cannot get content
+	 */
+	private String getContentOfEmbeddedFile(String embeddedPath) {
+		try {
+			URL url = Resources.getResource(embeddedPath);
+			String content = Resources.toString(url, Charsets.UTF_8);
+			return content;
+		}
+		catch (Exception e) {
+			logger.warn("Failed to get content of file " + embeddedPath, e);
+		}
+		return null;
+	}
+	
 	private void buildOrUpdateEsMapping() {
 
 		logger.info("Updating ES mapping because you're using a local node");
@@ -50,22 +68,33 @@ public class ElasticsearchConfig {
 
         for (String index : indexTypes.keySet()) {
 
+        	// create index, with settings if exists
+        	String indexSettings = getContentOfEmbeddedFile(MAPPING_DIR + "/" + index + ".json");
         	try {
-        		elasticsearchClient.admin().indices().prepareCreate(index).execute().actionGet();
+        		if (indexSettings == null) {
+        			elasticsearchClient.admin().indices().prepareCreate(index)/*************************/.execute().actionGet();
+        		} else {
+        			elasticsearchClient.admin().indices().prepareCreate(index).setSettings(indexSettings).execute().actionGet();
+        		}
         	} catch (IndexAlreadyExistsException e) {
-        		logger.info("Index {} already exists", index);
+        		logger.info("Index {} already exists, juste updating settings", index);
+        		
+            	// may have to update settings
+            	elasticsearchClient.admin().indices().close(new CloseIndexRequest(index)).actionGet();
+            	UpdateSettingsRequestBuilder usrb = new UpdateSettingsRequestBuilder(elasticsearchClient.admin().indices(), index);
+            	elasticsearchClient.admin().indices().updateSettings(usrb.setSettings(indexSettings).request()).actionGet();
+            	elasticsearchClient.admin().indices().open(new OpenIndexRequest(index)).actionGet();
+            	
         	} catch (Exception e) {
         		logger.error("Failed to rebuild index {}", index, e);
         	}
-
+        	
         	// at the second level, we've types
         	for (String type : indexTypes.get(index)) {
         		try {
-        			URL url = Resources.getResource(MAPPING_DIR + "/" + index + "/" + type + ".json");
-        			String content = Resources.toString(url, Charsets.UTF_8);
-        			
+        			String typeMapping = getContentOfEmbeddedFile(MAPPING_DIR + "/" + index + "/" + type + ".json");
         			logger.info("Updating mapping for {}/{}", index, type);
-        			elasticsearchClient.admin().indices().preparePutMapping(index).setType(type).setSource(content).execute().actionGet();
+        			elasticsearchClient.admin().indices().preparePutMapping(index).setType(type).setSource(typeMapping).execute().actionGet();
         		} catch (Exception e) {
         			logger.error("Failed to read mapping or update mapping for ES", e);
         			logger.error("THE MODE IS DETERIORED, YOU MAY HAVE TO MANUALY UPDATE MAPPING ! (see EdmAdministrationController)");

@@ -6,8 +6,14 @@
 				"index": "not_analyzed"
 			},
             "name" : {
-                "type" : "string",
-                "analyzer":"french"
+		    	"type" : "string",
+		    	"analyzer":"french",
+		    	"fields" : {
+				    "name_autocomplete" : {
+				    	"type" : "string",
+				    	"analyzer" : "edm_autocomplete"
+				    }
+				}
             },
             "description" : {
                 "type" : "string",
@@ -37,7 +43,13 @@
             },
 			"nodePath": {
 				"type": "string",
-				"analyzer":"french"
+				"analyzer":"french",
+		    	"fields" : {
+				    "nodePath_autocomplete" : {
+				    	"type" : "string",
+				    	"analyzer" : "edm_autocomplete"
+				    }
+				}
 			}
         }
     }

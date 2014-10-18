@@ -245,4 +245,36 @@ public class EdmDocumentServiceTest {
         assertThat(docs).containsAll(attemptedResult);
     }
     
+    @Test 
+    public void autocompleteShouldSuggestOnDocumentName() throws Exception {
+    	List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("dipl");
+    			
+        List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
+                docBac
+        });
+
+        assertThat(docs).isNotNull();
+        assertThat(docs.size()).isEqualTo(attemptedResult.size());
+        assertThat(docs).containsAll(attemptedResult);
+    }
+    
+    @Test 
+    public void autocompleteShouldSuggestOnDocumentPath() throws Exception {
+        EdmDocumentFile document = new EdmDocumentFile();
+        document.setName("document without name");
+        document.setNodePath("without/name/echeancier/document");
+        document = edmDocumentService.save(document);
+       
+        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+    	
+    	List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("echea");
+    			
+        List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
+        		document
+        });
+
+        assertThat(docs).isNotNull();
+        assertThat(docs.size()).isEqualTo(attemptedResult.size());
+        assertThat(docs).containsAll(attemptedResult);
+    }
 }

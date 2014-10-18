@@ -19,6 +19,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Base64;
+import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -33,7 +34,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.data.elasticsearch.core.FacetedPageImpl;
 import org.springframework.data.elasticsearch.core.SearchResultMapper;
@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.CaseFormat;
 
-import fr.simple.edm.ElasticsearchConfig;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
 import fr.simple.edm.model.EdmNode;
@@ -329,5 +328,12 @@ public class EdmDocumentService {
 		}
 		// reset map to be sur new ids won't be deleted
 		sourceDocumentsIds.put(sourceId, new ArrayList<String>());
+	}
+	
+	public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
+		BoolQueryBuilder qb = QueryBuilders.boolQuery();
+		qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
+		logger.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
+		return Lists.newArrayList(edmDocumentRepository.search(qb));
 	}
 }

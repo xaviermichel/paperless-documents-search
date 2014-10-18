@@ -5,6 +5,8 @@ angular.module('edmApp')
 
 	$scope.searchedPattern = $routeParams.q || "";
 
+	$scope.autocompleteDocumentList = [];
+	
 	$scope.searchSubmit = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
 			return;
@@ -57,6 +59,12 @@ angular.module('edmApp')
 		    	break;
 		}
 		return "unknown"; // default icon
+	}
+	
+	$scope.searchPatternHasBeenUpdated = function() {
+		$http.get('/document/suggest/?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+			$scope.autocompleteDocumentList = response;
+		});
 	}
 	
 	$http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {

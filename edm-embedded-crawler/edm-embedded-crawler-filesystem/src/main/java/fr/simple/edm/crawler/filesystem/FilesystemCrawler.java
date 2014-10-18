@@ -47,7 +47,7 @@ public class FilesystemCrawler {
 	
 	public static boolean isExcluded(String filePath, String exclusionPattern) {
 		boolean toExclude = ! exclusionPattern.isEmpty() && Pattern.compile(exclusionPattern).matcher(filePath).find();
-		logger.warn("Check if '{}' match with '{}' : {}", filePath, exclusionPattern, toExclude);
+		logger.debug("Check if '{}' match with '{}' : {}", filePath, exclusionPattern, toExclude);
 		return toExclude;
 	}
 	

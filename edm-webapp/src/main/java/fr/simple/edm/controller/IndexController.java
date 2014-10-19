@@ -33,7 +33,7 @@ public class IndexController {
         // application informations
     	model.addAttribute("APPLICATION_NAME", env.getProperty("APPLICATION_NAME"));
     	model.addAttribute("APPLICATION_ENV", env.getProperty("APPLICATION_ENV"));
-        
+    	
     	return "home";
     }
 

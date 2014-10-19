@@ -39,7 +39,12 @@ public class ElasticsearchConfig {
 	
 	@Inject
 	private Client elasticsearchClient;
-
+	
+	public Client getClient() {
+		return elasticsearchClient;
+	}
+	
+	
 	private void flushIndex(String index) {
 		elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
 	}

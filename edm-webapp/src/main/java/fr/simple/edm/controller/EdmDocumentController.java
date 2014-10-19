@@ -65,6 +65,11 @@ public class EdmDocumentController {
         return edmDocumentMapper.boToDto(edmDocumentService.getSuggestions(pattern));
     }
     
+    @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
+    public @ResponseBody List<String> getTerms() {
+        return edmDocumentService.getTopTerms();
+    }
+    
     @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")
     @ResponseStatus(value=HttpStatus.OK)
     public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) throws Exception {

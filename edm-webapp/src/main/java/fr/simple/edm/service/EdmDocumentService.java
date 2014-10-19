@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +23,20 @@ import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +50,9 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 
+import fr.simple.edm.ElasticsearchConfig;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
 import fr.simple.edm.model.EdmNode;
@@ -50,6 +60,10 @@ import fr.simple.edm.model.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
+@PropertySources(value = {
+		@PropertySource("classpath:/edm-configuration.properties")
+	}
+)
 public class EdmDocumentService {
 
 	private final Logger logger = LoggerFactory.getLogger(EdmDocumentService.class);
@@ -71,8 +85,14 @@ public class EdmDocumentService {
 	private EdmSourceService edmSourceService;
 	
 	@Inject
-	ElasticsearchOperations elasticsearchTemplate;
+	private ElasticsearchOperations elasticsearchTemplate;
 
+	@Inject
+	private ElasticsearchConfig elasticsearchConfig;
+	
+	@Inject
+	private Environment env;
+	
 	// Map<source, List<documentId>>, is used to delete removed document at re-indexation
 	private static Map<String, List<String>> sourceDocumentsIds;
 
@@ -199,8 +219,14 @@ public class EdmDocumentService {
 		String postTag = "</" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
 		SearchQuery searchQuery = new NativeSearchQueryBuilder()
 				.withQuery(qb)
-				.withHighlightFields(new Field("name").preTags(preTag).postTags(postTag), new Field("description").preTags(preTag).postTags(postTag),
-						new Field("file").preTags(preTag).postTags(postTag), new Field("nodePath").preTags(preTag).postTags(postTag)).withSort(new ScoreSortBuilder()).build();
+				.withHighlightFields(
+						new Field("name").preTags(preTag).postTags(postTag), 
+						new Field("description").preTags(preTag).postTags(postTag),
+						new Field("file").preTags(preTag).postTags(postTag), 
+						new Field("nodePath").preTags(preTag).postTags(postTag)
+				)
+				.withSort(new ScoreSortBuilder())
+				.build();
 
 		final List<EdmDocumentSearchResult> searchResult = new ArrayList<>();
 
@@ -335,5 +361,51 @@ public class EdmDocumentService {
 		qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
 		logger.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
 		return Lists.newArrayList(edmDocumentRepository.search(qb));
+	}
+	
+	
+	private List<String> getExtensions() {
+		QueryBuilder query = QueryBuilders.matchAllQuery();
+		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_fileExtension").field("fileExtension").size(20);
+
+		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
+		
+		List<String> extensions = new ArrayList<>();
+		
+		Terms terms = response.getAggregations().get("agg_terms_fileExtension");
+		Collection<Terms.Bucket> buckets = terms.getBuckets();
+		
+		for (Terms.Bucket bucket : buckets) {
+			extensions.add(bucket.getKey());
+		}
+		return extensions;
+	}
+	
+	
+	public List<String> getTopTerms() {
+		QueryBuilder query = QueryBuilders.matchAllQuery();
+		
+		String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
+		String filesExtension = Joiner.on("|").join(getExtensions());
+		
+		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension);
+
+		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
+		
+		List<String> mostCommonTerms = new ArrayList<>();
+		
+		Terms terms = response.getAggregations().get("agg_terms_nodePath");
+		Collection<Terms.Bucket> buckets = terms.getBuckets();
+		
+		for (Terms.Bucket bucket : buckets) {
+			mostCommonTerms.add(bucket.getKey());
+		}
+		return mostCommonTerms;
 	}
 }

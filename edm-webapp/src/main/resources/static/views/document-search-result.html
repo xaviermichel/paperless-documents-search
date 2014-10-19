@@ -14,19 +14,32 @@
 <br/><br/>
 <hr/>
 
-<div ng-repeat="searchResult in searchResults">
-    <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">
-    	<div ng-class="'icone-sprite ' + getDocumentNodeIcon(searchResult.edmDocument)"></div>
-        <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>
-    </a>
-    <br/>
-    <span class="text-muted">
-        <a ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}" class="text-muted" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedNodePath || searchResult.edmDocument.nodePath)"></a>
-        <small>&mdash; {{searchResult.edmDocument.date | date : 'dd/MM/yyyy'}}</small>
-    </span>
-    <br/>
-    <p ng-bind-html="getTrustedHtmlContent(searchResult.highlightedDescription || searchResult.edmDocument.description)"></p>
-    <pre ng-show="searchResult.highlightedFileContentMatching" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedFileContentMatching)">
-    </pre>
-    <hr/>
+
+<div class="k-content col-md-10">
+
+	<div ng-repeat="searchResult in searchResults">
+	    <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">
+	    	<div ng-class="'icone-sprite ' + getDocumentNodeIcon(searchResult.edmDocument)"></div>
+	        <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>
+	    </a>
+	    <br/>
+	    <span class="text-muted">
+	        <a ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}" class="text-muted" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedNodePath || searchResult.edmDocument.nodePath)"></a>
+	        <small>&mdash; {{searchResult.edmDocument.date | date : 'dd/MM/yyyy'}}</small>
+	    </span>
+	    <br/>
+	    <p ng-bind-html="getTrustedHtmlContent(searchResult.highlightedDescription || searchResult.edmDocument.description)"></p>
+	    <pre ng-show="searchResult.highlightedFileContentMatching" ng-bind-html="getTrustedHtmlContent(searchResult.highlightedFileContentMatching)">
+	    </pre>
+	    <hr/>
+	</div>
+
+</div>
+
+<div class="k-content col-md-2">
+	<strong>Le top des mots clés qui vous intéressent !</strong>
+	<br/>
+	<span ng-repeat="keyword in topKeywordsToSee">
+		<span class="label label-default" ng-click="updateSearchPattern(keyword)"><a href="#" onClick="return false;" style="color:#FFFFFF">{{keyword}}</a></span>
+	</span>
 </div>

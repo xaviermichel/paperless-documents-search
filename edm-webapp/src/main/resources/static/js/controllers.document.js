@@ -7,6 +7,8 @@ angular.module('edmApp')
 
 	$scope.autocompleteDocumentList = [];
 	
+	$scope.topKeywordsToSee = [];
+	
 	$scope.searchSubmit = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
 			return;
@@ -61,6 +63,11 @@ angular.module('edmApp')
 		return "unknown"; // default icon
 	}
 	
+	$scope.updateSearchPattern = function(pattern) {
+		$scope.searchedPattern = pattern;
+		$scope.searchSubmit();
+	}
+	
 	$scope.searchPatternHasBeenUpdated = function() {
 		$http.get('/document/suggest/?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 			$scope.autocompleteDocumentList = response;
@@ -68,6 +75,14 @@ angular.module('edmApp')
 	}
 	
 	$http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+		if ($scope.searchedPattern.trim().length === 0) {
+			return;
+		}
 		$scope.searchResults = response;
 	});
+	
+	$http.get('/document/top_terms').success(function(response, status, headers, config) {
+		$scope.topKeywordsToSee = response;
+	});
+	
 }]);

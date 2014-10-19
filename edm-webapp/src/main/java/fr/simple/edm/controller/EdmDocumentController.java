@@ -66,8 +66,9 @@ public class EdmDocumentController {
     }
     
     @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
-    public @ResponseBody List<String> getTerms() {
-        return edmDocumentService.getTopTerms();
+    public @ResponseBody List<String> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    	logger.debug("Get relative terms for pattern : '{}'", pattern);
+        return edmDocumentService.getTopTerms(pattern);
     }
     
     @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")

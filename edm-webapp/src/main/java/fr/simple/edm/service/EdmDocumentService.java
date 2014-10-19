@@ -181,6 +181,26 @@ public class EdmDocumentService {
 		return edmDocument;
 	}
 
+	/**
+	 * When you search a document, this query is executed
+	 * 
+	 * @param pattern
+	 * 			The searched pattern
+	 * @return
+	 * 			The adapted query
+	 */
+	private QueryBuilder getEdmQueryForPattern(String pattern) {
+		// in case of invalid query
+		if (pattern == null || pattern.trim().isEmpty()) {
+			return QueryBuilders.matchAllQuery();
+		}
+		
+		// the real query
+		BoolQueryBuilder qb = QueryBuilders.boolQuery();
+		qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+		return qb;
+	}
+	
 	/*
 		curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d ' 
 		{  
@@ -210,8 +230,7 @@ public class EdmDocumentService {
 	public List<EdmDocumentSearchResult> search(String pattern) {
 
 		// basic query
-		BoolQueryBuilder qb = QueryBuilders.boolQuery();
-		qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+		QueryBuilder qb = getEdmQueryForPattern(pattern);
 		logger.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
 		// custom query for highlight
@@ -385,14 +404,16 @@ public class EdmDocumentService {
 	}
 	
 	
-	public List<String> getTopTerms() {
-		QueryBuilder query = QueryBuilders.matchAllQuery();
+	public List<String> getTopTerms(String relativeWordSearch) {
+		// the query
+		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 		
+		// the aggregation, with exclusions
 		String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
 		String filesExtension = Joiner.on("|").join(getExtensions());
-		
 		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension);
 
+		// execute
 		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)

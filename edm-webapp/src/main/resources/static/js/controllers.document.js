@@ -64,7 +64,11 @@ angular.module('edmApp')
 	}
 	
 	$scope.updateSearchPattern = function(pattern) {
-		$scope.searchedPattern = pattern;
+		var requestPrefix = "";
+		if ( $scope.searchedPattern.trim().length !== 0) {
+			requestPrefix = $scope.searchedPattern.trim() + ' AND ';
+		}
+		$scope.searchedPattern = requestPrefix + pattern;
 		$scope.searchSubmit();
 	}
 	
@@ -81,7 +85,7 @@ angular.module('edmApp')
 		$scope.searchResults = response;
 	});
 	
-	$http.get('/document/top_terms').success(function(response, status, headers, config) {
+	$http.get('/document/top_terms?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 		$scope.topKeywordsToSee = response;
 	});
 	

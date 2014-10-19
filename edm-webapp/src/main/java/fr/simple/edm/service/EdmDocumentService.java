@@ -53,6 +53,8 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
 import fr.simple.edm.ElasticsearchConfig;
+import fr.simple.edm.common.dto.EdmAggregationItemDto;
+import fr.simple.edm.model.EdmAggregationItem;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
 import fr.simple.edm.model.EdmNode;
@@ -383,8 +385,8 @@ public class EdmDocumentService {
 	}
 	
 	
-	private List<String> getExtensions() {
-		QueryBuilder query = QueryBuilders.matchAllQuery();
+	private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
+		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_fileExtension").field("fileExtension").size(20);
 
 		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
@@ -392,13 +394,13 @@ public class EdmDocumentService {
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 		
-		List<String> extensions = new ArrayList<>();
+		List<EdmAggregationItem> extensions = new ArrayList<>();
 		
 		Terms terms = response.getAggregations().get("agg_terms_fileExtension");
 		Collection<Terms.Bucket> buckets = terms.getBuckets();
 		
 		for (Terms.Bucket bucket : buckets) {
-			extensions.add(bucket.getKey());
+			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}
 		return extensions;
 	}
@@ -410,7 +412,13 @@ public class EdmDocumentService {
 		
 		// the aggregation, with exclusions
 		String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
-		String filesExtension = Joiner.on("|").join(getExtensions());
+		
+		List<String> filesExtensions = new ArrayList<>();
+		for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
+			filesExtensions.add(edmAggregationItem.getKey());
+		}
+		String filesExtension = Joiner.on("|").join(filesExtensions);
+		
 		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension);
 
 		// execute
@@ -428,5 +436,11 @@ public class EdmDocumentService {
 			mostCommonTerms.add(bucket.getKey());
 		}
 		return mostCommonTerms;
+	}
+
+	public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
+		Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
+		aggregations.put("fileExtension", getAggregationExtensions(pattern));
+		return aggregations;
 	}
 }

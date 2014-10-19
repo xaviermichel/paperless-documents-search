@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.simple.edm.common.dto.EdmAggregationItemDto;
 import fr.simple.edm.common.dto.EdmDocumentFileDto;
 import fr.simple.edm.common.dto.EdmDocumentSearchResultDto;
 import fr.simple.edm.common.dto.EdmDocumentUploadResponse;
+import fr.simple.edm.mapper.EdmAggregationItemMapper;
 import fr.simple.edm.mapper.EdmDocumentMapper;
 import fr.simple.edm.mapper.EdmDocumentSearchResultMapper;
 import fr.simple.edm.model.EdmDocumentFile;
@@ -53,6 +56,10 @@ public class EdmDocumentController {
     @Inject
     private EdmDocumentSearchResultMapper edmDocumentSearchResultMapper;
     
+    @Inject
+    private EdmAggregationItemMapper edmAggregationItemMapper;
+    
+    
     @RequestMapping(value = "/document", method = RequestMethod.GET, params = {"q"})
     public @ResponseBody List<EdmDocumentSearchResultDto> search(@RequestParam(value = "q") String pattern) {
         logger.debug("Searched pattern : '{}'", pattern);
@@ -69,6 +76,12 @@ public class EdmDocumentController {
     public @ResponseBody List<String> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
     	logger.debug("Get relative terms for pattern : '{}'", pattern);
         return edmDocumentService.getTopTerms(pattern);
+    }
+    
+    @RequestMapping(value = "/document/aggregations", method = RequestMethod.GET)
+    public @ResponseBody Map<String, List<EdmAggregationItemDto>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    	logger.debug("Get relative terms for pattern : '{}'", pattern);
+        return edmAggregationItemMapper.boToDto(edmDocumentService.getAggregations(pattern));
     }
     
     @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")

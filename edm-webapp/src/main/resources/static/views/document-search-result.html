@@ -1,7 +1,7 @@
 <div class="k-content col-md-12">
 	<form name="searchForm" class="navbar-form navbar-left" role="search">
 		<div class="form-group" style="width:250px;">
-			<input list="suggestions" ng-model="searchedPattern" type="text" class="form-control" placeholder="Que voulez-vous chercher ?" ng-required="true" ng-change="searchPatternHasBeenUpdated()" />
+			<input list="suggestions" ng-model="searchedPattern" type="text" class="form-control" placeholder="Que voulez-vous chercher ?" ng-required="true" ng-change="searchPatternHaveBeenUpdated()" />
 			<datalist id="suggestions">
 				Votre navigateur ne permets pas d'afficher les suggestions, essayer en un plus récent !
 				<option ng-value="autocompleteDocument.name" label="{{autocompleteDocument.nodePath}}" ng-repeat="autocompleteDocument in autocompleteDocumentList" />
@@ -14,8 +14,30 @@
 <br/><br/>
 <hr/>
 
+<div class="k-content col-md-2" ng-if="searchedPattern.trim().length === 0">
+	<!-- empty div for empty search pattern ! -->
+</div>
+<div class="k-content col-md-2" ng-if="searchedPattern.trim().length !== 0">
+	<strong>Types de fichier</strong>
+	<br/>
+	<form name="input_fileExtension">
+		<span ng-repeat="aggItem in aggregations.fileExtension">
+			<input	type="checkbox" 
+					name="fileExtension"
+					ng-value="aggItem.key" 
+					ng-checked="hiddenSearchedPattern.indexOf('fileExtension:') === -1 || hiddenSearchedPattern.indexOf('fileExtension:'+aggItem.key) > -1" 
+					ng-change="searchAggregationsHaveBeenUpdated()" 
+					ng-model="fileExtension.aggValues[aggItem.key]" 
+					ng-init="fileExtension.aggValues[aggItem.key] = hiddenSearchedPattern.indexOf('fileExtension:') === -1 || hiddenSearchedPattern.indexOf('fileExtension:'+aggItem.key) > -1" 
+			/>
+			{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
+			<br/>
+		</span>
+	</form>
+</div>
 
-<div class="k-content col-md-10">
+
+<div class="k-content col-md-8">
 
 	<div ng-repeat="searchResult in searchResults">
 	    <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">

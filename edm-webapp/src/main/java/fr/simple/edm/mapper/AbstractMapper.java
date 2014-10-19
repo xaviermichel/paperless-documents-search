@@ -1,7 +1,10 @@
 package fr.simple.edm.mapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,5 +90,16 @@ public class AbstractMapper<T, S> {
             dtos.add(boToDto(bo));
         }
         return dtos;
+	}
+	
+	/**
+	 * The same exercise with Map<String, BO>
+	 */
+	public Map<String, List<S>> boToDto(Map<String, List<T>> mapOfItems) {
+		Map<String, List<S>> result = new HashMap<String, List<S>>();
+		for (Entry<String, List<T>> entry : mapOfItems.entrySet()) {
+			result.put(entry.getKey(), boToDto(entry.getValue()));
+		}
+		return result;
 	}
 }

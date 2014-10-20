@@ -28,11 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import fr.simple.edm.common.dto.EdmAggregationItemDto;
 import fr.simple.edm.common.dto.EdmDocumentFileDto;
-import fr.simple.edm.common.dto.EdmDocumentSearchResultDto;
+import fr.simple.edm.common.dto.EdmDocumentSearchResultWrapperDto;
 import fr.simple.edm.common.dto.EdmDocumentUploadResponse;
 import fr.simple.edm.mapper.EdmAggregationItemMapper;
 import fr.simple.edm.mapper.EdmDocumentMapper;
-import fr.simple.edm.mapper.EdmDocumentSearchResultMapper;
+import fr.simple.edm.mapper.EdmDocumentSearchResultWrapperMapper;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.service.EdmDocumentService;
 
@@ -54,16 +54,15 @@ public class EdmDocumentController {
     private EdmDocumentMapper edmDocumentMapper;
     
     @Inject
-    private EdmDocumentSearchResultMapper edmDocumentSearchResultMapper;
-    
-    @Inject
     private EdmAggregationItemMapper edmAggregationItemMapper;
     
+    @Inject
+    private EdmDocumentSearchResultWrapperMapper edmDocumentSearchResultWrapperMapper;
     
     @RequestMapping(value = "/document", method = RequestMethod.GET, params = {"q"})
-    public @ResponseBody List<EdmDocumentSearchResultDto> search(@RequestParam(value = "q") String pattern) {
+    public @ResponseBody EdmDocumentSearchResultWrapperDto search(@RequestParam(value = "q") String pattern) {
         logger.debug("Searched pattern : '{}'", pattern);
-        return edmDocumentSearchResultMapper.boToDto(edmDocumentService.search(pattern));
+        return edmDocumentSearchResultWrapperMapper.boToDto(edmDocumentService.search(pattern));
     }
     
     @RequestMapping(value = "/document/suggest", method = RequestMethod.GET, params = {"q"})

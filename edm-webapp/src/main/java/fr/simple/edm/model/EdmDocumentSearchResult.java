@@ -17,7 +17,6 @@ public class EdmDocumentSearchResult {
     private String highlightedFileContentMatching;
     
     private String highlightedNodePath;
-
     
     public EdmDocumentFile getEdmDocument() {
         return edmDocument;

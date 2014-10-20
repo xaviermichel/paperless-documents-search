@@ -12,7 +12,6 @@ public class EdmDocumentSearchResultDto {
     private String highlightedFileContentMatching;
     
     private String highlightedNodePath;
-
     
     public EdmDocumentFileDto getEdmDocument() {
         return edmDocument;
@@ -53,5 +52,4 @@ public class EdmDocumentSearchResultDto {
     public void setHighlightedNodePath(String highlightedNodePath) {
         this.highlightedNodePath = highlightedNodePath;
     }
-    
 }

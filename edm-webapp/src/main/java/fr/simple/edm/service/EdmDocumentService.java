@@ -60,6 +60,7 @@ import fr.simple.edm.ElasticsearchConfig;
 import fr.simple.edm.model.EdmAggregationItem;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
+import fr.simple.edm.model.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.model.EdmNode;
 import fr.simple.edm.model.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
@@ -232,7 +233,7 @@ public class EdmDocumentService {
 		   }
 		}
 	 */
-	public List<EdmDocumentSearchResult> search(String pattern) {
+	public EdmDocumentSearchResultWrapper search(String pattern) {
 
 		// basic query
 		QueryBuilder qb = getEdmQueryForPattern(pattern);
@@ -252,14 +253,17 @@ public class EdmDocumentService {
 				.withSort(new ScoreSortBuilder())
 				.build();
 
-		final List<EdmDocumentSearchResult> searchResult = new ArrayList<>();
-
+		final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
+		
 		// Highlight result
 		elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
 			@Override
 			public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
 				List<EdmDocumentFile> chunk = new ArrayList<>();
 								
+				searchResult.setTookTime(response.getTookInMillis());
+				searchResult.setTotalHitsCount(response.getHits().getTotalHits());
+				
 				for (SearchHit searchHit : response.getHits()) {
 					if (response.getHits().getHits().length <= 0) {
 						return new FacetedPageImpl<T>((List<T>) chunk);

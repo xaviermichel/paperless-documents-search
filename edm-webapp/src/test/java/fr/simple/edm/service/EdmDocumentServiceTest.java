@@ -21,6 +21,7 @@ import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
+import fr.simple.edm.model.EdmDocumentSearchResultWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -87,9 +88,9 @@ public class EdmDocumentServiceTest {
 	}
 
 	
-	private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(List<EdmDocumentSearchResult> edmDocumentSearchResult) {
+	private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
 	    List<EdmDocumentFile> result = new ArrayList<>();
-	    for (EdmDocumentSearchResult res : edmDocumentSearchResult) {
+	    for (EdmDocumentSearchResult res : edmDocumentSearchResultWrapper.getSearchResults()) {
 	        result.add(res.getEdmDocument());
 	    }
 	    return result;

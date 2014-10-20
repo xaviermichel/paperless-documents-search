@@ -51,7 +51,10 @@
 
 <div class="k-content col-md-8">
 
-	<div ng-repeat="searchResult in searchResults">
+	<div class="pull-right" ng-show="searchResults"><small><em class="text-muted">{{searchResults.totalHitsCount}} documents trouvés en {{searchResults.tookTime}} ms</em></small></div>
+	<br/>
+
+	<div ng-repeat="searchResult in searchResults.searchResults">
 	    <a class="lead" ng-href="{{linkToDocument(searchResult.edmDocument.nodePath)}}">
 	    	<div ng-class="'icone-sprite ' + getDocumentNodeIcon(searchResult.edmDocument)"></div>
 	        <span ng-bind-html="getTrustedHtmlContent(searchResult.highlightedName || searchResult.edmDocument.name)"></span>

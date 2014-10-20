@@ -18,19 +18,31 @@
 	<!-- empty div for empty search pattern ! -->
 </div>
 <div class="k-content col-md-2" ng-if="searchedPattern.trim().length !== 0">
-	<strong>Types de fichier</strong>
+	<strong>Type</strong>
 	<br/>
 	<form name="input_fileExtension">
 		<span ng-repeat="aggItem in aggregations.fileExtension">
 			<input	type="checkbox" 
-					name="fileExtension"
-					ng-value="aggItem.key" 
-					ng-checked="hiddenSearchedPattern.indexOf('fileExtension:') === -1 || hiddenSearchedPattern.indexOf('fileExtension:'+aggItem.key) > -1" 
+					ng-checked="true" 
 					ng-change="searchAggregationsHaveBeenUpdated()" 
 					ng-model="fileExtension.aggValues[aggItem.key]" 
-					ng-init="fileExtension.aggValues[aggItem.key] = hiddenSearchedPattern.indexOf('fileExtension:') === -1 || hiddenSearchedPattern.indexOf('fileExtension:'+aggItem.key) > -1" 
+					ng-init="fileExtension.aggValues[aggItem.key] = true" 
 			/>
 			{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
+			<br/>
+		</span>
+	</form>
+	<strong>Date</strong>
+	<br/>
+	<form name="input_fileDate">
+		<span ng-repeat="aggItem in aggregations.date">
+			<input	type="checkbox" 
+					ng-checked="true" 
+					ng-change="searchAggregationsHaveBeenUpdated()" 
+					ng-model="date.aggValues[aggItem.key]" 
+					ng-init="date.aggValues[aggItem.key] = true" 
+			/>
+			{{aggItem.key | date:'MM/yyyy'}} <span class="badge">{{aggItem.docCount}}</span>
 			<br/>
 		</span>
 	</form>

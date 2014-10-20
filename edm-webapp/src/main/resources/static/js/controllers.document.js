@@ -4,7 +4,6 @@ angular.module('edmApp')
 	 function($scope,   $http,   $location,   $routeParams,   $sce) {
 
 	$scope.searchedPattern = $routeParams.q || "";
-	$scope.hiddenSearchedPattern = $routeParams.q || ""; // will be used by aggregations
 
 	$scope.autocompleteDocumentList = [];
 	
@@ -12,7 +11,8 @@ angular.module('edmApp')
 	
 	$scope.aggregations = {};
 	$scope.fileExtension = [];
-	
+	$scope.date = [];
+
 	$scope.searchSubmit = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
 			return;
@@ -82,6 +82,12 @@ angular.module('edmApp')
 		});
 	}
 	
+	$scope.pad = function(num, size) {
+	    var s = num+"";
+	    while (s.length < size) s = "0" + s;
+	    return s;
+	}
+	
 	$scope.searchAggregationsHaveBeenUpdated = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
 			return;
@@ -107,8 +113,30 @@ angular.module('edmApp')
 		console.debug("Extension fileExtension filter : ");
 		console.debug(extensionsFilter);
 		
+		// date parsing...
+		console.debug("Extensions date models :");
+		console.debug($scope.date.aggValues);
+		var dateFilterItems = [];
+		for (var property in $scope.date.aggValues) {
+	    	if ($scope.date.aggValues[property]) { // is checked !
+	    		var from = moment(property).startOf("month").format('YYYY-MM-DD');
+	    		var to   = moment(property).endOf("month").format('YYYY-MM-DD');
+	    		dateFilterItems.push("[" + from + " TO " + to + "]");
+	    	}
+		}
+		console.log("aggregation date items :");
+		console.debug(dateFilterItems);
+		var dateFilter = "";
+		if (dateFilterItems.length > 0) {
+			dateFilter = "date:" + dateFilterItems.join(" OR date:");
+			dateFilter = " AND (" + dateFilter + ")";
+		}
+		console.debug("Extension date filter : ");
+		console.debug(dateFilter);
+		
+		
 		// submit request with all filters
-		$http.get('/document?q=' + $scope.searchedPattern + extensionsFilter).success(function(response, status, headers, config) {
+		$http.get('/document?q=' + $scope.searchedPattern + extensionsFilter + dateFilter).success(function(response, status, headers, config) {
 			$scope.searchResults = response;
 		});
 	}

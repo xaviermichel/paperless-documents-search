@@ -28,6 +28,10 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
@@ -53,7 +57,6 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
 import fr.simple.edm.ElasticsearchConfig;
-import fr.simple.edm.common.dto.EdmAggregationItemDto;
 import fr.simple.edm.model.EdmAggregationItem;
 import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.model.EdmDocumentSearchResult;
@@ -256,6 +259,7 @@ public class EdmDocumentService {
 			@Override
 			public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
 				List<EdmDocumentFile> chunk = new ArrayList<>();
+								
 				for (SearchHit searchHit : response.getHits()) {
 					if (response.getHits().getHits().length <= 0) {
 						return new FacetedPageImpl<T>((List<T>) chunk);
@@ -387,7 +391,7 @@ public class EdmDocumentService {
 	
 	private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
 		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_fileExtension").field("fileExtension").size(20);
+		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
 
 		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
                 .setQuery(query)
@@ -396,15 +400,32 @@ public class EdmDocumentService {
 		
 		List<EdmAggregationItem> extensions = new ArrayList<>();
 		
-		Terms terms = response.getAggregations().get("agg_terms_fileExtension");
-		Collection<Terms.Bucket> buckets = terms.getBuckets();
+		Terms terms = response.getAggregations().get("agg_fileExtension");
 		
-		for (Terms.Bucket bucket : buckets) {
+		for (Terms.Bucket bucket : terms.getBuckets()) {
 			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}
 		return extensions;
 	}
 	
+	private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
+		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
+		DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
+
+		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
+		
+		List<EdmAggregationItem> extensions = new ArrayList<>();
+		
+		InternalDateHistogram buckets = response.getAggregations().get("agg_date");
+		
+		for (Histogram.Bucket bucket : buckets.getBuckets()) {
+			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+		}
+		return extensions;
+	}
 	
 	public List<String> getTopTerms(String relativeWordSearch) {
 		// the query
@@ -419,7 +440,7 @@ public class EdmDocumentService {
 		}
 		String filesExtension = Joiner.on("|").join(filesExtensions);
 		
-		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_terms_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension);
+		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(20);
 
 		// execute
 		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
@@ -429,7 +450,7 @@ public class EdmDocumentService {
 		
 		List<String> mostCommonTerms = new ArrayList<>();
 		
-		Terms terms = response.getAggregations().get("agg_terms_nodePath");
+		Terms terms = response.getAggregations().get("agg_nodePath");
 		Collection<Terms.Bucket> buckets = terms.getBuckets();
 		
 		for (Terms.Bucket bucket : buckets) {
@@ -441,6 +462,7 @@ public class EdmDocumentService {
 	public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
 		Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
 		aggregations.put("fileExtension", getAggregationExtensions(pattern));
+		aggregations.put("date", getAggregationDate(pattern));
 		return aggregations;
 	}
 }

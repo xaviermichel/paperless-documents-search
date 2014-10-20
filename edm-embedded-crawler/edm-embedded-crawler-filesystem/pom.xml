@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>simple-data-search-embedded-crawler</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.2</version>
 		<relativePath>..</relativePath>
 	</parent>
 

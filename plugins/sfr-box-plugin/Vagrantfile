@@ -1,0 +1,15 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+	if Vagrant.has_plugin?("vagrant-proxyconf")
+		config.proxy.http      = "http://my.proxy.fr:3128/"
+		config.proxy.https     = "http://my.proxy.fr:3128/"
+		config.proxy.no_proxy  = "localhost,127.0.0.1"
+	end
+
+	config.vm.box = "precise32"
+	config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+	config.vm.provision :shell, :path => "bootstrap.sh"
+end

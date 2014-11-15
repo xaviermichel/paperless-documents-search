@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./commons.sh
+. ../commons.sh
 
 SYNTHESE_TMP_FILE=synthese.pdf
 DETAILS_TMP_FILE=details.pdf

@@ -10,7 +10,9 @@ module.exports = function(grunt) {
 			dist: {
 				src: [
 					// project resources
-					EDM_WEBAPP_DIR + '/js/*.js'
+					EDM_WEBAPP_DIR + '/js/*.js',
+					// external resources without CDN
+					EDM_WEBAPP_DIR + '/bower_inc/angular-chart.js/dist/angular-chart.js'
 				],
 				dest: EDM_WEBAPP_DIR + '/build/js/production.js'
 			}
@@ -25,7 +27,9 @@ module.exports = function(grunt) {
 			dist: {
 				src: [
 					// project resources
-					EDM_WEBAPP_DIR + '/css/*.css'
+					EDM_WEBAPP_DIR + '/css/*.css',
+					// external resources without CDN
+					EDM_WEBAPP_DIR + '/bower_inc/angular-chart.js/dist/angular-chart.css'
 				],
 				dest: EDM_WEBAPP_DIR + '/build/css/production.min.css'
 			}

@@ -14,38 +14,56 @@
 <br/><br/>
 <hr/>
 
-<div class="k-content col-md-2" ng-if="searchedPattern.trim().length === 0">
-	<!-- empty div for empty search pattern ! -->
-</div>
-<div class="k-content col-md-2" ng-if="searchedPattern.trim().length !== 0">
-	<strong>Type</strong>
-	<br/>
-	<form name="input_fileExtension">
-		<span ng-repeat="aggItem in aggregations.fileExtension">
-			<input	type="checkbox" 
-					ng-checked="true" 
-					ng-change="searchAggregationsHaveBeenUpdated()" 
-					ng-model="fileExtension.aggValues[aggItem.key]" 
-					ng-init="fileExtension.aggValues[aggItem.key] = true" 
-			/>
-			{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
+<div class="k-content col-md-12" ng-if="searchedPattern.trim().length !== 0">
+
+	<button class="btn" type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter">
+		Filtrer les résultats
+	</button>
+
+	<div style="display:none;" id="collapseFilter">
+
+		<hr/>
+
+		<div class="k-content col-md-4">
+			<strong>Extension des fichiers</strong>
 			<br/>
-		</span>
-	</form>
-	<strong>Date</strong>
-	<br/>
-	<form name="input_fileDate">
-		<span ng-repeat="aggItem in aggregations.date">
-			<input	type="checkbox" 
-					ng-checked="true" 
-					ng-change="searchAggregationsHaveBeenUpdated()" 
-					ng-model="date.aggValues[aggItem.key]" 
-					ng-init="date.aggValues[aggItem.key] = true" 
-			/>
-			{{aggItem.key | date:'MM/yyyy'}} <span class="badge">{{aggItem.docCount}}</span>
+			<canvas id="fileExtensionAggChart" class="chart chart-bar" data="fileExtensionAggData" labels="fileExtensionAggLabels" style="heigth:100px"></canvas> 
 			<br/>
-		</span>
-	</form>
+			<form name="input_fileExtension" class="filetype-columns">
+				<span ng-repeat="aggItem in aggregations.fileExtension">
+					<input	type="checkbox" 
+							ng-checked="true" 
+							ng-change="searchAggregationsHaveBeenUpdated()" 
+							ng-model="fileExtension.aggValues[aggItem.key]" 
+							ng-init="fileExtension.aggValues[aggItem.key] = true" 
+					/>
+					{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
+					<br/>
+				</span>
+			</form>
+		</div>
+		
+		<div class="k-content col-md-8">
+			<strong>Date des fichiers</strong>
+			<br/>
+			<canvas id="dateAggChart" class="chart chart-line" data="dateAggData" labels="dateAggLabels" legend="true" series="dateAggSeries" click="onClickOnDateAggChart"></canvas> 
+			<br/>
+			<form name="input_fileDate" class="filedate-columns">
+				<span ng-repeat="aggItem in aggregations.date">
+					<input	type="checkbox" 
+							ng-checked="true" 
+							ng-change="searchAggregationsHaveBeenUpdated()" 
+							ng-model="date.aggValues[aggItem.key]" 
+							ng-init="date.aggValues[aggItem.key] = true" 
+					/>
+					{{aggItem.key | date:'MM/yyyy'}} <span class="badge">{{aggItem.docCount}}</span>
+					<br/>
+				</span>
+			</form>
+		</div>
+
+	</div>
+	
 </div>
 
 
@@ -73,10 +91,11 @@
 
 </div>
 
-<div class="k-content col-md-2">
+
+<div class="k-content col-md-4">
 	<strong>Le top des mots clés qui vous intéressent !</strong>
 	<br/>
-	<span ng-repeat="keyword in topKeywordsToSee">
-		<span class="label label-default" ng-click="updateSearchPattern(keyword)"><a href="#" onClick="return false;" style="color:#FFFFFF">{{keyword}}</a></span>
-	</span>
+	<canvas id="topTermsChart" class="chart chart-radar" data="topTermsData" labels="topTermsLabels" click="updateSearchPatternFromChart"></canvas> 
 </div>
+
+

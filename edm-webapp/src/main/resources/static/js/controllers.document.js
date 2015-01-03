@@ -1,17 +1,24 @@
 angular.module('edmApp')
 	.controller('DocumentSearchController', 
-			['$scope', '$http', '$location', '$routeParams', '$sce', 
+			['$scope', '$http', '$location', '$routeParams', '$sce',
 	 function($scope,   $http,   $location,   $routeParams,   $sce) {
 
 	$scope.searchedPattern = $routeParams.q || "";
 
 	$scope.autocompleteDocumentList = [];
 	
-	$scope.topKeywordsToSee = [];
+	$scope.topTermsLabels = [];
+	$scope.topTermsData = [];
+	$scope.dateAggSeries = ['Date des fichiers'];
+	$scope.dateAggLabels = [];
+	$scope.dateAggData = [];
+	$scope.fileExtensionAggLabels = [];
+	$scope.fileExtensionAggData = [];
 	
 	$scope.aggregations = {};
 	$scope.fileExtension = [];
 	$scope.date = [];
+
 
 	$scope.searchSubmit = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
@@ -141,6 +148,27 @@ angular.module('edmApp')
 		});
 	}
 	
+	$scope.updateSearchPatternFromChart = function(chartObjects) {
+		chartObjects.forEach(function(chartObject) {
+			$scope.updateSearchPattern(chartObject.label);
+		});
+		
+		$scope.$apply();
+	}
+	
+	$scope.onClickOnDateAggChart = function(chartObjects) {
+		$scope.aggregations.date.forEach(function(aggItem) {
+			$scope.date.aggValues[aggItem.key] = false;
+		});
+		
+		chartObjects.forEach(function(chartObject) {
+			var d = moment(chartObject.label, 'MM/YYYY').startOf('month').format('YYYY-MM-DD') + 'T00:00:00.000Z';
+			$scope.date.aggValues[d] = true;
+		});
+		
+		$scope.$apply();
+	}
+	
 	$http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 		if ($scope.searchedPattern.trim().length === 0) {
 			return;
@@ -149,11 +177,30 @@ angular.module('edmApp')
 	});
 	
 	$http.get('/document/top_terms?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-		$scope.topKeywordsToSee = response;
+		$scope.topTermsLabels = response.map(function(topHit) { 
+			return topHit.key; 
+		});
+		$scope.topTermsData = [response.map(function(topHit) { 
+			return topHit.docCount; 
+		})];
 	});
 	
 	$http.get('/document/aggregations?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 		$scope.aggregations = response;
+		
+		$scope.dateAggLabels = response.date.map(function(topHit) { 
+			return moment(topHit.key).format('MM/YYYY'); 
+		});
+		$scope.dateAggData = [response.date.map(function(topHit) { 
+			return topHit.docCount; 
+		})];
+
+		$scope.fileExtensionAggLabels = response.fileExtension.map(function(topHit) { 
+			return topHit.key; 
+		});
+		$scope.fileExtensionAggData = [response.fileExtension.map(function(topHit) { 
+			return topHit.docCount; 
+		})];
 	});
 	
 }]);

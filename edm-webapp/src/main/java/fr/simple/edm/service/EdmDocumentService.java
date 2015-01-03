@@ -431,7 +431,7 @@ public class EdmDocumentService {
 		return extensions;
 	}
 	
-	public List<String> getTopTerms(String relativeWordSearch) {
+	public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
 		// the query
 		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 		
@@ -444,7 +444,7 @@ public class EdmDocumentService {
 		}
 		String filesExtension = Joiner.on("|").join(filesExtensions);
 		
-		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(20);
+		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
 
 		// execute
 		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
@@ -452,13 +452,13 @@ public class EdmDocumentService {
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 		
-		List<String> mostCommonTerms = new ArrayList<>();
+		List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
 		
 		Terms terms = response.getAggregations().get("agg_nodePath");
 		Collection<Terms.Bucket> buckets = terms.getBuckets();
 		
 		for (Terms.Bucket bucket : buckets) {
-			mostCommonTerms.add(bucket.getKey());
+			mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}
 		return mostCommonTerms;
 	}

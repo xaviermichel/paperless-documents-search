@@ -21,6 +21,15 @@
 	<!-- spring -->
 	<logger name="org.springframework" level="WARN" />
 
+	<!-- jetty -->
+	<logger name="org.eclipse.jetty" level="WARN" />
+	
+	<!-- thymeleaf -->
+	<logger name="org.thymeleaf" level="WARN" />
+
+	<!-- jndi -->
+	<logger name="jndi" level="WARN" />
+
 	<!-- others -->
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />

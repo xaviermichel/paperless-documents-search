@@ -11,11 +11,11 @@ edmsHost=http://127.0.0.1:8053
 ## You have to create the source with curl calls, for example
 ##     curl -XGET 'http://127.0.0.1:8053/category/name/Documents'
 ##    {"id":"iBhZrF8JTq6FEJvagwsjfQ","edmNodeType":"CATEGORY","parentId":null,"name":"Documents","description":""}
-##     curl -XPOST 'http://127.0.0.1:8053/source' -H "Content-Type: application/json" -d '{"name" : "docks", "parentId" : "iBhZrF8JTq6FEJvagwsjfQ"}'
-##    {"id":"dTdWqfXORq2aXiyMPcsnHA","edmNodeType":"SOURCE","parentId":"iBhZrF8JTq6FEJvagwsjfQ","name":"docks","description":null}
+##     curl -XPOST 'http://127.0.0.1:8053/source' -H "Content-Type: application/json" -d '{"name" : "alfresco", "parentId" : "iBhZrF8JTq6FEJvagwsjfQ"}'
+##    {"id":"dTdWqfXORq2aXiyMPcsnHA","edmNodeType":"SOURCE","parentId":"iBhZrF8JTq6FEJvagwsjfQ","name":"alfresco","description":null}
 ## So the parent is dTdWqfXORq2aXiyMPcsnHA
 edmsSourceId=dTdWqfXORq2aXiyMPcsnHA
-edmsSourceName=docks
+edmsSourceName=alfresco
 
 
 function crawlDirectoryById() {

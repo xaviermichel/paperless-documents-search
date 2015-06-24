@@ -19,56 +19,24 @@ then
 	xlog INFO "Proxy is configured : ${X_PROXY}"
 fi
 
-
-#
-# Vérifie que les version entre le code et maven sont identiques
-#
-# @param 1 Version du code
-# @param 2 Version de maven
-# @param 3 Module concerné
-#
-# Quitte en cas d'erreur
-#
-check_maven_code_version() {
-	if [ "$1" != "$2" ]
-	then
-		xlog ERROR "Versions are different beetwen code and maven plugin : ${3}"
-		xlog ERROR "You have to fix that before releasing file ! Arboring now"
-		exit 1
-	fi
-}
-
-
-
-cd ..
-
-
-# version check
-EDM_CONSTANT_VERSION=$(grep 'APPLICATION_VERSION' 'edm-webapp/src/main/resources/properties/constants.properties' | sed 's/^.*=\(.*\)$/\1/')
-
-EDM_PARENT_VERSION=$(grep '<version>' 'pom.xml' | head -1 | sed 's/^.*>\(.*\)<.*$/\1/')
-EDM_CONTRACT_VERSION=$(grep 'version' 'edm-contracts/pom.xml' | head -1 | sed 's/^.*>\(.*\)<.*$/\1/')
-EDM_WEBAPP_VERSION=$(grep '<edm.version>' 'edm-webapp/pom.xml' | head -1 | sed 's/^.*>\(.*\)<.*$/\1/')
-
-xlog DEBUG "Parent version        : ${EDM_PARENT_VERSION}"
-xlog DEBUG "Contracts version     : ${EDM_CONTRACT_VERSION}"
-xlog DEBUG "Webapp version        : ${EDM_WEBAPP_VERSION}"
-xlog DEBUG "Constant code version : ${EDM_CONSTANT_VERSION}"
-
-check_maven_code_version ${EDM_CONSTANT_VERSION} ${EDM_PARENT_VERSION} "simple-edm parent"
-check_maven_code_version ${EDM_CONSTANT_VERSION} ${EDM_CONTRACT_VERSION} "simple-edm contracts"
-check_maven_code_version ${EDM_CONSTANT_VERSION} ${EDM_WEBAPP_VERSION} "simple-edm webapp"
-
-xlog INFO "Versions sounds pretty good !"
+read -p "Release version ? " RELEASE_VERSION
+read -p "Next snapshot version ? " SNAPSHOT_VERSION
 
 # replace version in vars
-TMP_RELEASE_DIR=$(echo "${TMP_RELEASE_DIR}" | sed "s/{{VERSION}}/${EDM_CONSTANT_VERSION}/g")
-RELEASE_FINAL_FILE=$(echo "${RELEASE_FINAL_FILE}" | sed "s/{{VERSION}}/${EDM_CONSTANT_VERSION}/g")
+TMP_RELEASE_DIR=$(echo "${TMP_RELEASE_DIR}" | sed "s/{{VERSION}}/${RELEASE_VERSION}/g")
+RELEASE_FINAL_FILE=$(echo "${RELEASE_FINAL_FILE}" | sed "s/{{VERSION}}/${RELEASE_VERSION}/g")
 
 xlog DEBUG "Temporary release dir : ${TMP_RELEASE_DIR}"
 xlog DEBUG "Released file : ${RELEASE_FINAL_FILE}"
 
+cd ..
+
+xlog INFO "Setting version to ${RELEASE_VERSION}"
+mvn versions:set -DnewVersion=${RELEASE_VERSION} > /dev/null
+
+
 xlog INFO "Maven compilation..."
+
 mvn clean install ${MAVEN_TEST} | grep -B 1 -A 100 'Reactor Summary:'
 if [ $? -eq 0 ]
 then
@@ -95,8 +63,24 @@ else
 fi
 
 
-cd ../scripts
+cd ..
 
+xlog INFO "Adding all pom.xml for release commit"
+find . -name 'pom.xml' -exec git add {} \;
+git commit -m "chore: release ${RELEASE_VERSION}"
+
+xlog INFO "Adding git tag (${RELEASE_VERSION})"
+git tag -a v${RELEASE_VERSION} -m "Version ${RELEASE_VERSION}"
+
+xlog INFO "Setting version to ${SNAPSHOT_VERSION}"
+mvn versions:set -DnewVersion=${SNAPSHOT_VERSION} > /dev/null
+
+xlog INFO "Adding all pom.xml for snapshot commit"
+find . -name 'pom.xml' -exec git add {} \;
+git commit -m "chore: next snapshot (${SNAPSHOT_VERSION})"
+
+
+cd scripts
 xlog INFO "Preparing release directory"
 
 mkdir -p ${TMP_RELEASE_DIR}
@@ -115,6 +99,6 @@ zip -r ${RELEASE_FINAL_FILE} ${TMP_RELEASE_DIR}
 rm -fr ${TMP_RELEASE_DIR}
 
 xlog INFO "${RELEASE_FINAL_FILE} is ready to be released"
-xlog WARN "Do not forget to update your poms now !"
+xlog INFO "If all sounds goods, just run : git push --tags"
 
 

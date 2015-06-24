@@ -7,7 +7,7 @@
       },
       "name": {
         "type": "string",
-        "analyzer": "french"
+        "analyzer": "edm_analyzer_french"
       }
     }
   }

@@ -63,3 +63,4 @@ logback.xml
 *.lnk
 *.appref-ms
 *.xlsx
+*.versionsBackup

@@ -7,14 +7,12 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
-@EnableAutoConfiguration
-@ComponentScan(basePackages = {"fr.simple.edm"})
+@SpringBootApplication
 @PropertySources(value = {
 		@PropertySource("classpath:/properties/constants.properties"),
 		@PropertySource("classpath:/edm-configuration.properties"),

@@ -7,7 +7,7 @@ Simple Data Search
 This program is an only entry point to search in your files.
 You launch it, index one (or more) directory on your filesystem and you can search in the indexeds files.
 
-**Features (strongly based on simple-edm)**
+**Features**
 
 - easy to use (it's like a web application)
 - powerful search engine
@@ -52,9 +52,9 @@ java -jar target/simple-data-search-webapp*.jar
 
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
 ```
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files
+http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents
 // or with more informations (see EdmCrawlingController) :
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\simple-edm\simple-edm\edm\files&sourceName=Mes documents&categoryName=Documents
+http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
 // you can also exclude some pattern
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```

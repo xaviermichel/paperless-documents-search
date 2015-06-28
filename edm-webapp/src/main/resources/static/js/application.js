@@ -1,4 +1,4 @@
-angular.module('edmApp', ['ngRoute', 'nodeService', 'documentService', 'notificationService', 'chart.js']).
+angular.module('edmApp', ['ngRoute', 'nodeService', 'documentService', 'notificationService']).
     config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
         	when('/', // /?q=bazinga

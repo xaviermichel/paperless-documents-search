@@ -27,15 +27,13 @@
 		<div class="k-content col-md-4">
 			<strong>Extension des fichiers</strong>
 			<br/>
-			<canvas id="fileExtensionAggChart" class="chart chart-bar" data="fileExtensionAggData" labels="fileExtensionAggLabels" style="heigth:100px"></canvas> 
-			<br/>
 			<form name="input_fileExtension" class="filetype-columns">
 				<span ng-repeat="aggItem in aggregations.fileExtension">
 					<input	type="checkbox" 
 							ng-checked="true" 
 							ng-change="searchAggregationsHaveBeenUpdated()" 
-							ng-model="fileExtension.aggValues[aggItem.key]" 
-							ng-init="fileExtension.aggValues[aggItem.key] = true" 
+							ng-model="aggItem.isChecked" 
+							ng-init="aggItem.isChecked = true" 
 					/>
 					{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
 					<br/>
@@ -46,15 +44,13 @@
 		<div class="k-content col-md-8">
 			<strong>Date des fichiers</strong>
 			<br/>
-			<canvas id="dateAggChart" class="chart chart-line" data="dateAggData" labels="dateAggLabels" legend="true" series="dateAggSeries" click="onClickOnDateAggChart"></canvas> 
-			<br/>
 			<form name="input_fileDate" class="filedate-columns">
 				<span ng-repeat="aggItem in aggregations.date">
 					<input	type="checkbox" 
 							ng-checked="true" 
 							ng-change="searchAggregationsHaveBeenUpdated()" 
-							ng-model="date.aggValues[aggItem.key]" 
-							ng-init="date.aggValues[aggItem.key] = true" 
+							ng-model="aggItem.isChecked" 
+							ng-init="aggItem.isChecked = true" 
 					/>
 					{{aggItem.key | date:'MM/yyyy'}} <span class="badge">{{aggItem.docCount}}</span>
 					<br/>
@@ -95,7 +91,12 @@
 <div class="k-content col-md-4">
 	<strong>Le top des mots clés qui vous intéressent !</strong>
 	<br/>
-	<canvas id="topTermsChart" class="chart chart-radar" data="topTermsData" labels="topTermsLabels" click="updateSearchPatternFromChart"></canvas> 
+	<ol>
+		<li ng-repeat="topTerm in topTerms">
+			<a href="" ng-click="updateSearchPatternFromTopTerms(topTerm.key)">{{topTerm.key}}</a>
+			<span class="badge">{{topTerm.docCount}}</span>
+		</li>
+	</ol>
 </div>
 
 

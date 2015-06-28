@@ -6,19 +6,8 @@ angular.module('edmApp')
 	$scope.searchedPattern = $routeParams.q || "";
 
 	$scope.autocompleteDocumentList = [];
-	
-	$scope.topTermsLabels = [];
-	$scope.topTermsData = [];
-	$scope.dateAggSeries = ['Date des fichiers'];
-	$scope.dateAggLabels = [];
-	$scope.dateAggData = [];
-	$scope.fileExtensionAggLabels = [];
-	$scope.fileExtensionAggData = [];
-	
+	$scope.topTerms = [];
 	$scope.aggregations = {};
-	$scope.fileExtension = [];
-	$scope.date = [];
-
 
 	$scope.searchSubmit = function() {
 		if ($scope.searchedPattern.trim().length === 0) {
@@ -76,7 +65,7 @@ angular.module('edmApp')
 	
 	$scope.updateSearchPattern = function(pattern) {
 		var requestPrefix = "";
-		if ( $scope.searchedPattern.trim().length !== 0) {
+		if ($scope.searchedPattern.trim().length !== 0) {
 			requestPrefix = $scope.searchedPattern.trim() + ' AND ';
 		}
 		$scope.searchedPattern = requestPrefix + pattern;
@@ -90,8 +79,10 @@ angular.module('edmApp')
 	}
 	
 	$scope.pad = function(num, size) {
-	    var s = num+"";
-	    while (s.length < size) s = "0" + s;
+	    var s = num + "";
+	    while (s.length < size) {
+	    	s = "0" + s;
+	    }
 	    return s;
 	}
 	
@@ -100,72 +91,50 @@ angular.module('edmApp')
 			return;
 		}
 		console.log("aggregation updated");
-			
-		// extensions parsing...
-		console.debug("Extensions fileExtension models :");
-		console.debug($scope.fileExtension.aggValues);
-		var extensionsFilterItems = [];
-		for (var property in $scope.fileExtension.aggValues) {
-	    	if ($scope.fileExtension.aggValues[property]) { // is checked !
-	    		extensionsFilterItems.push(property);
-	    	}
-		}
-		console.log("aggregation fileExtension items :");
-		console.debug(extensionsFilterItems);
-		var extensionsFilter = "";
-		if (extensionsFilterItems.length > 0) {
-			extensionsFilter = "fileExtension:" + extensionsFilterItems.join(" OR fileExtension:");
-			extensionsFilter = " AND (" + extensionsFilter + ")";
-		}
-		console.debug("Extension fileExtension filter : ");
-		console.debug(extensionsFilter);
 		
-		// date parsing...
-		console.debug("Extensions date models :");
-		console.debug($scope.date.aggValues);
-		var dateFilterItems = [];
-		for (var property in $scope.date.aggValues) {
-	    	if ($scope.date.aggValues[property]) { // is checked !
-	    		var from = moment(property).startOf("month").format('YYYY-MM-DD');
-	    		var to   = moment(property).endOf("month").format('YYYY-MM-DD');
-	    		dateFilterItems.push("[" + from + " TO " + to + "]");
-	    	}
+		// file extension
+		var aggregateFileExtensionFilter = $scope.aggregations.fileExtension
+				.filter(function isChecked(e) {
+					return e.isChecked;
+				})
+				.map(function formatedQuery(e) {
+					return "fileExtension:" + e.key
+				})
+				.join(" OR ")
+				;
+
+		if (aggregateFileExtensionFilter.length !== 0) {
+			aggregateFileExtensionFilter = " AND (" + aggregateFileExtensionFilter + ")";
 		}
-		console.log("aggregation date items :");
-		console.debug(dateFilterItems);
-		var dateFilter = "";
-		if (dateFilterItems.length > 0) {
-			dateFilter = "date:" + dateFilterItems.join(" OR date:");
-			dateFilter = " AND (" + dateFilter + ")";
+		console.debug("aggregateFileExtensionFilter = " + aggregateFileExtensionFilter);
+
+		// date
+		var aggregateDateFilter = $scope.aggregations.date
+				.filter(function isChecked(e) {
+					return e.isChecked;
+				})
+				.map(function formatedQuery(e) {
+					var from = moment(e.key).startOf("month").format('YYYY-MM-DD');
+	    			var to   = moment(e.key).endOf("month").format('YYYY-MM-DD');
+	    			return "date:[" + from + " TO " + to + "]";
+				})
+				.join(" OR ")
+				;
+
+		if (aggregateDateFilter.length !== 0) {
+			aggregateDateFilter = " AND (" + aggregateDateFilter + ")";
 		}
-		console.debug("Extension date filter : ");
-		console.debug(dateFilter);
-		
-		
+		console.debug("aggregateDateFilter = " + aggregateDateFilter);
+
+
 		// submit request with all filters
-		$http.get('/document?q=' + $scope.searchedPattern + extensionsFilter + dateFilter).success(function(response, status, headers, config) {
+		$http.get('/document?q=' + $scope.searchedPattern + aggregateFileExtensionFilter + aggregateDateFilter).success(function(response, status, headers, config) {
 			$scope.searchResults = response;
 		});
 	}
 	
-	$scope.updateSearchPatternFromChart = function(chartObjects) {
-		chartObjects.forEach(function(chartObject) {
-			$scope.updateSearchPattern(chartObject.label);
-		});
-		
-		$scope.$apply();
-	}
-	
-	$scope.onClickOnDateAggChart = function(chartObjects) {
-		$scope.aggregations.date.forEach(function(aggItem) {
-			$scope.date.aggValues[aggItem.key] = false;
-		});
-		
-		chartObjects.forEach(function(chartObject) {
-			var d = moment(chartObject.label, 'MM/YYYY').startOf('month').format('YYYY-MM-DD') + 'T00:00:00.000Z';
-			$scope.date.aggValues[d] = true;
-		});
-		
+	$scope.updateSearchPatternFromTopTerms = function(term) {
+		$scope.updateSearchPattern(term);
 		$scope.$apply();
 	}
 	
@@ -177,30 +146,11 @@ angular.module('edmApp')
 	});
 	
 	$http.get('/document/top_terms?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-		$scope.topTermsLabels = response.map(function(topHit) { 
-			return topHit.key; 
-		});
-		$scope.topTermsData = [response.map(function(topHit) { 
-			return topHit.docCount; 
-		})];
+		$scope.topTerms = response;
 	});
 	
 	$http.get('/document/aggregations?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
 		$scope.aggregations = response;
-		
-		$scope.dateAggLabels = response.date.map(function(topHit) { 
-			return moment(topHit.key).format('MM/YYYY'); 
-		});
-		$scope.dateAggData = [response.date.map(function(topHit) { 
-			return topHit.docCount; 
-		})];
-
-		$scope.fileExtensionAggLabels = response.fileExtension.map(function(topHit) { 
-			return topHit.key; 
-		});
-		$scope.fileExtensionAggData = [response.fileExtension.map(function(topHit) { 
-			return topHit.docCount; 
-		})];
 	});
 	
 }]);

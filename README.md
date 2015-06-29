@@ -32,14 +32,14 @@ cd simple-data-search
 Now, install node required modules
 ```bash
 sudo npm install
-sudo npm install -g grunt-cli
+sudo npm install -g gulp-cli
 sudo npm install -g bower
 ```
 
 Then, download and compress resources for production compilation
 ```bash
 bower install
-grunt			# will prepare webapp resources for release
+gulp minify-code	# will prepare webapp resources for release
 ```
 
 Now, you can compile the project core and run it
@@ -58,6 +58,7 @@ http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Me
 // you can also exclude some pattern
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```
+
 
 Downloads
 ---------
@@ -81,4 +82,7 @@ mvn clean install
 mvn sonar:sonar
 ```
 
+**Debug mode (non minified js)**
+
+Just add `?debug=true` in url : http://127.0.0.1:8053/?debug=true/#/
 

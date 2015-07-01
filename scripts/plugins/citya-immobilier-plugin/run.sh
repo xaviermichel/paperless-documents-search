@@ -1,31 +1,33 @@
 #!/bin/bash
 
 . ../commons.sh
+. ./configuration.cfg
 
 DOWNLOAD_INSTRUCTION_FILE=instructions.tmp
 SYNTHESE_TMP_FILE=synthese.pdf
-
-# read configuration
-declare -A config
-read_properties configuration.properties
 
 # remove potential old files
 rm -fv ${DOWNLOAD_INSTRUCTION_FILE}
 rm -fv ${SYNTHESE_TMP_FILE}
 
 # get download instruction
-vagrant up
-vagrant ssh --command "cd /vagrant ; casperjs dl_invoice.js \"${config[citya.user]}\" \"${config[citya.pass]}\" \"${DOWNLOAD_INSTRUCTION_FILE}\" \"${SYNTHESE_TMP_FILE}\""
-vagrant halt
+casperjs dl_invoice.js "${citya_user}" "${citya_pass}" "${DOWNLOAD_INSTRUCTION_FILE}" "${SYNTHESE_TMP_FILE}"
+sleep 60
 
 # download the file
 dl_command=$(cat ${DOWNLOAD_INSTRUCTION_FILE})
 eval ${dl_command}
 
-# copy then in target directory
-docFilteredPrefix=$(replace_var_in_var_current_month "${config[destination.document.prefix]}")
-docFilteredLocation=$(replace_var_in_var_current_month "${config[destination.location]}")
-mkdir -p "${docFilteredLocation}"
-chmod 777 "${SYNTHESE_TMP_FILE}"
-cp "${SYNTHESE_TMP_FILE}" "${docFilteredLocation}/${docFilteredPrefix}.pdf"
+if grep -qv "%PDF" <<< $(head -c 4 "${SYNTHESE_TMP_FILE}" 2>&1); then
+    echo "${SYNTHESE_TMP_FILE} ne semble pas etre un PDF, abandon"
+    echo "* Exact reason : "
+    head -c 4 "${SYNTHESE_TMP_FILE}" 2>&1
+    exit 1
+fi
 
+# copy then in target directory
+docFilteredPrefix=$(replace_var_in_var_current_month "${destination_document_prefix}")
+docFilteredLocation=$(replace_var_in_var_current_month "${destination_location}")
+mkdir -v -p "${docFilteredLocation}"
+chmod -v 777 "${SYNTHESE_TMP_FILE}"
+cp -v "${SYNTHESE_TMP_FILE}" "${docFilteredLocation}/${docFilteredPrefix}.pdf"

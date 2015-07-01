@@ -13,7 +13,8 @@ var EDM_WEBAPP_DIR = 'edm-webapp/src/main/resources/';
 var paths = {
     scripts: [
         EDM_WEBAPP_DIR + 'static/js/*.js',
-        'gulpfile.js'
+        'gulpfile.js',
+        'scripts/**/*.js'
     ],
     minify: [
         EDM_WEBAPP_DIR + 'static/js/*.js'

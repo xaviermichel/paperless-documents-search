@@ -33,6 +33,7 @@ directory_icons
 
 # others
 *.swp
+*.tmp
 
 # windows dependencies
 *.dll

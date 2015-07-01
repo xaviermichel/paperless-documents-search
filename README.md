@@ -14,6 +14,15 @@ You launch it, index one (or more) directory on your filesystem and you can sear
 - scalability (see scalability section)
 - exposed REST api
 
+
+Screenshot
+----------
+
+![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/screenshots/master/edm_webapp.png)
+
+![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/simple-data-search/screenshots/master/edm_jenkins.png)
+
+
 Solution stack
 --------------
 

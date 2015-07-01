@@ -18,7 +18,7 @@ You launch it, index one (or more) directory on your filesystem and you can sear
 Screenshot
 ----------
 
-![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_jenkins.png)
+![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_webapp.png)
 
 ![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_jenkins.png)
 

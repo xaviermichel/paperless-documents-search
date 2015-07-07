@@ -16,7 +16,10 @@ sleep 60
 
 # download the file
 dl_command=$(cat ${DOWNLOAD_INSTRUCTION_FILE})
-eval ${dl_command}
+
+#eval ${dl_command}
+# Because of curl in sh problem, I call another shell
+/c/cygwin64/bin/bash -c "${dl_command}"
 
 if grep -qv "%PDF" <<< $(head -c 4 "${SYNTHESE_TMP_FILE}" 2>&1); then
     echo "${SYNTHESE_TMP_FILE} ne semble pas etre un PDF, abandon"

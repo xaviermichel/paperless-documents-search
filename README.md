@@ -77,6 +77,34 @@ Downloads
 You can find the [lastest release here](https://github.com/xaviermichel/simple-data-search/releases).
 
 
+Mapping migration
+-----------------
+
+On standalone application (local node) :
+- delete `edm` directory
+- restart the application
+- reindex your documents !
+
+On application connected with other elastic (assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update)
+- delete `documents_2`
+- re-create mapping for `documents_2` (curl put)
+- reindex your documents, with bash script, should looks like (the best way may be to copy and adapt `alfreso_crawler.sh`) :
+```bash
+     # upload in edms
+     temporyFileToken=$(curl -s -XPOST "${edmHost}/document/upload" -F "file=@${fileToIndex}" | sed 's/.*temporaryFileToken":"\(.*\)".*/\1/g')
+
+     # send doc informations
+     curl -XPOST "${edmHost}/document" -d "{
+             \"date\" : \"${docDate}\",
+             \"nodePath\"    : \"${uniqNodePath}\",
+             \"edmNodeType\" : \"DOCUMENT\",
+             \"name\" : \"${docName}\",
+             \"temporaryFileToken\" : \"${temporyFileToken}\",
+             \"parentId\" : \"${edmSourceId}\"
+     }" -H "Content-Type: application/json"
+```
+- switch alias !
+
 Other
 -----
 

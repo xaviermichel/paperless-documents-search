@@ -64,7 +64,6 @@
 	<modules>
 		<module>edm-webapp</module>
 		<module>edm-contracts</module>
-		<module>edm-mapping-migration</module>
 		<module>edm-embedded-crawler</module>
 	</modules>
 

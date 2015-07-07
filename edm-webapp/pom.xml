@@ -130,12 +130,6 @@
 
         <dependency>
             <groupId>fr.simple.edm</groupId>
-            <artifactId>simple-data-search-mapping-migration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>fr.simple.edm</groupId>
             <artifactId>simple-data-search-embedded-crawler-filesystem</artifactId>
             <version>${project.version}</version>
         </dependency>

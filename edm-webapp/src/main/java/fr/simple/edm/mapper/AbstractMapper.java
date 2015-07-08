@@ -14,53 +14,53 @@ public class AbstractMapper<T, S> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMapper.class);
 
-	private Class<T> tt;
-	private Class<S> ss;
+    private Class<T> tt;
+    private Class<S> ss;
 
-	public AbstractMapper(Class<T> model, Class<S> dto) {
-		tt = model;
-		ss = dto;
-	}
+    public AbstractMapper(Class<T> model, Class<S> dto) {
+        tt = model;
+        ss = dto;
+    }
 
-	public T dtoToBo(S dto) {
-		T t = null;
-		try {
-			t = tt.newInstance();
-			BeanUtils.copyProperties(dto, t);
-		} catch (Exception e) {
-			LOGGER.error("Failed to convert dto to bo", e);
-		}
-		return t;
-	}
+    public T dtoToBo(S dto) {
+        T t = null;
+        try {
+            t = tt.newInstance();
+            BeanUtils.copyProperties(dto, t);
+        } catch (Exception e) {
+            LOGGER.error("Failed to convert dto to bo", e);
+        }
+        return t;
+    }
 
-	public S boToDto(T bo) {
-		S s = null;
-		try {
-			s = ss.newInstance();
-			BeanUtils.copyProperties(bo, s);
-		} catch (Exception e) {
-		    LOGGER.error("Failed to convert bo to dto", e);
-		}
-		return s;
-	}
+    public S boToDto(T bo) {
+        S s = null;
+        try {
+            s = ss.newInstance();
+            BeanUtils.copyProperties(bo, s);
+        } catch (Exception e) {
+            LOGGER.error("Failed to convert bo to dto", e);
+        }
+        return s;
+    }
 
-	/**
-	 * Try to map the DTO to BO, returns null if failed
-	 */
-	@SuppressWarnings("unchecked")
+    /**
+     * Try to map the DTO to BO, returns null if failed
+     */
+    @SuppressWarnings("unchecked")
     public <U> T dtoToBoOrNull(U potentialDto) {
-	    try {
-    	    if (! potentialDto.getClass().equals(ss.newInstance().getClass())) {
-    	        return null;
-    	    }
-    	    return dtoToBo((S) potentialDto);
-	    }
-	    catch(Exception e) {
-	        return null;
-	    }
-	}
+        try {
+            if (! potentialDto.getClass().equals(ss.newInstance().getClass())) {
+                return null;
+            }
+            return dtoToBo((S) potentialDto);
+        }
+        catch(Exception e) {
+            return null;
+        }
+    }
 
-	/**
+    /**
      * Try to map the BO to DTO, returns null if failed
      */
     @SuppressWarnings("unchecked")
@@ -76,30 +76,30 @@ public class AbstractMapper<T, S> {
         }
     }
 
-	public List<T> dtoToBo(List<S> dtos) {
+    public List<T> dtoToBo(List<S> dtos) {
         List<T> bos = new ArrayList<>(dtos.size());
         for (S dto : dtos) {
             bos.add(dtoToBo(dto));
         }
         return bos;
-	}
+    }
 
-	public List<S> boToDto(List<T> bos) {
+    public List<S> boToDto(List<T> bos) {
         List<S> dtos = new ArrayList<>(bos.size());
         for (T bo : bos) {
             dtos.add(boToDto(bo));
         }
         return dtos;
-	}
+    }
 
-	/**
-	 * The same exercise with Map<String, BO>
-	 */
-	public Map<String, List<S>> boToDto(Map<String, List<T>> mapOfItems) {
-		Map<String, List<S>> result = new HashMap<String, List<S>>();
-		for (Entry<String, List<T>> entry : mapOfItems.entrySet()) {
-			result.put(entry.getKey(), boToDto(entry.getValue()));
-		}
-		return result;
-	}
+    /**
+     * The same exercise with Map<String, BO>
+     */
+    public Map<String, List<S>> boToDto(Map<String, List<T>> mapOfItems) {
+        Map<String, List<S>> result = new HashMap<String, List<S>>();
+        for (Entry<String, List<T>> entry : mapOfItems.entrySet()) {
+            result.put(entry.getKey(), boToDto(entry.getValue()));
+        }
+        return result;
+    }
 }

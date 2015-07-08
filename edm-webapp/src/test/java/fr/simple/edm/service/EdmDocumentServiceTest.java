@@ -29,37 +29,37 @@ import fr.simple.edm.model.EdmDocumentSearchResultWrapper;
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class EdmDocumentServiceTest {
 
-	@Autowired
-	private ElasticsearchTestingHelper elasticsearchTestingHelper;
-	
-	@Autowired
-	private EdmNodeService edmNodeService;
-	
-	@Autowired
-	private EdmDocumentService edmDocumentService;
-	
-	@Autowired
-	private EdmCategoryService edmLibraryService;
-	
+    @Autowired
+    private ElasticsearchTestingHelper elasticsearchTestingHelper;
+    
+    @Autowired
+    private EdmNodeService edmNodeService;
+    
+    @Autowired
+    private EdmDocumentService edmDocumentService;
+    
+    @Autowired
+    private EdmCategoryService edmLibraryService;
+    
     @Autowired
     private EdmSourceService edmDirectoryService;
     
-	
+    
     private EdmDocumentFile docBac;
     private EdmDocumentFile docBrevet;
     private EdmDocumentFile docBacNotes;
     private EdmDocumentFile docLatex;
-	
     
-	/**
-	 * Will destroy and rebuild ES_INDEX
-	 */
-	@Before
-	public void setUp() throws Exception {
-		elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-		
-		String targetDirAbsolutePath = System.getProperty("user.dir") + (System.getProperty("user.dir").contains("edm-webapp") ? "" : "/edm-webapp") + "/target/test-classes/";
-		
+    
+    /**
+     * Will destroy and rebuild ES_INDEX
+     */
+    @Before
+    public void setUp() throws Exception {
+        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        
+        String targetDirAbsolutePath = System.getProperty("user.dir") + (System.getProperty("user.dir").contains("edm-webapp") ? "" : "/edm-webapp") + "/target/test-classes/";
+        
         docBac = new EdmDocumentFile();
         docBac.setName("Diplome du bac");
         docBac.setNodePath("/documents/1");
@@ -85,17 +85,17 @@ public class EdmDocumentServiceTest {
         docLatex = edmDocumentService.save(docLatex);
         
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-	}
+    }
 
-	
-	private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
-	    List<EdmDocumentFile> result = new ArrayList<>();
-	    for (EdmDocumentSearchResult res : edmDocumentSearchResultWrapper.getSearchResults()) {
-	        result.add(res.getEdmDocument());
-	    }
-	    return result;
-	}
-	
+    
+    private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
+        List<EdmDocumentFile> result = new ArrayList<>();
+        for (EdmDocumentSearchResult res : edmDocumentSearchResultWrapper.getSearchResults()) {
+            result.add(res.getEdmDocument());
+        }
+        return result;
+    }
+    
     /**
      * Search on doc name, very basic
      */
@@ -104,14 +104,14 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("brevet"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-        		docBrevet
+                docBrevet
         });
         
         assertThat(docs).isNotNull();
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
     }
-	
+    
     /**
      * Search test with accented word
      */
@@ -248,8 +248,8 @@ public class EdmDocumentServiceTest {
     
     @Test 
     public void autocompleteShouldSuggestOnDocumentName() throws Exception {
-    	List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("dipl");
-    			
+        List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("dipl");
+                
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
                 docBac
         });
@@ -267,11 +267,11 @@ public class EdmDocumentServiceTest {
         document = edmDocumentService.save(document);
        
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-    	
-    	List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("echea");
-    			
+        
+        List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("echea");
+                
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-        		document
+                document
         });
 
         assertThat(docs).isNotNull();

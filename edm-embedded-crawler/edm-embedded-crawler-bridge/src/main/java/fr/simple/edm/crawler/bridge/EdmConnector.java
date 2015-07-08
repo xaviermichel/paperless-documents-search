@@ -85,23 +85,23 @@ public class EdmConnector {
     }
 
     public void notifyStartCrawling(String server, String source) throws ClientProtocolException, IOException {
-    	HttpGet request = new HttpGet("http://" + server + "/crawl/start?source=" + sanitizeSourceName(source));
-    	HttpClient client = HttpClientBuilder.create().build();
-		client.execute(request);
+        HttpGet request = new HttpGet("http://" + server + "/crawl/start?source=" + sanitizeSourceName(source));
+        HttpClient client = HttpClientBuilder.create().build();
+        client.execute(request);
     }
 
     public void notifyEndOfCrawling(String server, String source) throws ClientProtocolException, IOException {
-    	HttpGet request = new HttpGet("http://" + server + "/crawl/stop?source=" + sanitizeSourceName(source));
-    	HttpClient client = HttpClientBuilder.create().build();
-		client.execute(request);
+        HttpGet request = new HttpGet("http://" + server + "/crawl/stop?source=" + sanitizeSourceName(source));
+        HttpClient client = HttpClientBuilder.create().build();
+        client.execute(request);
     }
 
     private String sanitizeSourceName(String sourceName) {
-    	return sourceName.replaceAll(" ", "-");
+        return sourceName.replaceAll(" ", "-");
     }
 
     public String getIdFromSourceBySourceName(String server, String sourceName, String categoryId) {
-    	// get Node
+        // get Node
         RestTemplate restTemplate = new RestTemplate();
         EdmSourceDto result = restTemplate.getForObject("http://" + server + "/source/name/{sourceName}", EdmSourceDto.class, sourceName);
 
@@ -120,7 +120,7 @@ public class EdmConnector {
     }
 
     public String getIdFromCategoryByCategoryName(String server, String categoryName) {
-    	// get Node
+        // get Node
         RestTemplate restTemplate = new RestTemplate();
         EdmCategoryDto result = restTemplate.getForObject("http://" + server + "/category/name/{categoryName}", EdmCategoryDto.class, categoryName);
 

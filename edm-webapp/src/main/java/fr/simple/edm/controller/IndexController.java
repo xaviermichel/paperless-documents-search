@@ -13,28 +13,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @PropertySources(value = {
-		@PropertySource("classpath:/properties/constants.properties")
-	}
+        @PropertySource("classpath:/properties/constants.properties")
+    }
 )
 public class IndexController {
 
     @Inject
     private Environment env;
-	
+    
     @RequestMapping("/")
     public String home(Model model, @RequestParam(value = "debug", defaultValue = "") String debug) {
-    	
+        
         // current page
         model.addAttribute("section_document", true);
-    	
+        
         // debug mode flag
         model.addAttribute("debug", ! debug.isEmpty());
         
         // application informations
-    	model.addAttribute("APPLICATION_NAME", env.getProperty("APPLICATION_NAME"));
-    	model.addAttribute("APPLICATION_ENV", env.getProperty("APPLICATION_ENV"));
-    	
-    	return "home";
+        model.addAttribute("APPLICATION_NAME", env.getProperty("APPLICATION_NAME"));
+        model.addAttribute("APPLICATION_ENV", env.getProperty("APPLICATION_ENV"));
+        
+        return "home";
     }
 
 }

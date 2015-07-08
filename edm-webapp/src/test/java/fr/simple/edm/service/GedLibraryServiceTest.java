@@ -24,29 +24,29 @@ import fr.simple.edm.model.EdmNode;
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class GedLibraryServiceTest {
 
-	@Autowired
-	private EdmCategoryService edmCategoryService;
+    @Autowired
+    private EdmCategoryService edmCategoryService;
 
-	@Autowired
-	private ElasticsearchTestingHelper elasticsearchTestingHelper;
-	
-	private EdmCategory edmCategory;
-	
-	/**
-	 * Will destroy and rebuild ES_INDEX
-	 */
-	@Before
-	public void setUp() throws Exception {
-		elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-		elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-		
-		EdmCategory category = new EdmCategory();
-		category.setName("My category");
-		edmCategory = edmCategoryService.save(category);
-		
-		elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-	}
-	
+    @Autowired
+    private ElasticsearchTestingHelper elasticsearchTestingHelper;
+    
+    private EdmCategory edmCategory;
+    
+    /**
+     * Will destroy and rebuild ES_INDEX
+     */
+    @Before
+    public void setUp() throws Exception {
+        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        
+        EdmCategory category = new EdmCategory();
+        category.setName("My category");
+        edmCategory = edmCategoryService.save(category);
+        
+        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+    }
+    
     @Test
     public void categoryCanBeFindByHisName() {
         EdmNode node = edmCategoryService.findOneByName("My category");

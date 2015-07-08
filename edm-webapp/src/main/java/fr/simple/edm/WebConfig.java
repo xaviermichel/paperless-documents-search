@@ -21,14 +21,14 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 @EnableWebMvc
 @Configuration
 @PropertySources(value = {
-		@PropertySource("classpath:/edm-configuration.properties")
-	}
+        @PropertySource("classpath:/edm-configuration.properties")
+    }
 )
 public class WebConfig extends WebMvcConfigurerAdapter {
 
-	@Inject
-	Environment env;
-	
+    @Inject
+    Environment env;
+    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/static/");
@@ -36,7 +36,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public ClassLoaderTemplateResolver templateResolver() {
-    	ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setPrefix("/templates/");
         resolver.setSuffix(".html");
         // NB, selecting HTML5 as the template mode.

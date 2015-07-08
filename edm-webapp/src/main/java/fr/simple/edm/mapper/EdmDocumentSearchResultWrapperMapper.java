@@ -14,21 +14,21 @@ public class EdmDocumentSearchResultWrapperMapper extends AbstractMapper<EdmDocu
     private EdmDocumentSearchResultMapper edmDocumentSearchResultMapper;
     
     public EdmDocumentSearchResultWrapperMapper() {
-		super(EdmDocumentSearchResultWrapper.class, EdmDocumentSearchResultWrapperDto.class);
-	}
+        super(EdmDocumentSearchResultWrapper.class, EdmDocumentSearchResultWrapperDto.class);
+    }
 
     @Override
     public EdmDocumentSearchResultWrapperDto boToDto(EdmDocumentSearchResultWrapper bo) {
-    	EdmDocumentSearchResultWrapperDto dto = new EdmDocumentSearchResultWrapperDto();
+        EdmDocumentSearchResultWrapperDto dto = new EdmDocumentSearchResultWrapperDto();
         
-    	dto.setTookTime(bo.getTookTime());
-    	dto.setTotalHitsCount(bo.getTotalHitsCount());
-    	
-    	for (EdmDocumentSearchResult boResult : bo.getSearchResults()) {
-    		dto.add(edmDocumentSearchResultMapper.boToDto(boResult));
-    	}
+        dto.setTookTime(bo.getTookTime());
+        dto.setTotalHitsCount(bo.getTotalHitsCount());
+        
+        for (EdmDocumentSearchResult boResult : bo.getSearchResults()) {
+            dto.add(edmDocumentSearchResultMapper.boToDto(boResult));
+        }
  
         return dto;
     }
 }
-	
+    

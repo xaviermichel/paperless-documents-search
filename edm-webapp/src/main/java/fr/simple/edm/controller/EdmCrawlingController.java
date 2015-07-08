@@ -26,15 +26,15 @@ public class EdmCrawlingController {
     @RequestMapping(value = "/crawl/start", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
-    	LOGGER.info("Begin crawling for source : {}", source);
-    	edmDocumentService.snapshotCurrentDocumentsForSource(source);
+        LOGGER.info("Begin crawling for source : {}", source);
+        edmDocumentService.snapshotCurrentDocumentsForSource(source);
     }
 
     @RequestMapping(value = "/crawl/stop", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
-    	LOGGER.info("End of crawling for source : {}", source);
-    	edmDocumentService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
+        LOGGER.info("End of crawling for source : {}", source);
+        edmDocumentService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
     }
 
     @RequestMapping(value = "/crawl/filesystem", method = RequestMethod.GET, params = {"path"})

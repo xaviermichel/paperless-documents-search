@@ -8,8 +8,8 @@ import fr.simple.edm.model.EdmAggregationItem;
 @Named
 public class EdmAggregationItemMapper extends AbstractMapper<EdmAggregationItem, EdmAggregationItemDto> {
 
-	public EdmAggregationItemMapper() {
-		super(EdmAggregationItem.class, EdmAggregationItemDto.class);
-	}
+    public EdmAggregationItemMapper() {
+        super(EdmAggregationItem.class, EdmAggregationItemDto.class);
+    }
 
 }

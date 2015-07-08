@@ -19,23 +19,23 @@ import fr.simple.edm.service.EdmCategoryService;
 @RestController
 public class EdmCategoryController {
 
-	@Inject
-	private EdmCategoryService edmCategoryService;
-	
-	@Inject
-	private EdmCategoryMapper edmCategoryMapper;
-	
-	
+    @Inject
+    private EdmCategoryService edmCategoryService;
+
+    @Inject
+    private EdmCategoryMapper edmCategoryMapper;
+
+
     @RequestMapping(value = "/category", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<EdmCategoryDto> list() {
         return edmCategoryMapper.boToDto(edmCategoryService.getEdmCategories());
     }
-    
+
     @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmCategoryDto create(@RequestBody EdmCategoryDto edmLibraryDto) {
         return edmCategoryMapper.boToDto(edmCategoryService.save(edmCategoryMapper.dtoToBo(edmLibraryDto)));
     }
-    
+
     @RequestMapping(value = "/category/name/{categoryName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmCategoryDto getOneByName(@PathVariable String categoryName) {
         return edmCategoryMapper.boToDto(edmCategoryService.findOneByName(categoryName));

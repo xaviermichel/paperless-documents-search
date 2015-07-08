@@ -14,39 +14,39 @@ import fr.simple.edm.ElasticsearchConfig;
 @Component
 public class ElasticsearchTestingHelper {
 
-	
-	public static final String ES_INDEX_DOCUMENTS = "documents";
-	
-	
-	@Autowired
-	public ElasticsearchConfig elasticsearchConfig;
-	
-	
-	private Method flushIndexMethod;
-	
-	
-	/**
-	 * Will destroy and rebuild ES_INDEX_DOCUMENTS
-	 */
-	public void destroyAndRebuildIndex(String index) throws Exception {
-		Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
-		clientField.setAccessible(true);
+    
+    public static final String ES_INDEX_DOCUMENTS = "documents";
+    
+    
+    @Autowired
+    public ElasticsearchConfig elasticsearchConfig;
+    
+    
+    private Method flushIndexMethod;
+    
+    
+    /**
+     * Will destroy and rebuild ES_INDEX_DOCUMENTS
+     */
+    public void destroyAndRebuildIndex(String index) throws Exception {
+        Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
+        clientField.setAccessible(true);
 
-		Client client = (Client) clientField.get(elasticsearchConfig);
-		
-		Method rebuildEsMappingMethod = ElasticsearchConfig.class.getDeclaredMethod("buildOrUpdateEsMapping");
-		rebuildEsMappingMethod.setAccessible(true);
+        Client client = (Client) clientField.get(elasticsearchConfig);
+        
+        Method rebuildEsMappingMethod = ElasticsearchConfig.class.getDeclaredMethod("buildOrUpdateEsMapping");
+        rebuildEsMappingMethod.setAccessible(true);
 
-		flushIndexMethod = ElasticsearchConfig.class.getDeclaredMethod("flushIndex", String.class);
-		flushIndexMethod.setAccessible(true);
-		
-		client.admin().indices().delete(new DeleteIndexRequest(ES_INDEX_DOCUMENTS)).actionGet();
-		rebuildEsMappingMethod.invoke(elasticsearchConfig);
-	}
-	
-	
-	public void flushIndex(String index) throws Exception  {
-		flushIndexMethod.invoke(elasticsearchConfig, index);
-	}
-	
+        flushIndexMethod = ElasticsearchConfig.class.getDeclaredMethod("flushIndex", String.class);
+        flushIndexMethod.setAccessible(true);
+        
+        client.admin().indices().delete(new DeleteIndexRequest(ES_INDEX_DOCUMENTS)).actionGet();
+        rebuildEsMappingMethod.invoke(elasticsearchConfig);
+    }
+    
+    
+    public void flushIndex(String index) throws Exception  {
+        flushIndexMethod.invoke(elasticsearchConfig, index);
+    }
+    
 }

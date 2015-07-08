@@ -73,13 +73,13 @@ public class EdmDocumentController {
 
     @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
     public @ResponseBody List<EdmAggregationItemDto> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
-    	LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
+        LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationItemMapper.boToDto(edmDocumentService.getTopTerms(pattern));
     }
 
     @RequestMapping(value = "/document/aggregations", method = RequestMethod.GET)
     public @ResponseBody Map<String, List<EdmAggregationItemDto>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
-    	LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
+        LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationItemMapper.boToDto(edmDocumentService.getAggregations(pattern));
     }
 

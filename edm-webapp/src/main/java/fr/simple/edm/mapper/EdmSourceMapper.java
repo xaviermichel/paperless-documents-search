@@ -8,8 +8,8 @@ import fr.simple.edm.model.EdmSource;
 @Named
 public class EdmSourceMapper extends AbstractMapper<EdmSource, EdmSourceDto> {
 
-	public EdmSourceMapper() {
-		super(EdmSource.class, EdmSourceDto.class);
-	}
+    public EdmSourceMapper() {
+        super(EdmSource.class, EdmSourceDto.class);
+    }
 
 }

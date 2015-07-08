@@ -25,31 +25,31 @@ import fr.simple.edm.ElasticsearchConfig;
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class ElasticsearchClientTest {
 
-	@Autowired
-	private ElasticsearchTestingHelper elasticsearchTestingHelper;
-	
-	@Autowired
-	public ElasticsearchConfig elasticsearchConfig;
-	
-	/**
-	 * Will destroy and rebuild ES_INDEX
-	 */
-	@Before
-	public void setUp() throws Exception {
-		elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-	}
-	
-	@Test
-	public void localNodeShouldBeStartedAndWorking() throws Exception {
-		Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
-		clientField.setAccessible(true);
+    @Autowired
+    private ElasticsearchTestingHelper elasticsearchTestingHelper;
+    
+    @Autowired
+    public ElasticsearchConfig elasticsearchConfig;
+    
+    /**
+     * Will destroy and rebuild ES_INDEX
+     */
+    @Before
+    public void setUp() throws Exception {
+        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+    }
+    
+    @Test
+    public void localNodeShouldBeStartedAndWorking() throws Exception {
+        Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
+        clientField.setAccessible(true);
 
-		Client client = (Client) clientField.get(elasticsearchConfig);
+        Client client = (Client) clientField.get(elasticsearchConfig);
 
-		assertThat(client).isNotNull();
-		
-		CountResponse response = client.prepareCount(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS).execute().actionGet();
-		assertThat(response.getCount()).isEqualTo(0);
-	}
-	
+        assertThat(client).isNotNull();
+        
+        CountResponse response = client.prepareCount(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS).execute().actionGet();
+        assertThat(response.getCount()).isEqualTo(0);
+    }
+    
 }

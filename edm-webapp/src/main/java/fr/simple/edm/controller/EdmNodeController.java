@@ -29,11 +29,11 @@ public class EdmNodeController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EdmNodeController.class);
 
-	@Inject
-	private EdmNodeService edmNodeService;
+    @Inject
+    private EdmNodeService edmNodeService;
 
-	@Inject
-	private EdmNodeMapper edmNodeMapper;
+    @Inject
+    private EdmNodeMapper edmNodeMapper;
 
     @RequestMapping(value = "/node/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmNodeDto read(@PathVariable String nodeid) {
@@ -51,21 +51,21 @@ public class EdmNodeController {
         edmNodeService.deleteRecursively(edmNodeService.findOne(id));
     }
 
-	// not really restfull
-	@RequestMapping(value = "/node/path/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    // not really restfull
+    @RequestMapping(value = "/node/path/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmNodeDto read(HttpServletRequest request) {
-	    String nodepath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	    nodepath = nodepath.replaceFirst("/node/path/", "");
-	    LOGGER.debug("get node for path : '{}'", nodepath);
+        String nodepath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        nodepath = nodepath.replaceFirst("/node/path/", "");
+        LOGGER.debug("get node for path : '{}'", nodepath);
         return edmNodeMapper.boToDto(edmNodeService.findOneByPath(nodepath));
     }
 
-	// not really restfull
-	@RequestMapping(value = "/node/childs/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody List<EdmNodeDto> getChildNodes(@PathVariable String nodeid) {
-	    List<EdmNode> children = edmNodeService.getChildren(nodeid);
-	    Collections.sort(children);
-		return edmNodeMapper.boToDto(children);
-	}
+    // not really restfull
+    @RequestMapping(value = "/node/childs/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody List<EdmNodeDto> getChildNodes(@PathVariable String nodeid) {
+        List<EdmNode> children = edmNodeService.getChildren(nodeid);
+        Collections.sort(children);
+        return edmNodeMapper.boToDto(children);
+    }
 
 }

@@ -13,8 +13,8 @@ import fr.simple.edm.model.EdmSource;
 public interface EdmSourceRepository extends ElasticsearchRepository<EdmSource, String> {
 
     @Query("{\"match\": {\"parentId\" : \"?0\"}}")
-	Page<EdmSource> findByParentId(String parentId, Pageable page);
-	
-	List<EdmSource> findByName(String name);
-	
+    Page<EdmSource> findByParentId(String parentId, Pageable page);
+    
+    List<EdmSource> findByName(String name);
+    
 }

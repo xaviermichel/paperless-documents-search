@@ -6,18 +6,18 @@ import fr.simple.edm.common.EdmNodeType;
 
 public class EdmSourceDto extends EdmNodeDto implements Serializable {
 
-	private String description;
+    private String description;
 
-	public EdmSourceDto() {
-		super(EdmNodeType.SOURCE);
-	}
+    public EdmSourceDto() {
+        super(EdmNodeType.SOURCE);
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 }

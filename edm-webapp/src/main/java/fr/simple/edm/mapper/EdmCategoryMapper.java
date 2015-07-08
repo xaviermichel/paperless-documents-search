@@ -8,9 +8,9 @@ import fr.simple.edm.model.EdmCategory;
 @Named
 public class EdmCategoryMapper extends AbstractMapper<EdmCategory, EdmCategoryDto> {
 
-	public EdmCategoryMapper() {
-		super(EdmCategory.class, EdmCategoryDto.class);
-	}
+    public EdmCategoryMapper() {
+        super(EdmCategory.class, EdmCategoryDto.class);
+    }
 
 }
-	
+    

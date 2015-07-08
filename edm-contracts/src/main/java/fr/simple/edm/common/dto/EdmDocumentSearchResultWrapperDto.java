@@ -5,8 +5,8 @@ import java.util.List;
 
 
 public class EdmDocumentSearchResultWrapperDto {
-	
-	// took time in MS
+    
+    // took time in MS
     private long tookTime;
     
     private long totalHitsCount;
@@ -14,34 +14,34 @@ public class EdmDocumentSearchResultWrapperDto {
     private List<EdmDocumentSearchResultDto> searchResults;
     
     public EdmDocumentSearchResultWrapperDto() {
-    	searchResults = new ArrayList<>();
+        searchResults = new ArrayList<>();
     }
     
     public void add(EdmDocumentSearchResultDto edmDocumentSearchResultDto) {
-    	searchResults.add(edmDocumentSearchResultDto);
+        searchResults.add(edmDocumentSearchResultDto);
     }
     
-	public long getTookTime() {
-		return tookTime;
-	}
+    public long getTookTime() {
+        return tookTime;
+    }
 
-	public void setTookTime(long tookTime) {
-		this.tookTime = tookTime;
-	}
+    public void setTookTime(long tookTime) {
+        this.tookTime = tookTime;
+    }
 
-	public long getTotalHitsCount() {
-		return totalHitsCount;
-	}
+    public long getTotalHitsCount() {
+        return totalHitsCount;
+    }
 
-	public void setTotalHitsCount(long totalHitsCount) {
-		this.totalHitsCount = totalHitsCount;
-	}
+    public void setTotalHitsCount(long totalHitsCount) {
+        this.totalHitsCount = totalHitsCount;
+    }
 
-	public List<EdmDocumentSearchResultDto> getSearchResults() {
-		return searchResults;
-	}
+    public List<EdmDocumentSearchResultDto> getSearchResults() {
+        return searchResults;
+    }
 
-	public void setSearchResults(List<EdmDocumentSearchResultDto> searchResults) {
-		this.searchResults = searchResults;
-	}
+    public void setSearchResults(List<EdmDocumentSearchResultDto> searchResults) {
+        this.searchResults = searchResults;
+    }
 }

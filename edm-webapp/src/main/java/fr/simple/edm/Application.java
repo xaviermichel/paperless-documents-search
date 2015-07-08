@@ -14,39 +14,39 @@ import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 @PropertySources(value = {
-		@PropertySource("classpath:/properties/constants.properties"),
-		@PropertySource("classpath:/edm-configuration.properties"),
-		@PropertySource("classpath:/application.properties")
-	}
+        @PropertySource("classpath:/properties/constants.properties"),
+        @PropertySource("classpath:/edm-configuration.properties"),
+        @PropertySource("classpath:/application.properties")
+    }
 )
 public class Application {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-	private static Environment env;
+    private static Environment env;
     
     @Inject
-	public void setEnv(Environment env) {
-		Application.env = env;
-	}
+    public void setEnv(Environment env) {
+        Application.env = env;
+    }
     
     private static ElasticsearchConfig elasticsearchConfig;
     
     @Inject
-	public void setElasticsearchConfig(ElasticsearchConfig elasticsearchConfig) {
-		Application.elasticsearchConfig = elasticsearchConfig;
-	}
+    public void setElasticsearchConfig(ElasticsearchConfig elasticsearchConfig) {
+        Application.elasticsearchConfig = elasticsearchConfig;
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-	    SpringApplication app = new SpringApplication(Application.class);
+        SpringApplication app = new SpringApplication(Application.class);
         app.setShowBanner(false);
         app.run(args);
         
         // Run this logs AFTER spring bean injection !
         LOGGER.info("==================================================================================");
-		LOGGER.info("Hi, this is {} version {}", env.getProperty("APPLICATION_NAME"), env.getProperty("APPLICATION_VERSION"));
-		LOGGER.info("You can report issues on {}", env.getProperty("APPLICATION_ISSUES_URL"));
+        LOGGER.info("Hi, this is {} version {}", env.getProperty("APPLICATION_NAME"), env.getProperty("APPLICATION_VERSION"));
+        LOGGER.info("You can report issues on {}", env.getProperty("APPLICATION_ISSUES_URL"));
         LOGGER.info("----------------------------------------------------------------------------------");
         LOGGER.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
         LOGGER.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));

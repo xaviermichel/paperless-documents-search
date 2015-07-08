@@ -67,405 +67,405 @@ import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
 @PropertySources(value = {
-		@PropertySource("classpath:/edm-configuration.properties")
-	}
+        @PropertySource("classpath:/edm-configuration.properties")
+    }
 )
 public class EdmDocumentService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
 
-	// html tag for highlighting matching result, for example :
-	// "...this is a <mark>simple</mark> demo..."
-	private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
+    // html tag for highlighting matching result, for example :
+    // "...this is a <mark>simple</mark> demo..."
+    private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
 
-	@Inject
-	private Client elasticsearchClient;
+    @Inject
+    private Client elasticsearchClient;
 
-	@Inject
-	private EdmDocumentRepository edmDocumentRepository;
+    @Inject
+    private EdmDocumentRepository edmDocumentRepository;
 
-	@Inject
-	private EdmNodeService edmNodeService;
+    @Inject
+    private EdmNodeService edmNodeService;
 
-	@Inject
-	private EdmSourceService edmSourceService;
+    @Inject
+    private EdmSourceService edmSourceService;
 
-	@Inject
-	private ElasticsearchOperations elasticsearchTemplate;
+    @Inject
+    private ElasticsearchOperations elasticsearchTemplate;
 
-	@Inject
-	private ElasticsearchConfig elasticsearchConfig;
+    @Inject
+    private ElasticsearchConfig elasticsearchConfig;
 
-	@Inject
-	private Environment env;
+    @Inject
+    private Environment env;
 
-	// Map<source, List<documentId>>, is used to delete removed document at re-indexation
-	private static Map<String, List<String>> sourceDocumentsIds;
+    // Map<source, List<documentId>>, is used to delete removed document at re-indexation
+    private static Map<String, List<String>> sourceDocumentsIds;
 
-	static {
-		sourceDocumentsIds = new HashMap<>();
-	}
+    static {
+        sourceDocumentsIds = new HashMap<>();
+    }
 
-	public EdmDocumentFile findOne(String id) {
-		return edmDocumentRepository.findOne(id);
-	}
+    public EdmDocumentFile findOne(String id) {
+        return edmDocumentRepository.findOne(id);
+    }
 
-	public EdmDocumentFile save(EdmDocumentFile edmDocument) {
+    public EdmDocumentFile save(EdmDocumentFile edmDocument) {
 
-		// unique identifier for updating
+        // unique identifier for updating
         String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getParentId());
-		edmDocument.setId(id);
+        edmDocument.setId(id);
 
-		try {
-			// the document is build manually to
-			// have the possibility to add the binary file
-			// content
+        try {
+            // the document is build manually to
+            // have the possibility to add the binary file
+            // content
 
-			XContentBuilder contentBuilder = jsonBuilder();
+            XContentBuilder contentBuilder = jsonBuilder();
 
-			// add document attributes
-			contentBuilder.startObject();
+            // add document attributes
+            contentBuilder.startObject();
 
-			Class<?>[] classes = new Class[] { EdmNode.class, EdmDocumentFile.class };
-			for (Class<?> clazz : classes) {
-				for (Method m : clazz.getDeclaredMethods()) {
-					if (m.getName().startsWith("get")) {
-						if (m.getName().equalsIgnoreCase("getFilename")) { // ignore this type
-							continue;
-						}
-						Object oo = m.invoke(edmDocument);
-						String fieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, m.getName().substring(3));
-						contentBuilder.field(fieldName, oo);
-					}
-				}
-			}
+            Class<?>[] classes = new Class[] { EdmNode.class, EdmDocumentFile.class };
+            for (Class<?> clazz : classes) {
+                for (Method m : clazz.getDeclaredMethods()) {
+                    if (m.getName().startsWith("get")) {
+                        if (m.getName().equalsIgnoreCase("getFilename")) { // ignore this type
+                            continue;
+                        }
+                        Object oo = m.invoke(edmDocument);
+                        String fieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, m.getName().substring(3));
+                        contentBuilder.field(fieldName, oo);
+                    }
+                }
+            }
 
-			if (!edmDocument.getFilename().isEmpty()) {
+            if (!edmDocument.getFilename().isEmpty()) {
 
-				// computed values
-				String thisDocumentFileExtension = com.google.common.io.Files.getFileExtension(edmDocument.getFilename());
-				edmDocument.setFileExtension(thisDocumentFileExtension);
+                // computed values
+                String thisDocumentFileExtension = com.google.common.io.Files.getFileExtension(edmDocument.getFilename());
+                edmDocument.setFileExtension(thisDocumentFileExtension);
 
-				String from = edmDocument.getFilename();
-				edmDocument.setFilename("");
-				Path filePath = Paths.get(from);
+                String from = edmDocument.getFilename();
+                edmDocument.setFilename("");
+                Path filePath = Paths.get(from);
 
-				contentBuilder.startObject("file");
+                contentBuilder.startObject("file");
 
-				String contentType = Files.probeContentType(filePath);
-				String content = Base64.encodeBytes(Files.readAllBytes(filePath));
+                String contentType = Files.probeContentType(filePath);
+                String content = Base64.encodeBytes(Files.readAllBytes(filePath));
 
-				contentBuilder.field("_content", content);
-				contentBuilder.field("_language", "fr");
+                contentBuilder.field("_content", content);
+                contentBuilder.field("_language", "fr");
 
-				contentBuilder.endObject();
+                contentBuilder.endObject();
 
-				contentBuilder.field("fileExtension", thisDocumentFileExtension);
-				contentBuilder.field("fileContentType", contentType);
+                contentBuilder.field("fileExtension", thisDocumentFileExtension);
+                contentBuilder.field("fileContentType", contentType);
 
-				// remove temporary document
-				Files.deleteIfExists(filePath);
-			}
+                // remove temporary document
+                Files.deleteIfExists(filePath);
+            }
 
-			// and that's all folks
-			contentBuilder.endObject();
+            // and that's all folks
+            contentBuilder.endObject();
 
-			IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
+            IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
 
-			edmDocument.setId(ir.getId());
+            edmDocument.setId(ir.getId());
 
-			LOGGER.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
-		} catch (Exception e) {
-			LOGGER.error("Failed to index document", e);
-		}
+            LOGGER.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
+        } catch (Exception e) {
+            LOGGER.error("Failed to index document", e);
+        }
 
-		if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
-			sourceDocumentsIds.get(edmDocument.getParentId()).remove(edmDocument.getId());
-		}
+        if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
+            sourceDocumentsIds.get(edmDocument.getParentId()).remove(edmDocument.getId());
+        }
 
-		return edmDocument;
-	}
+        return edmDocument;
+    }
 
-	/**
-	 * When you search a document, this query is executed
-	 *
-	 * @param pattern
-	 * 			The searched pattern
-	 * @return
-	 * 			The adapted query
-	 */
-	private QueryBuilder getEdmQueryForPattern(String pattern) {
-		// in case of invalid query
-		if (pattern == null || pattern.trim().isEmpty()) {
-			return QueryBuilders.matchAllQuery();
-		}
+    /**
+     * When you search a document, this query is executed
+     *
+     * @param pattern
+     *             The searched pattern
+     * @return
+     *             The adapted query
+     */
+    private QueryBuilder getEdmQueryForPattern(String pattern) {
+        // in case of invalid query
+        if (pattern == null || pattern.trim().isEmpty()) {
+            return QueryBuilders.matchAllQuery();
+        }
 
-		// the real query
-		BoolQueryBuilder qb = QueryBuilders.boolQuery();
-		qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
-		return qb;
-	}
+        // the real query
+        BoolQueryBuilder qb = QueryBuilders.boolQuery();
+        qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+        return qb;
+    }
 
-	/*
-		curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d '
-		{
-		   "fields":[
+    /*
+        curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d '
+        {
+           "fields":[
 
-		   ],
-		   "query":{
-		      "query_string":{
-		         "query":"trololo",
-		         "default_operator":"and"
-		      }
-		   },
-		   "highlight":{
-		      "fields":{
-		         "file":{
-		         },
-		         "name":{
-		         },
-		         "description":{
-		         },
-		         "nodePath":{
-		         }
-		      }
-		   }
-		}
-	 */
-	public EdmDocumentSearchResultWrapper search(String pattern) {
+           ],
+           "query":{
+              "query_string":{
+                 "query":"trololo",
+                 "default_operator":"and"
+              }
+           },
+           "highlight":{
+              "fields":{
+                 "file":{
+                 },
+                 "name":{
+                 },
+                 "description":{
+                 },
+                 "nodePath":{
+                 }
+              }
+           }
+        }
+     */
+    public EdmDocumentSearchResultWrapper search(String pattern) {
 
-		// basic query
-		QueryBuilder qb = getEdmQueryForPattern(pattern);
-		LOGGER.debug("The search query for pattern '{}' is : {}", pattern, qb);
+        // basic query
+        QueryBuilder qb = getEdmQueryForPattern(pattern);
+        LOGGER.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
-		// custom query for highlight
-		String preTag = "<" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
-		String postTag = "</" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
-		SearchQuery searchQuery = new NativeSearchQueryBuilder()
-				.withQuery(qb)
-				.withHighlightFields(
-						new Field("name").preTags(preTag).postTags(postTag),
-						new Field("description").preTags(preTag).postTags(postTag),
-						new Field("file").preTags(preTag).postTags(postTag),
-						new Field("nodePath").preTags(preTag).postTags(postTag)
-				)
-				.withSort(new ScoreSortBuilder())
-				.build();
+        // custom query for highlight
+        String preTag = "<" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
+        String postTag = "</" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(qb)
+                .withHighlightFields(
+                        new Field("name").preTags(preTag).postTags(postTag),
+                        new Field("description").preTags(preTag).postTags(postTag),
+                        new Field("file").preTags(preTag).postTags(postTag),
+                        new Field("nodePath").preTags(preTag).postTags(postTag)
+                )
+                .withSort(new ScoreSortBuilder())
+                .build();
 
-		final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
+        final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
-		// Highlight result
-		elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
-			@Override
-			public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
-				List<EdmDocumentFile> chunk = new ArrayList<>();
+        // Highlight result
+        elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
+            @Override
+            public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
+                List<EdmDocumentFile> chunk = new ArrayList<>();
 
-				searchResult.setTookTime(response.getTookInMillis());
-				searchResult.setTotalHitsCount(response.getHits().getTotalHits());
+                searchResult.setTookTime(response.getTookInMillis());
+                searchResult.setTotalHitsCount(response.getHits().getTotalHits());
 
-				for (SearchHit searchHit : response.getHits()) {
-					if (response.getHits().getHits().length <= 0) {
-						return new FacetedPageImpl<T>((List<T>) chunk);
-					}
+                for (SearchHit searchHit : response.getHits()) {
+                    if (response.getHits().getHits().length <= 0) {
+                        return new FacetedPageImpl<T>((List<T>) chunk);
+                    }
 
-					EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
+                    EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
 
-					// fill every fields
-					EdmDocumentFile doc = edmDocumentRepository.findOne(searchHit.getId());
-					edmDocumentSearchResult.setEdmDocument(doc);
+                    // fill every fields
+                    EdmDocumentFile doc = edmDocumentRepository.findOne(searchHit.getId());
+                    edmDocumentSearchResult.setEdmDocument(doc);
 
-					// override custom elements, see
-					// https://groups.google.com/forum/#!topic/spring-data-elasticsearch-devs/se3yCfVnRiE
-					if (searchHit.getHighlightFields().get("name") != null) {
-						edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
-					}
-					if (searchHit.getHighlightFields().get("description") != null) {
-						edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
-					}
-					if (searchHit.getHighlightFields().get("file") != null) {
-						edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file").fragments()[0].toString());
-					}
-					if (searchHit.getHighlightFields().get("nodePath") != null) {
-						edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
-					}
+                    // override custom elements, see
+                    // https://groups.google.com/forum/#!topic/spring-data-elasticsearch-devs/se3yCfVnRiE
+                    if (searchHit.getHighlightFields().get("name") != null) {
+                        edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
+                    }
+                    if (searchHit.getHighlightFields().get("description") != null) {
+                        edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
+                    }
+                    if (searchHit.getHighlightFields().get("file") != null) {
+                        edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file").fragments()[0].toString());
+                    }
+                    if (searchHit.getHighlightFields().get("nodePath") != null) {
+                        edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
+                    }
 
-					searchResult.add(edmDocumentSearchResult);
-					chunk.add(doc);
-				}
-				return new FacetedPageImpl<T>((List<T>) chunk);
-			}
-		});
+                    searchResult.add(edmDocumentSearchResult);
+                    chunk.add(doc);
+                }
+                return new FacetedPageImpl<T>((List<T>) chunk);
+            }
+        });
 
-		// return modified result with highlighting
-		return searchResult;
-	}
+        // return modified result with highlighting
+        return searchResult;
+    }
 
-	public List<EdmDocumentFile> findByParent(String parentId) {
-		Page<EdmDocumentFile> page = edmDocumentRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
-		return page.getContent();
-	}
+    public List<EdmDocumentFile> findByParent(String parentId) {
+        Page<EdmDocumentFile> page = edmDocumentRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
+        return page.getContent();
+    }
 
-	public List<EdmDocumentFile> findByName(String name) {
-		return edmDocumentRepository.findByName(name);
-	}
+    public List<EdmDocumentFile> findByName(String name) {
+        return edmDocumentRepository.findByName(name);
+    }
 
-	public void delete(EdmDocumentFile edmDocument) {
-		edmDocumentRepository.delete(edmDocument);
-	}
+    public void delete(EdmDocumentFile edmDocument) {
+        edmDocumentRepository.delete(edmDocument);
+    }
 
-	/**
-	 * Convert the file path to a node path.
-	 *
-	 * Actually, the idea is the file path has just document.fileExtension more
-	 * than node path
-	 */
-	public String filePathToNodePath(String filePath) {
-		return new File(filePath).getParent().replace("\\", "/") + "/" + com.google.common.io.Files.getNameWithoutExtension(filePath);
-	}
+    /**
+     * Convert the file path to a node path.
+     *
+     * Actually, the idea is the file path has just document.fileExtension more
+     * than node path
+     */
+    public String filePathToNodePath(String filePath) {
+        return new File(filePath).getParent().replace("\\", "/") + "/" + com.google.common.io.Files.getNameWithoutExtension(filePath);
+    }
 
-	public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
-		String nodePath = filePathToNodePath(filePath);
-		LOGGER.debug("Get server file path for node path : '{}'", nodePath);
-		return (EdmDocumentFile) edmNodeService.findOneByPath(nodePath);
-	}
+    public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
+        String nodePath = filePathToNodePath(filePath);
+        LOGGER.debug("Get server file path for node path : '{}'", nodePath);
+        return (EdmDocumentFile) edmNodeService.findOneByPath(nodePath);
+    }
 
-	public void snapshotCurrentDocumentsForSource(String sourceName) {
+    public void snapshotCurrentDocumentsForSource(String sourceName) {
 
-		EdmSource source = edmSourceService.findOneByName(sourceName);
-		if (source == null) {
-			return;
-		}
-		String sourceId = source.getId();
+        EdmSource source = edmSourceService.findOneByName(sourceName);
+        if (source == null) {
+            return;
+        }
+        String sourceId = source.getId();
 
-		List<String> edmDocumentsIds = new ArrayList<>();
+        List<String> edmDocumentsIds = new ArrayList<>();
 
-		int pageSize = 10;
+        int pageSize = 10;
 
-		Pageable pageRequest = new PageRequest(0, pageSize);
-		Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
+        Pageable pageRequest = new PageRequest(0, pageSize);
+        Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
 
-		while (edmDocumentPage.getSize() > 0) {
-			LOGGER.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
+        while (edmDocumentPage.getSize() > 0) {
+            LOGGER.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
 
-			for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
-				edmDocumentsIds.add(doc.getId());
-			}
+            for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
+                edmDocumentsIds.add(doc.getId());
+            }
 
-			if (!edmDocumentPage.hasNext()) {
-				break;
-			}
-			pageRequest = edmDocumentPage.nextPageable();
-			edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
-		}
-		sourceDocumentsIds.put(sourceId, edmDocumentsIds);
+            if (!edmDocumentPage.hasNext()) {
+                break;
+            }
+            pageRequest = edmDocumentPage.nextPageable();
+            edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
+        }
+        sourceDocumentsIds.put(sourceId, edmDocumentsIds);
 
-		LOGGER.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
-	}
+        LOGGER.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
+    }
 
-	public void deleteUnusedDocumentsBeforeSnapshotForSource(String sourceName) {
-		EdmSource source = edmSourceService.findOneByName(sourceName);
-		if (source == null) {
-			return;
-		}
-		String sourceId = source.getId();
+    public void deleteUnusedDocumentsBeforeSnapshotForSource(String sourceName) {
+        EdmSource source = edmSourceService.findOneByName(sourceName);
+        if (source == null) {
+            return;
+        }
+        String sourceId = source.getId();
 
-		if (sourceDocumentsIds.get(sourceId) == null) {
-			return;
-		}
+        if (sourceDocumentsIds.get(sourceId) == null) {
+            return;
+        }
 
-		LOGGER.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
-		// loop on removed documents
-		for (String documentId : sourceDocumentsIds.get(sourceId)) {
-			EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
-			LOGGER.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
-			delete(edmDocumentFile);
-		}
-		// reset map to be sur new ids won't be deleted
-		sourceDocumentsIds.put(sourceId, new ArrayList<String>());
-	}
+        LOGGER.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
+        // loop on removed documents
+        for (String documentId : sourceDocumentsIds.get(sourceId)) {
+            EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
+            LOGGER.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
+            delete(edmDocumentFile);
+        }
+        // reset map to be sur new ids won't be deleted
+        sourceDocumentsIds.put(sourceId, new ArrayList<String>());
+    }
 
-	public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
-		BoolQueryBuilder qb = QueryBuilders.boolQuery();
-		qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
-		LOGGER.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
-		return Lists.newArrayList(edmDocumentRepository.search(qb));
-	}
+    public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
+        BoolQueryBuilder qb = QueryBuilders.boolQuery();
+        qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
+        LOGGER.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
+        return Lists.newArrayList(edmDocumentRepository.search(qb));
+    }
 
 
-	private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
-		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
+    private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
+        QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
+        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
 
-		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 
-		List<EdmAggregationItem> extensions = new ArrayList<>();
+        List<EdmAggregationItem> extensions = new ArrayList<>();
 
-		Terms terms = response.getAggregations().get("agg_fileExtension");
+        Terms terms = response.getAggregations().get("agg_fileExtension");
 
-		for (Terms.Bucket bucket : terms.getBuckets()) {
-			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
-		}
-		return extensions;
-	}
+        for (Terms.Bucket bucket : terms.getBuckets()) {
+            extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+        }
+        return extensions;
+    }
 
-	private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
-		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-		DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
+    private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
+        QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
+        DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
 
-		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 
-		List<EdmAggregationItem> extensions = new ArrayList<>();
+        List<EdmAggregationItem> extensions = new ArrayList<>();
 
-		InternalDateHistogram buckets = response.getAggregations().get("agg_date");
+        InternalDateHistogram buckets = response.getAggregations().get("agg_date");
 
-		for (Histogram.Bucket bucket : buckets.getBuckets()) {
-			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
-		}
-		return extensions;
-	}
+        for (Histogram.Bucket bucket : buckets.getBuckets()) {
+            extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+        }
+        return extensions;
+    }
 
-	public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
-		// the query
-		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
+    public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
+        // the query
+        QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
-		// the aggregation, with exclusions
-		String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
+        // the aggregation, with exclusions
+        String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
 
-		List<String> filesExtensions = new ArrayList<>();
-		for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
-			filesExtensions.add(edmAggregationItem.getKey());
-		}
-		String filesExtension = Joiner.on("|").join(filesExtensions);
+        List<String> filesExtensions = new ArrayList<>();
+        for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
+            filesExtensions.add(edmAggregationItem.getKey());
+        }
+        String filesExtension = Joiner.on("|").join(filesExtensions);
 
-		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
+        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
 
-		// execute
-		SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+        // execute
+        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 
-		List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
+        List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
 
-		Terms terms = response.getAggregations().get("agg_nodePath");
-		Collection<Terms.Bucket> buckets = terms.getBuckets();
+        Terms terms = response.getAggregations().get("agg_nodePath");
+        Collection<Terms.Bucket> buckets = terms.getBuckets();
 
-		for (Terms.Bucket bucket : buckets) {
-			mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
-		}
-		return mostCommonTerms;
-	}
+        for (Terms.Bucket bucket : buckets) {
+            mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+        }
+        return mostCommonTerms;
+    }
 
-	public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
-		Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
-		aggregations.put("fileExtension", getAggregationExtensions(pattern));
-		aggregations.put("date", getAggregationDate(pattern));
-		return aggregations;
-	}
+    public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
+        Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
+        aggregations.put("fileExtension", getAggregationExtensions(pattern));
+        aggregations.put("date", getAggregationDate(pattern));
+        return aggregations;
+    }
 }

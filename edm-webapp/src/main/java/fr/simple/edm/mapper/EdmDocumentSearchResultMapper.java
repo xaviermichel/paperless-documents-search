@@ -13,8 +13,8 @@ public class EdmDocumentSearchResultMapper extends AbstractMapper<EdmDocumentSea
     private EdmDocumentMapper edmDocumentMapper;
     
     public EdmDocumentSearchResultMapper() {
-		super(EdmDocumentSearchResult.class, EdmDocumentSearchResultDto.class);
-	}
+        super(EdmDocumentSearchResult.class, EdmDocumentSearchResultDto.class);
+    }
 
     @Override
     public EdmDocumentSearchResultDto boToDto(EdmDocumentSearchResult bo) {
@@ -31,4 +31,4 @@ public class EdmDocumentSearchResultMapper extends AbstractMapper<EdmDocumentSea
         return dto;
     }
 }
-	
+    

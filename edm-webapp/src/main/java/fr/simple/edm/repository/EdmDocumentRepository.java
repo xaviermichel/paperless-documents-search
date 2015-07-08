@@ -15,6 +15,6 @@ public interface EdmDocumentRepository extends ElasticsearchRepository<EdmDocume
     @Query("{\"match\": {\"parentId\" : \"?0\"}}")
     Page<EdmDocumentFile> findByParentId(String parentId, Pageable page);
 
-	List<EdmDocumentFile> findByName(String name);
+    List<EdmDocumentFile> findByName(String name);
 
 }

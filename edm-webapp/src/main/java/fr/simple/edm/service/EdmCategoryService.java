@@ -45,8 +45,8 @@ public class EdmCategoryService {
         edmCategoryRepository.delete(edmCategory);
     }
 
-	public EdmCategory findOneByName(String sourceName) {
-		List<EdmCategory> candidates = edmCategoryRepository.findByName(sourceName);
-		return candidates.isEmpty() ? new EdmCategory() : candidates.get(0);
-	}
+    public EdmCategory findOneByName(String sourceName) {
+        List<EdmCategory> candidates = edmCategoryRepository.findByName(sourceName);
+        return candidates.isEmpty() ? new EdmCategory() : candidates.get(0);
+    }
 }

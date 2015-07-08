@@ -11,22 +11,22 @@ import fr.simple.edm.common.EdmNodeType;
  */
 public class EdmNodeDto implements Serializable {
 
-	private String id;
+    private String id;
 
-	private EdmNodeType edmNodeType = null;
-	
-	private String parentId = null;
-	
-	private String name = null;
-	
-	public EdmNodeDto() {
-	    // please give me a node type... Or you'll do nothing with me !
-	}
-	
-	public EdmNodeDto(EdmNodeType edmNodeType) {
-		this.edmNodeType = edmNodeType;
-	}
-	
+    private EdmNodeType edmNodeType = null;
+    
+    private String parentId = null;
+    
+    private String name = null;
+    
+    public EdmNodeDto() {
+        // please give me a node type... Or you'll do nothing with me !
+    }
+    
+    public EdmNodeDto(EdmNodeType edmNodeType) {
+        this.edmNodeType = edmNodeType;
+    }
+    
     public String getId() {
         return id;
     }
@@ -35,21 +35,21 @@ public class EdmNodeDto implements Serializable {
         this.id = id;
     }
 
-	public EdmNodeType getEdmNodeType() {
-		return edmNodeType;
-	}
+    public EdmNodeType getEdmNodeType() {
+        return edmNodeType;
+    }
 
-	public void setEdmNodeType(EdmNodeType edmNodeType) {
-		this.edmNodeType = edmNodeType;
-	}
+    public void setEdmNodeType(EdmNodeType edmNodeType) {
+        this.edmNodeType = edmNodeType;
+    }
 
-	public String getParentId() {
-		return parentId;
-	}
+    public String getParentId() {
+        return parentId;
+    }
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
     public String getName() {
         return name;
@@ -58,6 +58,6 @@ public class EdmNodeDto implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-	
+    
 }
 

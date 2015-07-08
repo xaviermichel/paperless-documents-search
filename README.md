@@ -85,25 +85,32 @@ On standalone application (local node) :
 - restart the application
 - reindex your documents !
 
-On application connected with other elastic (assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update)
+On application connected with external elastic (assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update)
 - delete `documents_2`
-- re-create mapping for `documents_2` (curl put)
+```bash
+curl -XDELETE "http://127.0.0.1:9200/documents_2"
+```
+- re-create mapping for `documents_2` :
+```bash
+curl -XPUT "http://127.0.0.1:9200/documents_2" -d "@./documents.json"
+curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/category" -d "@./documents/category.json"
+curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/source" -d "@./documents/source.json"
+curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/document_file" -d "@./documents/document_file.json"
+```
 - reindex your documents, with bash script, should looks like (the best way may be to copy and adapt `alfreso_crawler.sh`) :
 ```bash
-     # upload in edms
-     temporyFileToken=$(curl -s -XPOST "${edmHost}/document/upload" -F "file=@${fileToIndex}" | sed 's/.*temporaryFileToken":"\(.*\)".*/\1/g')
-
-     # send doc informations
-     curl -XPOST "${edmHost}/document" -d "{
-             \"date\" : \"${docDate}\",
-             \"nodePath\"    : \"${uniqNodePath}\",
-             \"edmNodeType\" : \"DOCUMENT\",
-             \"name\" : \"${docName}\",
-             \"temporaryFileToken\" : \"${temporyFileToken}\",
-             \"parentId\" : \"${edmSourceId}\"
-     }" -H "Content-Type: application/json"
+???
 ```
 - switch alias !
+```bash
+curl -XPOST 'http://127.0.0.1:9200/_aliases' -d '
+{
+    "actions" : [
+        { "remove" : { "index" : "documents_1", "alias" : "documents" } },
+        { "add" : { "index" : "documents_2", "alias" : "documents" } }
+    ]
+}'
+```
 
 Other
 -----

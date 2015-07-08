@@ -37,59 +37,59 @@ import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.service.EdmDocumentService;
 
 @RestController
-@PropertySources(value = { 
+@PropertySources(value = {
         @PropertySource("classpath:/edm-configuration.properties")
 })
 public class EdmDocumentController {
 
-    private final Logger logger = LoggerFactory.getLogger(EdmDocumentController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentController.class);
 
     @Inject
     private Environment env;
-    
+
     @Inject
     private EdmDocumentService edmDocumentService;
-    
+
     @Inject
     private EdmDocumentMapper edmDocumentMapper;
-    
+
     @Inject
     private EdmAggregationItemMapper edmAggregationItemMapper;
-    
+
     @Inject
     private EdmDocumentSearchResultWrapperMapper edmDocumentSearchResultWrapperMapper;
-    
+
     @RequestMapping(value = "/document", method = RequestMethod.GET, params = {"q"})
     public @ResponseBody EdmDocumentSearchResultWrapperDto search(@RequestParam(value = "q") String pattern) {
-        logger.debug("Searched pattern : '{}'", pattern);
+        LOGGER.debug("Searched pattern : '{}'", pattern);
         return edmDocumentSearchResultWrapperMapper.boToDto(edmDocumentService.search(pattern));
     }
-    
+
     @RequestMapping(value = "/document/suggest", method = RequestMethod.GET, params = {"q"})
     public @ResponseBody List<EdmDocumentFileDto> getSuggestions(@RequestParam(value = "q") String pattern) {
-        logger.debug("Suggestions pattern : '{}'", pattern);
+        LOGGER.debug("Suggestions pattern : '{}'", pattern);
         return edmDocumentMapper.boToDto(edmDocumentService.getSuggestions(pattern));
     }
-    
+
     @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
     public @ResponseBody List<EdmAggregationItemDto> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
-    	logger.debug("Get relative terms for pattern : '{}'", pattern);
+    	LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationItemMapper.boToDto(edmDocumentService.getTopTerms(pattern));
     }
-    
+
     @RequestMapping(value = "/document/aggregations", method = RequestMethod.GET)
     public @ResponseBody Map<String, List<EdmAggregationItemDto>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
-    	logger.debug("Get relative terms for pattern : '{}'", pattern);
+    	LOGGER.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationItemMapper.boToDto(edmDocumentService.getAggregations(pattern));
     }
-    
+
     @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")
     @ResponseStatus(value=HttpStatus.OK)
     public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
+
         String fileExtension = com.google.common.io.Files.getFileExtension(multipartFile.getOriginalFilename());
         String temporaryFileToken =  String.valueOf(System.currentTimeMillis()) + String.valueOf(Math.random() + "." + fileExtension);
-        
+
         byte[] bytes = multipartFile.getBytes();
         BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(env.getProperty("edm.tmpdir") + temporaryFileToken)));
         stream.write(bytes);
@@ -99,8 +99,8 @@ public class EdmDocumentController {
         uploadResponse.setTemporaryFileToken(temporaryFileToken);
         return uploadResponse;
     }
-    
-    
+
+
     @RequestMapping(method=RequestMethod.POST, value="/document", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmDocumentFileDto create(@RequestBody EdmDocumentFileDto edmDocument) {
         EdmDocumentFile document = edmDocumentMapper.dtoToBo(edmDocument);
@@ -110,5 +110,5 @@ public class EdmDocumentController {
         }
         return edmDocumentMapper.boToDto(edmDocumentService.save(document));
     }
-    
+
 }

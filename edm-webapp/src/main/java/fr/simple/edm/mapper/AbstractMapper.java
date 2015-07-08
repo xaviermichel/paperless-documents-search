@@ -12,34 +12,34 @@ import org.springframework.beans.BeanUtils;
 
 public class AbstractMapper<T, S> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractMapper.class);
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMapper.class);
+
 	private Class<T> tt;
 	private Class<S> ss;
-	
+
 	public AbstractMapper(Class<T> model, Class<S> dto) {
 		tt = model;
 		ss = dto;
 	}
-	
+
 	public T dtoToBo(S dto) {
 		T t = null;
 		try {
 			t = tt.newInstance();
 			BeanUtils.copyProperties(dto, t);
 		} catch (Exception e) {
-			logger.error("Failed to convert dto to bo", e);
+			LOGGER.error("Failed to convert dto to bo", e);
 		}
 		return t;
 	}
-	
+
 	public S boToDto(T bo) {
 		S s = null;
 		try {
 			s = ss.newInstance();
 			BeanUtils.copyProperties(bo, s);
 		} catch (Exception e) {
-		    logger.error("Failed to convert bo to dto", e);
+		    LOGGER.error("Failed to convert bo to dto", e);
 		}
 		return s;
 	}
@@ -59,7 +59,7 @@ public class AbstractMapper<T, S> {
 	        return null;
 	    }
 	}
-	
+
 	/**
      * Try to map the BO to DTO, returns null if failed
      */
@@ -75,7 +75,7 @@ public class AbstractMapper<T, S> {
             return null;
         }
     }
-	
+
 	public List<T> dtoToBo(List<S> dtos) {
         List<T> bos = new ArrayList<>(dtos.size());
         for (S dto : dtos) {
@@ -83,7 +83,7 @@ public class AbstractMapper<T, S> {
         }
         return bos;
 	}
-	
+
 	public List<S> boToDto(List<T> bos) {
         List<S> dtos = new ArrayList<>(bos.size());
         for (T bo : bos) {
@@ -91,7 +91,7 @@ public class AbstractMapper<T, S> {
         }
         return dtos;
 	}
-	
+
 	/**
 	 * The same exercise with Map<String, BO>
 	 */

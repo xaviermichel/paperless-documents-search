@@ -72,7 +72,7 @@ import fr.simple.edm.repository.EdmDocumentRepository;
 )
 public class EdmDocumentService {
 
-	private final Logger logger = LoggerFactory.getLogger(EdmDocumentService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
 
 	// html tag for highlighting matching result, for example :
 	// "...this is a <mark>simple</mark> demo..."
@@ -80,7 +80,7 @@ public class EdmDocumentService {
 
 	@Inject
 	private Client elasticsearchClient;
-	
+
 	@Inject
 	private EdmDocumentRepository edmDocumentRepository;
 
@@ -89,16 +89,16 @@ public class EdmDocumentService {
 
 	@Inject
 	private EdmSourceService edmSourceService;
-	
+
 	@Inject
 	private ElasticsearchOperations elasticsearchTemplate;
 
 	@Inject
 	private ElasticsearchConfig elasticsearchConfig;
-	
+
 	@Inject
 	private Environment env;
-	
+
 	// Map<source, List<documentId>>, is used to delete removed document at re-indexation
 	private static Map<String, List<String>> sourceDocumentsIds;
 
@@ -115,7 +115,7 @@ public class EdmDocumentService {
 		// unique identifier for updating
         String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getParentId());
 		edmDocument.setId(id);
-        
+
 		try {
 			// the document is build manually to
 			// have the possibility to add the binary file
@@ -170,26 +170,25 @@ public class EdmDocumentService {
 			// and that's all folks
 			contentBuilder.endObject();
 
-			// TODO : dynamise index and type with EdmDocument annotation !
 			IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
 
 			edmDocument.setId(ir.getId());
 
-			logger.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
+			LOGGER.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
 		} catch (Exception e) {
-			logger.error("Failed to index document", e);
+			LOGGER.error("Failed to index document", e);
 		}
 
 		if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
 			sourceDocumentsIds.get(edmDocument.getParentId()).remove(edmDocument.getId());
 		}
-		
+
 		return edmDocument;
 	}
 
 	/**
 	 * When you search a document, this query is executed
-	 * 
+	 *
 	 * @param pattern
 	 * 			The searched pattern
 	 * @return
@@ -200,34 +199,34 @@ public class EdmDocumentService {
 		if (pattern == null || pattern.trim().isEmpty()) {
 			return QueryBuilders.matchAllQuery();
 		}
-		
+
 		// the real query
 		BoolQueryBuilder qb = QueryBuilders.boolQuery();
 		qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
 		return qb;
 	}
-	
+
 	/*
-		curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d ' 
-		{  
-		   "fields":[  
-		
+		curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d '
+		{
+		   "fields":[
+
 		   ],
-		   "query":{  
-		      "query_string":{  
+		   "query":{
+		      "query_string":{
 		         "query":"trololo",
 		         "default_operator":"and"
 		      }
 		   },
-		   "highlight":{  
-		      "fields":{  
-		         "file":{  
+		   "highlight":{
+		      "fields":{
+		         "file":{
 		         },
-		         "name":{  
+		         "name":{
 		         },
-		         "description":{  
+		         "description":{
 		         },
-		         "nodePath":{  
+		         "nodePath":{
 		         }
 		      }
 		   }
@@ -237,7 +236,7 @@ public class EdmDocumentService {
 
 		// basic query
 		QueryBuilder qb = getEdmQueryForPattern(pattern);
-		logger.debug("The search query for pattern '{}' is : {}", pattern, qb);
+		LOGGER.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
 		// custom query for highlight
 		String preTag = "<" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
@@ -245,25 +244,25 @@ public class EdmDocumentService {
 		SearchQuery searchQuery = new NativeSearchQueryBuilder()
 				.withQuery(qb)
 				.withHighlightFields(
-						new Field("name").preTags(preTag).postTags(postTag), 
+						new Field("name").preTags(preTag).postTags(postTag),
 						new Field("description").preTags(preTag).postTags(postTag),
-						new Field("file").preTags(preTag).postTags(postTag), 
+						new Field("file").preTags(preTag).postTags(postTag),
 						new Field("nodePath").preTags(preTag).postTags(postTag)
 				)
 				.withSort(new ScoreSortBuilder())
 				.build();
 
 		final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
-		
+
 		// Highlight result
 		elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
 			@Override
 			public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
 				List<EdmDocumentFile> chunk = new ArrayList<>();
-								
+
 				searchResult.setTookTime(response.getTookInMillis());
 				searchResult.setTotalHitsCount(response.getHits().getTotalHits());
-				
+
 				for (SearchHit searchHit : response.getHits()) {
 					if (response.getHits().getHits().length <= 0) {
 						return new FacetedPageImpl<T>((List<T>) chunk);
@@ -316,7 +315,7 @@ public class EdmDocumentService {
 
 	/**
 	 * Convert the file path to a node path.
-	 * 
+	 *
 	 * Actually, the idea is the file path has just document.fileExtension more
 	 * than node path
 	 */
@@ -326,18 +325,18 @@ public class EdmDocumentService {
 
 	public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
 		String nodePath = filePathToNodePath(filePath);
-		logger.debug("Get server file path for node path : '{}'", nodePath);
+		LOGGER.debug("Get server file path for node path : '{}'", nodePath);
 		return (EdmDocumentFile) edmNodeService.findOneByPath(nodePath);
 	}
 
 	public void snapshotCurrentDocumentsForSource(String sourceName) {
-		
+
 		EdmSource source = edmSourceService.findOneByName(sourceName);
 		if (source == null) {
 			return;
 		}
 		String sourceId = source.getId();
-		
+
 		List<String> edmDocumentsIds = new ArrayList<>();
 
 		int pageSize = 10;
@@ -346,7 +345,7 @@ public class EdmDocumentService {
 		Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
 
 		while (edmDocumentPage.getSize() > 0) {
-			logger.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
+			LOGGER.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
 
 			for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
 				edmDocumentsIds.add(doc.getId());
@@ -359,8 +358,8 @@ public class EdmDocumentService {
 			edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
 		}
 		sourceDocumentsIds.put(sourceId, edmDocumentsIds);
-		
-		logger.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
+
+		LOGGER.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
 	}
 
 	public void deleteUnusedDocumentsBeforeSnapshotForSource(String sourceName) {
@@ -369,30 +368,30 @@ public class EdmDocumentService {
 			return;
 		}
 		String sourceId = source.getId();
-		
+
 		if (sourceDocumentsIds.get(sourceId) == null) {
 			return;
 		}
-		
-		logger.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
+
+		LOGGER.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
 		// loop on removed documents
 		for (String documentId : sourceDocumentsIds.get(sourceId)) {
 			EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
-			logger.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
+			LOGGER.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
 			delete(edmDocumentFile);
 		}
 		// reset map to be sur new ids won't be deleted
 		sourceDocumentsIds.put(sourceId, new ArrayList<String>());
 	}
-	
+
 	public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
 		BoolQueryBuilder qb = QueryBuilders.boolQuery();
 		qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
-		logger.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
+		LOGGER.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
 		return Lists.newArrayList(edmDocumentRepository.search(qb));
 	}
-	
-	
+
+
 	private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
 		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
@@ -401,17 +400,17 @@ public class EdmDocumentService {
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
-		
+
 		List<EdmAggregationItem> extensions = new ArrayList<>();
-		
+
 		Terms terms = response.getAggregations().get("agg_fileExtension");
-		
+
 		for (Terms.Bucket bucket : terms.getBuckets()) {
 			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}
 		return extensions;
 	}
-	
+
 	private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
 		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 		DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
@@ -420,30 +419,30 @@ public class EdmDocumentService {
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
-		
+
 		List<EdmAggregationItem> extensions = new ArrayList<>();
-		
+
 		InternalDateHistogram buckets = response.getAggregations().get("agg_date");
-		
+
 		for (Histogram.Bucket bucket : buckets.getBuckets()) {
 			extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}
 		return extensions;
 	}
-	
+
 	public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
 		// the query
 		QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-		
+
 		// the aggregation, with exclusions
 		String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
-		
+
 		List<String> filesExtensions = new ArrayList<>();
 		for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
 			filesExtensions.add(edmAggregationItem.getKey());
 		}
 		String filesExtension = Joiner.on("|").join(filesExtensions);
-		
+
 		TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
 
 		// execute
@@ -451,12 +450,12 @@ public class EdmDocumentService {
                 .setQuery(query)
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
-		
+
 		List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
-		
+
 		Terms terms = response.getAggregations().get("agg_nodePath");
 		Collection<Terms.Bucket> buckets = terms.getBuckets();
-		
+
 		for (Terms.Bucket bucket : buckets) {
 			mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
 		}

@@ -16,7 +16,7 @@ import fr.simple.edm.crawler.bridge.EdmConnector;
 
 public class FilesystemCrawler {
 	
-    private static final Logger logger = LoggerFactory.getLogger(FilesystemCrawler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilesystemCrawler.class);
     
 	private static final EdmConnector edmConnector = new EdmConnector();
 	
@@ -38,7 +38,7 @@ public class FilesystemCrawler {
 		String sourceId = edmConnector.getIdFromSourceBySourceName(edmServerHttpAddress, sourceName, categoryId);
 		
 		// index
-		logger.debug("The source ID is {}", sourceId);
+		LOGGER.debug("The source ID is {}", sourceId);
 		edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
 		importFilesInDir(filePath, edmServerHttpAddress, sourceId, exclusionRegex);
 		edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
@@ -47,17 +47,17 @@ public class FilesystemCrawler {
 	
 	public static boolean isExcluded(String filePath, String exclusionPattern) {
 		boolean toExclude = ! exclusionPattern.isEmpty() && Pattern.compile(exclusionPattern).matcher(filePath).find();
-		logger.debug("Check if '{}' match with '{}' : {}", filePath, exclusionPattern, toExclude);
+		LOGGER.debug("Check if '{}' match with '{}' : {}", filePath, exclusionPattern, toExclude);
 		return toExclude;
 	}
 	
 	private static void importFilesInDir(String filePath, final String edmServerHttpAddress, final String sourceId, final String exclusionRegex) throws ClientProtocolException {
 		
-		logger.info("Embedded crawler looks for : " + filePath);
+		LOGGER.info("Embedded crawler looks for : " + filePath);
 		
 		// exclusion pattern
 		if (isExcluded(filePath, exclusionRegex)) {
-			logger.info("File excluded because it matches with exclusion regex");
+			LOGGER.info("File excluded because it matches with exclusion regex");
 			return;
 		}
 
@@ -65,7 +65,7 @@ public class FilesystemCrawler {
 		
 		// recursive crawling
 		if (file != null && file.isDirectory()) {
-		    logger.debug("... is a directory !");
+		    LOGGER.debug("... is a directory !");
 			for (File subFile : file.listFiles()) {
 			    importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId, exclusionRegex);
 			}
@@ -76,14 +76,14 @@ public class FilesystemCrawler {
 				
 		// add files
 		if (file != null && file.isFile()) {
-		    logger.debug("... is a file !");
+		    LOGGER.debug("... is a file !");
 			
 			double bytes = file.length();
 			double kilobytes = (bytes / 1024);
 			double megabytes = (kilobytes / 1024);
 			
 			if (megabytes > 100) {
-				logger.warn("Skipping too big file ({})", filePath);
+				LOGGER.warn("Skipping too big file ({})", filePath);
 			}
 			else {
 				// upload the file
@@ -108,7 +108,7 @@ public class FilesystemCrawler {
 		
 		// other type
 		if (file != null) {
-			logger.debug("... is nothing !");
+			LOGGER.debug("... is nothing !");
 			
 			// release memory
 			file = null;

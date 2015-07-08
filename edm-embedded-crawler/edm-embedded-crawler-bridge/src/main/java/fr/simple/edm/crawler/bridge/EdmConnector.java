@@ -28,26 +28,26 @@ import fr.simple.edm.common.dto.EdmSourceDto;
 
 public class EdmConnector {
 
-    private Logger logger = LoggerFactory.getLogger(EdmConnector.class);
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdmConnector.class);
+
     /**
      * Upload the given file and returns EDM token
      */
     public String uploadFile(String server, File file) throws ClientProtocolException {
 
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE);        
-        builder.addPart("file", new FileBody(file)); 
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+        builder.addPart("file", new FileBody(file));
         HttpEntity entity = builder.build();
-        
+
         HttpPost request = new HttpPost("http://" + server + "/document/upload");
         request.setEntity(entity);
 
         String edmFileToken = "";
-        
+
         HttpClient client = HttpClientBuilder.create().build();
         try {
             HttpResponse response = client.execute(request);
-            
+
             HttpEntity getVarsEntity = response.getEntity();
             String pageString = "";
 
@@ -59,23 +59,23 @@ public class EdmConnector {
                    pageString += line;
                }
             }
-            
-            logger.debug("Upload response : {} ", pageString);
-        
+
+            LOGGER.debug("Upload response : {} ", pageString);
+
             Pattern p = Pattern.compile("\\{\"temporaryFileToken\":\"(.*)\"\\}");
             Matcher m = p.matcher(pageString);
             while(m.find()) {
                 edmFileToken = m.group(1);
             }
-        
-            logger.debug("Edm file token : {} ", edmFileToken);
-            
+
+            LOGGER.debug("Edm file token : {} ", edmFileToken);
+
         } catch (IOException e) {
-            logger.error("Failed to upload file", e);
+            LOGGER.error("Failed to upload file", e);
         }
         return edmFileToken;
     }
-    
+
     /**
      * Save the given document in EDMS
      */
@@ -83,33 +83,33 @@ public class EdmConnector {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForEntity("http://" + server + "/document", doc, EdmDocumentFileDto.class);
     }
-    
+
     public void notifyStartCrawling(String server, String source) throws ClientProtocolException, IOException {
     	HttpGet request = new HttpGet("http://" + server + "/crawl/start?source=" + sanitizeSourceName(source));
     	HttpClient client = HttpClientBuilder.create().build();
 		client.execute(request);
     }
-    
+
     public void notifyEndOfCrawling(String server, String source) throws ClientProtocolException, IOException {
     	HttpGet request = new HttpGet("http://" + server + "/crawl/stop?source=" + sanitizeSourceName(source));
     	HttpClient client = HttpClientBuilder.create().build();
 		client.execute(request);
     }
-    
+
     private String sanitizeSourceName(String sourceName) {
     	return sourceName.replaceAll(" ", "-");
     }
-    
+
     public String getIdFromSourceBySourceName(String server, String sourceName, String categoryId) {
-    	// get Node 
+    	// get Node
         RestTemplate restTemplate = new RestTemplate();
         EdmSourceDto result = restTemplate.getForObject("http://" + server + "/source/name/{sourceName}", EdmSourceDto.class, sourceName);
-        
+
         // if exits, nothing to do !
         if (result.getId() != null && ! result.getId().isEmpty()) {
             return result.getId();
         }
-        
+
         // else, we have to create it
         EdmSourceDto directory = new EdmSourceDto();
         directory.setDescription("");
@@ -118,17 +118,17 @@ public class EdmConnector {
         ResponseEntity<EdmSourceDto> createdSource = restTemplate.postForEntity("http://" + server + "/source", directory, EdmSourceDto.class);
         return createdSource.getBody().getId();
     }
-    
+
     public String getIdFromCategoryByCategoryName(String server, String categoryName) {
-    	// get Node 
+    	// get Node
         RestTemplate restTemplate = new RestTemplate();
         EdmCategoryDto result = restTemplate.getForObject("http://" + server + "/category/name/{categoryName}", EdmCategoryDto.class, categoryName);
-        
+
         // if exits, nothing to do !
         if (result.getId() != null && ! result.getId().isEmpty()) {
             return result.getId();
         }
-        
+
         // else, we have to create it
         EdmCategoryDto category = new EdmCategoryDto();
         category.setDescription("");

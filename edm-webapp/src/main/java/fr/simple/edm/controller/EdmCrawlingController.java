@@ -18,7 +18,7 @@ import fr.simple.edm.service.EdmDocumentService;
 @Controller
 public class EdmCrawlingController {
 
-    private final Logger logger = LoggerFactory.getLogger(EdmCrawlingController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdmCrawlingController.class);
 
     @Inject
     private EdmDocumentService edmDocumentService;
@@ -26,14 +26,14 @@ public class EdmCrawlingController {
     @RequestMapping(value = "/crawl/start", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
-    	logger.info("Begin crawling for source : {}", source);
+    	LOGGER.info("Begin crawling for source : {}", source);
     	edmDocumentService.snapshotCurrentDocumentsForSource(source);
     }
 
     @RequestMapping(value = "/crawl/stop", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
-    	logger.info("End of crawling for source : {}", source);
+    	LOGGER.info("End of crawling for source : {}", source);
     	edmDocumentService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
     }
 
@@ -47,11 +47,11 @@ public class EdmCrawlingController {
             @RequestParam(value = "categoryName", defaultValue = "unmanned category") String categoryName,
             @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
        ) {
-        logger.info("Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
+        LOGGER.info("Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
         } catch (Exception e) {
-            logger.error("Failed to crawl '{}' with embedded crawler", path, e);
+            LOGGER.error("Failed to crawl '{}' with embedded crawler", path, e);
         }
         return "OK" ;
     }

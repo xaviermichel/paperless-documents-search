@@ -26,15 +26,15 @@ import fr.simple.edm.service.EdmNodeService;
 
 @RestController
 public class EdmNodeController {
-	
-    private final Logger logger = LoggerFactory.getLogger(EdmNodeController.class);
-    
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdmNodeController.class);
+
 	@Inject
 	private EdmNodeService edmNodeService;
-	
+
 	@Inject
 	private EdmNodeMapper edmNodeMapper;
-	
+
     @RequestMapping(value = "/node/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmNodeDto read(@PathVariable String nodeid) {
         return edmNodeMapper.boToDto(edmNodeService.findOne(nodeid));
@@ -44,22 +44,22 @@ public class EdmNodeController {
     public @ResponseBody EdmNodeDto create(@RequestBody EdmNodeDto edmNodeDto) {
         return edmNodeMapper.boToDto(edmNodeService.save(edmNodeMapper.dtoToBo(edmNodeDto)));
     }
-    
+
     @RequestMapping(method=RequestMethod.DELETE, value="/node/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public @ResponseBody void delete(@PathVariable String id) {
         edmNodeService.deleteRecursively(edmNodeService.findOne(id));
     }
-    
+
 	// not really restfull
 	@RequestMapping(value = "/node/path/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmNodeDto read(HttpServletRequest request) {
 	    String nodepath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	    nodepath = nodepath.replaceFirst("/node/path/", "");
-	    logger.debug("get node for path : '{}'", nodepath);
+	    LOGGER.debug("get node for path : '{}'", nodepath);
         return edmNodeMapper.boToDto(edmNodeService.findOneByPath(nodepath));
     }
-	
+
 	// not really restfull
 	@RequestMapping(value = "/node/childs/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody List<EdmNodeDto> getChildNodes(@PathVariable String nodeid) {
@@ -67,5 +67,5 @@ public class EdmNodeController {
 	    Collections.sort(children);
 		return edmNodeMapper.boToDto(children);
 	}
-	
+
 }

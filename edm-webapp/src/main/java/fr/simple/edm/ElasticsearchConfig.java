@@ -30,7 +30,7 @@ public class ElasticsearchConfig {
 	/**
 	 * My logger
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(ElasticsearchConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConfig.class);
 
 	/**
 	 * Mapping files location
@@ -59,14 +59,14 @@ public class ElasticsearchConfig {
 			return content;
 		}
 		catch (Exception e) {
-			logger.warn("Failed to get content of file " + embeddedPath, e);
+			LOGGER.warn("Failed to get content of file " + embeddedPath, e);
 		}
 		return null;
 	}
 	
 	private void buildOrUpdateEsMapping() {
 
-		logger.info("Updating ES mapping because you're using a local node");
+		LOGGER.info("Updating ES mapping because you're using a local node");
 
 		Map<String, List<String>> indexTypes = new HashMap<>();
         indexTypes.put("documents", Lists.newArrayList("category", "source", "document_file"));
@@ -82,7 +82,7 @@ public class ElasticsearchConfig {
         			elasticsearchClient.admin().indices().prepareCreate(index).setSettings(indexSettings).execute().actionGet();
         		}
         	} catch (IndexAlreadyExistsException e) {
-        		logger.info("Index {} already exists, juste updating settings", index);
+        		LOGGER.info("Index {} already exists, juste updating settings", index);
         		
             	// may have to update settings
             	elasticsearchClient.admin().indices().close(new CloseIndexRequest(index)).actionGet();
@@ -91,34 +91,34 @@ public class ElasticsearchConfig {
             	elasticsearchClient.admin().indices().open(new OpenIndexRequest(index)).actionGet();
             	
         	} catch (Exception e) {
-        		logger.error("Failed to rebuild index {}", index, e);
+        		LOGGER.error("Failed to rebuild index {}", index, e);
         	}
         	
         	// at the second level, we've types
         	for (String type : indexTypes.get(index)) {
         		try {
         			String typeMapping = getContentOfEmbeddedFile(MAPPING_DIR + "/" + index + "/" + type + ".json");
-        			logger.info("Updating mapping for {}/{}", index, type);
+        			LOGGER.info("Updating mapping for {}/{}", index, type);
         			elasticsearchClient.admin().indices().preparePutMapping(index).setType(type).setSource(typeMapping).execute().actionGet();
         		} catch (Exception e) {
-        			logger.error("Failed to read mapping or update mapping for ES", e);
-        			logger.error("THE MODE IS DETERIORED, YOU MAY HAVE TO MANUALY UPDATE MAPPING ! (see EdmAdministrationController)");
+        			LOGGER.error("Failed to read mapping or update mapping for ES", e);
+        			LOGGER.error("THE MODE IS DETERIORED, YOU MAY HAVE TO MANUALY UPDATE MAPPING ! (see EdmAdministrationController)");
         		}
         	}
 
         	flushIndex(index);
         }
 
-		logger.info("Building is over !");
+		LOGGER.info("Building is over !");
 	}
 
 	public void updateMappingIfLocalNode() {
-		logger.info("Wan't update mapping...");
+		LOGGER.info("Wan't update mapping...");
 		if (elasticsearchClient != null && elasticsearchClient instanceof NodeClient) {
 			buildOrUpdateEsMapping();
 			return;
 		}
-		logger.info("It's not a local node, I won't edit mapping");
+		LOGGER.info("It's not a local node, I won't edit mapping");
 	}
 
 }

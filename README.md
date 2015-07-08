@@ -80,28 +80,30 @@ You can find the [lastest release here](https://github.com/xaviermichel/simple-d
 Mapping migration
 -----------------
 
-On standalone application (local node) :
-- delete `edm` directory
-- restart the application
-- reindex your documents !
+### On standalone application (local node, with downtime)
+1. delete `edm` directory
+2. restart the application
+3. reindex your documents !
 
-On application connected with external elastic (assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update)
-- delete `documents_2`
+### On application connected with external elastic (without downtime) 
+
+Assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update. Elastic has elasticsearch-mapper-attachments installed.
+1. delete `documents_2`
 ```bash
 curl -XDELETE "http://127.0.0.1:9200/documents_2"
 ```
-- re-create mapping for `documents_2` :
+2. re-create mapping for `documents_2` :
 ```bash
 curl -XPUT "http://127.0.0.1:9200/documents_2" -d "@./documents.json"
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/category" -d "@./documents/category.json"
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/source" -d "@./documents/source.json"
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/document_file" -d "@./documents/document_file.json"
 ```
-- reindex your documents, with bash script, should looks like (the best way may be to copy and adapt `alfreso_crawler.sh`) :
+3. reindex your documents, with bash script, should looks like (the best way may be to copy and adapt `alfreso_crawler.sh`) :
 ```bash
 ???
 ```
-- switch alias !
+4. switch alias !
 ```bash
 curl -XPOST 'http://127.0.0.1:9200/_aliases' -d '
 {

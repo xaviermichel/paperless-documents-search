@@ -88,6 +88,7 @@ Mapping migration
 ### On application connected with external elastic (without downtime) 
 
 Assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update. Elastic has elasticsearch-mapper-attachments installed.
+
 1. delete `documents_2`
 ```bash
 curl -XDELETE "http://127.0.0.1:9200/documents_2"

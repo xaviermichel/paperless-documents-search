@@ -13,14 +13,14 @@ import fr.simple.edm.model.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 
 @Service
-@PropertySources(value = { 
+@PropertySources(value = {
         @PropertySource("classpath:/edm-configuration.properties")
 })
 public class EdmCategoryService {
 
     @Inject
     private EdmCategoryRepository edmCategoryRepository;
-    
+
     public EdmCategory findOne(String id) {
         return edmCategoryRepository.findOne(id);
     }
@@ -40,13 +40,13 @@ public class EdmCategoryService {
     public List<EdmCategory> findByName(String name) {
         return edmCategoryRepository.findByName(name);
     }
-    
+
     public void delete(EdmCategory edmCategory) {
         edmCategoryRepository.delete(edmCategory);
     }
 
 	public EdmCategory findOneByName(String sourceName) {
 		List<EdmCategory> candidates = edmCategoryRepository.findByName(sourceName);
-		return candidates.size() > 0 ? candidates.get(0) : new EdmCategory();
+		return candidates.isEmpty() ? new EdmCategory() : candidates.get(0);
 	}
 }

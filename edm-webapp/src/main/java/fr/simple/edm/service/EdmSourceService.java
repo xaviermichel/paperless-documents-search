@@ -17,15 +17,15 @@ public class EdmSourceService {
 
     @Inject
 	private EdmSourceRepository edmSourceRepository;
-    
+
     public EdmSource findOne(String id) {
     	return edmSourceRepository.findOne(id);
     }
-    
+
 	public EdmSource save(EdmSource edmSource) {
         return edmSourceRepository.index(edmSource);
 	}
-	
+
 	public List<EdmSource> findByParent(String parentId) {
 	    Page<EdmSource> page = edmSourceRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
 		return page.getContent();
@@ -34,13 +34,13 @@ public class EdmSourceService {
 	public List<EdmSource> findByName(String name) {
 	    return edmSourceRepository.findByName(name);
 	}
-	
+
 	public void delete(EdmSource edmSource) {
 	    edmSourceRepository.delete(edmSource);
 	}
 
 	public EdmSource findOneByName(String sourceName) {
 		List<EdmSource> candidates = edmSourceRepository.findByName(sourceName);
-		return candidates.size() > 0 ? candidates.get(0) : new EdmSource();
+		return candidates.isEmpty() ? new EdmSource() : candidates.get(0);
 	}
 }

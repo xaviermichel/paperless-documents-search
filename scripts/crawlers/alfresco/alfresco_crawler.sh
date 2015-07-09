@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# this crawler is sending all files in given alfresco site to simple-data-search
+#
+
 alfrescoUser=
 alfrescoPass=
 alfrescoHost=

@@ -55,7 +55,6 @@
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
         <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView/jobNames/comparator"/>
-        <string>run-alfresco-crawler</string>
       </jobNames>
       <jobFilters/>
       <columns>
@@ -67,7 +66,7 @@
         <hudson.views.LastDurationColumn/>
         <hudson.views.BuildButtonColumn/>
       </columns>
-      <includeRegex>index-.*</includeRegex>
+      <includeRegex>index-.*|run-.*-crawler</includeRegex>
       <recurse>false</recurse>
     </listView>
   </views>

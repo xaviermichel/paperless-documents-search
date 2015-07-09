@@ -9,10 +9,23 @@ You launch it, index one (or more) directory on your filesystem and you can sear
 
 **Features**
 
-- easy to use (it's like a web application)
+- easy to deploy (can be run with one jar)
+- easy to use (it's a web application)
 - powerful search engine
-- scalability (see scalability section)
+- scalability
 - exposed REST api
+
+
+Quick start
+-----------
+
+**Software**
+
+You can find the [lastest release here](https://github.com/xaviermichel/simple-data-search/releases).
+
+1. Download the zip, extract it and launch `simple-data-search.bat` to start application !
+2. Index your documents. The fastest way is to open you brower, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents`
+3. Open you brower on `http://127.0.0.1:8053`, you can now search in your documents !
 
 
 Screenshot
@@ -69,14 +82,6 @@ http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\ale
 ```
 
 
-Downloads
----------
-
-**Software**
-
-You can find the [lastest release here](https://github.com/xaviermichel/simple-data-search/releases).
-
-
 Mapping migration
 -----------------
 
@@ -85,7 +90,7 @@ Mapping migration
 2. restart the application
 3. reindex your documents !
 
-### On application connected with external elastic (without downtime) 
+### On application connected with external elastic (without downtime)
 
 Assuming that you use a `documents` alias which point `documents_1`, `documents_2` is index to update. Elastic has elasticsearch-mapper-attachments installed.
 
@@ -100,11 +105,21 @@ curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/category" -d "@./document
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/source" -d "@./documents/source.json"
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/document_file" -d "@./documents/document_file.json"
 ```
-3. reindex your documents, with bash script, should looks like (the best way may be to copy and adapt `alfreso_crawler.sh`) :
-```bash
-???
+3. create main category
 ```
-4. switch alias !
+curl -XPOST 'http://127.0.0.1:9200/documents_2/category' -H "Content-Type: application/json" -d "{
+    \"name\" : \"Documents\",
+    \"description\": \"Espace contenant mes documents\",
+    \"edmNodeType\": \"CATEGORY\"
+}"
+```
+4. reindex your documents, with bash crawler :
+```bash
+# launch the crawler...
+scripts/crawlers/local_files/local_file_crawler.sh
+# or use jenkins !
+```
+5. switch alias !
 ```bash
 curl -XPOST 'http://127.0.0.1:9200/_aliases' -d '
 {

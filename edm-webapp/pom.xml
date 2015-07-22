@@ -11,6 +11,7 @@
 
     <artifactId>simple-data-search-webapp</artifactId>
     <name>simple data search webapp</name>
+    <description>One entry point to search in your data !</description>
 
     <packaging>jar</packaging>
 

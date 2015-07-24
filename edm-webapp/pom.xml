@@ -65,6 +65,101 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>2.0-alpha-01</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <preloadSources>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/jquery/jquery.min.js</source>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/angular/angular.min.js</source>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/angular-route/angular-route.min.js</source>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/angular-resource/angular-resource.min.js</source>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/angular-animate/angular-animate.min.js</source>
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/moment/min/moment.min.js</source>
+
+                        <source>${project.basedir}/src/main/resources/static/bower_inc/angular-mocks/angular-mocks.js</source>
+                    </preloadSources>
+                    <jsSrcDir>${project.basedir}/src/main/resources/static/js</jsSrcDir>
+                    <jsTestSrcDir>${project.basedir}/src/test/resources/static/js/unit</jsTestSrcDir>
+                    <specIncludes>
+                        <include>*.spec.js</include>
+                    </specIncludes>
+                </configuration>
+            </plugin>
+
+<!--
+            <plugin>
+                <groupId>com.github.greengerong</groupId>
+                <artifactId>maven-ng-protractor</artifactId>
+                <version>0.0.2</version>
+                <configuration>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>ng-protractor</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+-->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>exec-npm-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-bower-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>bower</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>gulp</executable>
+                            <arguments>
+                                <argument>minify-code</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <resources>

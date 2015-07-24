@@ -46,11 +46,6 @@ else
 	exit 2
 fi
 
-xlog INFO "Resolving web libs (bower/gulp)"
-bower install
-gulp
-
-
 cd edm-webapp
 echo "Maven packaging..."
 mvn package -Dmaven.test.skip=true > /dev/null

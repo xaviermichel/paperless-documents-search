@@ -16,51 +16,44 @@ angular.module('edmApp')
                 $location.path('/').search({
                     'q': $scope.searchedPattern
                 });
-            }
+            };
 
             $scope.getTrustedHtmlContent = function(htmlString) {
                 return $sce.trustAsHtml(htmlString);
-            }
+            };
 
             $scope.linkToDocument = function(documentLink) {
                 if (documentLink.indexOf("http") === 0) {
                     return documentLink;
                 }
                 return "file:///" + documentLink;
-            }
+            };
 
             $scope.getDocumentNodeIcon = function(node) {
                 switch (node.fileExtension.toLowerCase()) {
                     case "pdf":
                         return "pdf";
-                        break;
                     case "html":
                         return "html";
-                        break;
                     case "png":
                     case "jpg":
                     case "jpeg":
                     case "gif":
                         return "image";
-                        break;
                     case "doc":
                     case "docx":
                         return "word";
-                        break;
                     case "xls":
                     case "xlsx":
                         return "excel";
-                        break;
                     case "ppt":
                     case "pptx":
                         return "power-point";
-                        break;
                     case "txt":
                         return "text";
-                        break;
                 }
                 return "unknown"; // default icon
-            }
+            };
 
             $scope.updateSearchPattern = function(pattern) {
                 var requestPrefix = "";
@@ -69,21 +62,13 @@ angular.module('edmApp')
                 }
                 $scope.searchedPattern = requestPrefix + pattern;
                 $scope.searchSubmit();
-            }
+            };
 
             $scope.searchPatternHaveBeenUpdated = function() {
                 $http.get('/document/suggest/?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
                     $scope.autocompleteDocumentList = response;
                 });
-            }
-
-            $scope.pad = function(num, size) {
-                var s = num + "";
-                while (s.length < size) {
-                    s = "0" + s;
-                }
-                return s;
-            }
+            };
 
             $scope.searchAggregationsHaveBeenUpdated = function() {
                 if ($scope.searchedPattern.trim().length === 0) {
@@ -97,7 +82,7 @@ angular.module('edmApp')
                         return e.isChecked;
                     })
                     .map(function formatedQuery(e) {
-                        return "fileExtension:" + e.key
+                        return "fileExtension:" + e.key;
                     })
                     .join(" OR ");
 
@@ -128,12 +113,12 @@ angular.module('edmApp')
                 $http.get('/document?q=' + $scope.searchedPattern + aggregateFileExtensionFilter + aggregateDateFilter).success(function(response, status, headers, config) {
                     $scope.searchResults = response;
                 });
-            }
+            };
 
             $scope.updateSearchPatternFromTopTerms = function(term) {
                 $scope.updateSearchPattern(term);
                 $scope.$apply();
-            }
+            };
 
             $http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
                 if ($scope.searchedPattern.trim().length === 0) {

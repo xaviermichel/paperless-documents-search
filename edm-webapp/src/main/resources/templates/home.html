@@ -7,16 +7,16 @@
     <title th:text="${APPLICATION_NAME}">Simple EDM</title>
 
     <!-- Scripts -->
-    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-resource.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-animate.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script src="/resources/bower_inc/jquery/jquery.min.js"></script>
+    <script src="/resources/bower_inc/angular/angular.min.js"></script>
+    <script src="/resources/bower_inc/angular-route/angular-route.min.js"></script>
+    <script src="/resources/bower_inc/angular-resource/angular-resource.min.js"></script>
+    <script src="/resources/bower_inc/angular-animate/angular-animate.min.js"></script>
+    <script src="/resources/bower_inc/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/resources/bower_inc/moment/min/moment.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/resources/bower_inc/bootstrap/dist/css/bootstrap.min.css" />
 
     <span th:unless="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
 	<!-- Production resources -->
@@ -28,7 +28,7 @@
     <span th:if="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
 	<link rel="stylesheet" href="/resources/css/style.css"/>
 	<link rel="stylesheet" href="/resources/css/icons-sprite.css"/>
-	
+
 	<script src="/resources/js/application.js"></script>
 	<script src="/resources/js/controllers.document.js"></script>
 	<script src="/resources/js/services.js"></script>

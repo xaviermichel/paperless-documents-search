@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     minifyCss = require('gulp-minify-css');
 
 
-var EDM_WEBAPP_DIR = 'edm-webapp/src/main/resources/';
+var EDM_WEBAPP_DIR = 'src/main/resources/';
 
 var paths = {
     scripts: [
@@ -41,9 +41,7 @@ gulp.task('uglify-js', function() {
         .pipe(gulp.dest(EDM_WEBAPP_DIR + 'static/build/js'));
 });
 
-gulp.task('minify-js', function() {
-    runSequence('concat-js', 'uglify-js');
-});
+gulp.task('minify-js', ['concat-js', 'uglify-js']);
 
 gulp.task('minify-css', function() {
     return gulp.src(paths.style)

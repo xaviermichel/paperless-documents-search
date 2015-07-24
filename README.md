@@ -58,15 +58,9 @@ sudo npm install -g gulp-cli
 sudo npm install -g bower
 ```
 
-Then, download and compress resources for production compilation
-```bash
-bower install
-gulp minify-code	# will prepare webapp resources for release
-```
-
 Now, you can compile the project core and run it
 ```bash
-mvn install -Dmaven.test.skip=true
+mvn clean install -Dmaven.test.skip=true
 cd edm-webapp
 mvn package -Dmaven.test.skip=true
 java -jar target/simple-data-search-webapp*.jar

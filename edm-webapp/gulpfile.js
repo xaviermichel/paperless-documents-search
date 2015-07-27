@@ -5,7 +5,9 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     rename = require("gulp-rename"),
-    minifyCss = require('gulp-minify-css');
+    minifyCss = require('gulp-minify-css'),
+    karma = require('gulp-karma'),
+    argv = require('yargs').argv;
 
 
 var EDM_WEBAPP_DIR = 'src/main/resources/';
@@ -25,8 +27,29 @@ var paths = {
     templates: [
         EDM_WEBAPP_DIR + '/**/*.html',
         '!' + EDM_WEBAPP_DIR + 'static/bower_inc/**/*.html'
+    ],
+    unitTestFiles: [
+        'src/main/resources/static/bower_inc/jquery/jquery.min.js',
+        'src/main/resources/static/bower_inc/angular/angular.min.js',
+        'src/main/resources/static/bower_inc/angular-route/angular-route.min.js',
+        'src/main/resources/static/bower_inc/angular-resource/angular-resource.min.js',
+        'src/main/resources/static/bower_inc/angular-animate/angular-animate.min.js',
+        'src/main/resources/static/bower_inc/moment/min/moment.min.js',
+        'src/main/resources/static/bower_inc/angular-mocks/angular-mocks.js',
+        'src/main/resources/static/js/*.js',
+        'src/test/resources/static/js/unit/*.spec.js'
     ]
 };
+
+function skipTests(task) {
+    if (argv.skipTests === 'true') {
+        return function() {
+            process.stdout.write('Skipped Tests...\n');
+        };
+    } else {
+        return task;
+    }
+}
 
 gulp.task('concat-js', function() {
     return gulp.src(paths.minify)
@@ -90,5 +113,19 @@ gulp.task('minify-code', function() {
         ['minify-js', 'minify-css']
     );
 });
+
+gulp.task('karma', skipTests(function() {
+    return gulp
+        .src(paths.unitTestFiles)
+        .pipe(karma({
+            configFile: 'karma.conf.js',
+            action: 'run'
+        }))
+        .on('error', function(err) {
+            process.stdout.write(err);
+            // Make sure failed tests cause gulp to exit non-zero
+            throw err;
+        });
+}));
 
 gulp.task('default', ['prettify-code']);

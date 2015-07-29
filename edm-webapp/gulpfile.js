@@ -156,10 +156,6 @@ gulp.task('protractor', skipTests(function() {
     gulp.start('backend-server');
 
     return gulp.src(['src/test/resources/static/js/e2e/*.spec.js'])
-        .pipe(
-			// wait until server is started
-			wait(60000)
-		)
         .pipe(protractor({
             configFile: 'protractor.conf.js',
             args: ['--baseUrl', 'http://localhost:' + serverPort]
@@ -178,7 +174,7 @@ gulp.task('protractor-only-on-travis', onlyOnTravis(function() {
 
 // if you use a local env, you may want to coment protractor test because they are really slow !
 gulp.task('test', function() {
-	runSequence('karma', 'protractor-only-on-travis');
+	runSequence('karma'/*, 'protractor-only-on-travis'*/);
 });
 
 gulp.task('default', ['prettify-code']);

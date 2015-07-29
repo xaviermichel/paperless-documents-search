@@ -1,17 +1,17 @@
 describe('DocumentSearchController', function() {
 
     // compatibility : http://www.w3schools.com/jsref/jsref_trim_string.asp
-    if(typeof String.prototype.trim !== 'function') {
+    if (typeof String.prototype.trim !== 'function') {
         String.prototype.trim = function() {
             return this.replace(/^\s+|\s+$/g, '');
         };
     }
-    if (typeof (console) === 'undefined' || console === null) {
+    if (typeof(console) === 'undefined' || console === null) {
         console = {
             debug: function() {},
-            log: function () {},
-            warn: function () {},
-            error: function () {}
+            log: function() {},
+            warn: function() {},
+            error: function() {}
         };
     }
     // --

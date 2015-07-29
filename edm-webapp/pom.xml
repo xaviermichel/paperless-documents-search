@@ -66,25 +66,6 @@
                 </executions>
             </plugin>
 
-<!--
-            <plugin>
-                <groupId>com.github.greengerong</groupId>
-                <artifactId>maven-ng-protractor</artifactId>
-                <version>0.0.2</version>
-                <configuration>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ng-protractor</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -129,12 +110,12 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>exec-front-unit-test</id>
+                        <id>exec-front-test</id>
                         <phase>test</phase>
                         <configuration>
                             <executable>gulp</executable>
                             <arguments>
-                                <argument>karma</argument>
+                                <argument>test</argument>
                                 <argument>--skipTests=${skipTests}</argument>
                             </arguments>
                         </configuration>

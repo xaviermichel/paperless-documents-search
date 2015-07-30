@@ -31,7 +31,11 @@ You can find the [lastest release here](https://github.com/xaviermichel/simple-d
 Screenshot
 ----------
 
+### Frontend, search in your documents !
+
 ![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_webapp.png)
+
+### Backend, index your documents
 
 ![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_jenkins.png)
 
@@ -58,17 +62,11 @@ sudo npm install -g gulp-cli
 sudo npm install -g bower
 ```
 
-Then, download and compress resources for production compilation
-```bash
-bower install
-gulp minify-code	# will prepare webapp resources for release
-```
-
 Now, you can compile the project core and run it
 ```bash
-mvn install -Dmaven.test.skip=true
+mvn clean install -Dmaven.test.skip=true
 cd edm-webapp
-mvn package -Dmaven.test.skip=true
+mvn package -DskipTests
 java -jar target/simple-data-search-webapp*.jar
 ```
 
@@ -147,4 +145,25 @@ mvn sonar:sonar
 **Debug mode (non minified js)**
 
 Just add `?debug=true` in url : http://127.0.0.1:8053/?debug=true/#/
+
+
+**Front tests with protractor**
+
+You need to start a webdriver locally :
+```code:bash
+cd edm-webapp
+./node_modules/protractor/bin/webdriver-manager update
+./node_modules/protractor/bin/webdriver-manager start
+```
+
+On another shell, start edm-webapp on port 9053 :
+```code:bash
+mvn spring-boot:run -D"run.arguments=--server.port=9053"
+```
+
+You can now run front e2e tests ! 
+```code:bash
+gulp protractor
+```
+
 

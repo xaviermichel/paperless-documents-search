@@ -7,16 +7,21 @@
     <title th:text="${APPLICATION_NAME}">Simple EDM</title>
 
     <!-- Scripts -->
-    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-resource.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-animate.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script src="/resources/bower_inc/jquery/jquery.min.js"></script>
+    <script src="/resources/bower_inc/angular/angular.min.js"></script>
+    <script src="/resources/bower_inc/angular-route/angular-route.min.js"></script>
+    <script src="/resources/bower_inc/angular-resource/angular-resource.min.js"></script>
+    <script src="/resources/bower_inc/angular-animate/angular-animate.min.js"></script>
+    <script src="/resources/bower_inc/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/resources/bower_inc/moment/min/moment.min.js"></script>
+    <script src="/resources/bower_inc/bootstrap-material-design/dist/js/ripples.min.js"></script>
+    <script src="/resources/bower_inc/bootstrap-material-design/dist/js/material.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/resources/bower_inc/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="/resources/bower_inc/bootstrap-material-design/dist/css/roboto.min.css" rel="stylesheet" />
+    <link href="/resources/bower_inc/bootstrap-material-design/dist/css/material.min.css" rel="stylesheet" />
+    <link href="/resources/bower_inc/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet" />
 
     <span th:unless="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
 	<!-- Production resources -->
@@ -28,7 +33,7 @@
     <span th:if="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
 	<link rel="stylesheet" href="/resources/css/style.css"/>
 	<link rel="stylesheet" href="/resources/css/icons-sprite.css"/>
-	
+
 	<script src="/resources/js/application.js"></script>
 	<script src="/resources/js/controllers.document.js"></script>
 	<script src="/resources/js/services.js"></script>
@@ -38,17 +43,25 @@
 
 <body>
 
-    <div class="container">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand spec-title" href="/" th:text="${APPLICATION_NAME}">Simple EDM</a>
+            </div>
 
-        <div class="header">
-            <ul class="nav nav-pills pull-right">
-                <li th:class="${section_document}? 'active'"><a href="/">Documents</a></li>
-                <li th:class="${section_about}? 'active'"><a href="https://github.com/xaviermichel/simple-data-search" target="_blank">A propos</a></li>
-            </ul>
-            <a href="/">
-                <h3 class="text-muted" th:text="${APPLICATION_NAME}">Simple EDM</h3>
-            </a>
+            <div class="nav navbar-nav navbar-right">
+				<a class="btn btn-default" href="https://github.com/xaviermichel/simple-data-search" target="_blank" style="padding:5px 0px;">
+					<img src="/resources/images/github.png" alt="A propos" class="img-circle" />
+				</a>
+            </div>
         </div>
+    </nav>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <div class="container">
 
         <ng-include src="'resources/views/notifications.html'"></ng-include>
 
@@ -57,6 +70,13 @@
 
     </div>
     <!-- /container -->
+
+    <script>
+        $(document).ready(function() {
+            // initialize material design
+            $.material.init();
+        });
+    </script>
 
 </body>
 

@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,9 +39,8 @@ public class EdmCrawlingController {
     }
 
     @RequestMapping(value = "/crawl/filesystem", method = RequestMethod.GET, params = {"path"})
-    @ResponseStatus(value=HttpStatus.OK)
-    @ResponseBody
     public String crawlFilesystem(
+            Model model,
             @RequestParam(value = "path") String path,
             @RequestParam(value = "edmServerHttpAddress", defaultValue = "127.0.0.1:8053") String edmServerHttpAddress,
             @RequestParam(value = "sourceName", defaultValue = "unmanned source") String sourceName,
@@ -53,6 +53,10 @@ public class EdmCrawlingController {
         } catch (Exception e) {
             LOGGER.error("Failed to crawl '{}' with embedded crawler", path, e);
         }
-        return "OK" ;
+        
+        model.addAttribute("result", "OK");
+        model.addAttribute("details", "");
+        
+        return "generic_result";
     }
 }

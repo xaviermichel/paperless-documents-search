@@ -10,7 +10,7 @@ TMP_RELEASE_DIR=./simple-data-search
 RELEASE_FINAL_FILE=./simple-data-search-{{VERSION}}.zip
 
 # always skip tests
-MAVEN_TEST=-Dmaven.test.skip=true
+MAVEN_TEST=-DskipTests
 
 # proxy
 if [ ! -z "${HTTP_PROXY}" ]
@@ -45,11 +45,6 @@ else
 	xlog ERROR "maven compilation has failed. Please fix errors before release"
 	exit 2
 fi
-
-xlog INFO "Resolving web libs (bower/gulp)"
-bower install
-gulp
-
 
 cd edm-webapp
 echo "Maven packaging..."

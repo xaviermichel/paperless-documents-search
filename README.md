@@ -35,7 +35,7 @@ Screenshot
 
 ![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_webapp.png)
 
-### Backend, index your documents
+### Backend (optionnal), manage document indexation, automatic crawling, ...
 
 ![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_jenkins.png)
 

@@ -37,6 +37,19 @@ public class Application {
         Application.elasticsearchConfig = elasticsearchConfig;
     }
 
+	
+    private static String getEnvPropertyWithSilentDeathOnError(String property) {
+        String propertyValue = "";
+        try {
+            propertyValue = env.getProperty(property);
+        }
+        catch (Exception e) {
+            LOGGER.warn(e.getMessage());
+        }
+        return propertyValue;
+    }
+
+
     public static void main(String[] args) {
 
         SpringApplication app = new SpringApplication(Application.class);
@@ -45,8 +58,8 @@ public class Application {
         
         // Run this logs AFTER spring bean injection !
         LOGGER.info("==================================================================================");
-        LOGGER.info("Hi, this is {} version {}", env.getProperty("APPLICATION_NAME"), env.getProperty("APPLICATION_VERSION"));
-        LOGGER.info("You can report issues on {}", env.getProperty("APPLICATION_ISSUES_URL"));
+        LOGGER.info("Hi, this is {} version {}", getEnvPropertyWithSilentDeathOnError("APPLICATION_NAME"), getEnvPropertyWithSilentDeathOnError("APPLICATION_VERSION"));
+        LOGGER.info("You can report issues on {}", getEnvPropertyWithSilentDeathOnError("APPLICATION_ISSUES_URL"));
         LOGGER.info("----------------------------------------------------------------------------------");
         LOGGER.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
         LOGGER.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));

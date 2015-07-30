@@ -27,7 +27,6 @@ Utils = {
 };
 
 
-
 describe('Searching use case', function() {
 
     var mainTitle = element(by.css('.spec-title'));
@@ -69,11 +68,14 @@ describe('Searching use case', function() {
         seachButton.click();
         expect(docFoundCount.getText()).toEqual('0');
     });
+
 /*
-	// http://localhost:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=/home/xavier/work/simple-data-search/edm-webapp/src/test/resources
+	// http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=/home/xavier/work/simple-data-search/edm-webapp/src/test/resources
 	it('should index some content', function() {
-		browser.get('http://localhost:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=' + CURRENT_DIR + '/src/test/resources');
-		expect(crawlingResultStatus.getText()).toEqual('OK');
+		browser.sleep(30000);
+		browser.driver.get('http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=' + __dirname + '/../../..');
+		browser.sleep(30000);
+		expect(true).toBe(true);
 	});
 
 	it('searching existing pattern should return 1 result', function() {

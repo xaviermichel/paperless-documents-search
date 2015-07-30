@@ -39,8 +39,8 @@ public class EdmCrawlingController {
     }
 
     @RequestMapping(value = "/crawl/filesystem", method = RequestMethod.GET, params = {"path"})
+    @ResponseBody
     public String crawlFilesystem(
-            Model model,
             @RequestParam(value = "path") String path,
             @RequestParam(value = "edmServerHttpAddress", defaultValue = "127.0.0.1:8053") String edmServerHttpAddress,
             @RequestParam(value = "sourceName", defaultValue = "unmanned source") String sourceName,
@@ -53,10 +53,7 @@ public class EdmCrawlingController {
         } catch (Exception e) {
             LOGGER.error("Failed to crawl '{}' with embedded crawler", path, e);
         }
-        
-        model.addAttribute("result", "OK");
-        model.addAttribute("details", "");
-        
-        return "generic_result";
+
+        return "OK";
     }
 }

@@ -174,7 +174,7 @@ gulp.task('protractor-only-on-travis', onlyOnTravis(function() {
 
 // if you use a local env, you may want to coment protractor test because they are really slow !
 gulp.task('test', function() {
-	runSequence('karma'/*, 'protractor-only-on-travis'*/);
+    runSequence('karma' /*, 'protractor-only-on-travis'*/ );
 });
 
 gulp.task('default', ['prettify-code']);

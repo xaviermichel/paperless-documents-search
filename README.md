@@ -64,7 +64,7 @@ sudo npm install -g bower
 
 Now, you can compile the project core and run it
 ```bash
-mvn clean install -Dmaven.test.skip=true
+mvn clean install -DskipTests
 cd edm-webapp
 mvn package -DskipTests
 java -jar target/simple-data-search-webapp*.jar
@@ -161,7 +161,7 @@ On another shell, start edm-webapp on port 9053 :
 mvn spring-boot:run -D"run.arguments=--server.port=9053"
 ```
 
-You can now run front e2e tests ! 
+You can now run front e2e tests !
 ```code:bash
 gulp protractor
 ```

@@ -22,11 +22,11 @@ angular.module('edmApp')
                 return $sce.trustAsHtml(htmlString);
             };
 
-            $scope.linkToDocument = function(documentLink) {
-                if (documentLink.indexOf("http") === 0) {
-                    return documentLink;
+            $scope.linkToDocument = function(edmDocument) {
+                if (edmDocument.nodePath.indexOf("http") === 0) {
+                    return edmDocument.nodePath;
                 }
-                return "file:///" + documentLink;
+                return "/files?docId=" + edmDocument.id;
             };
 
             $scope.getDocumentNodeIcon = function(node) {

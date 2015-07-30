@@ -69,19 +69,19 @@ describe('Searching use case', function() {
         expect(docFoundCount.getText()).toEqual('0');
     });
 
-/*
-	// http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=/home/xavier/work/simple-data-search/edm-webapp/src/test/resources
-	it('should index some content', function() {
-		browser.sleep(30000);
-		browser.driver.get('http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=' + __dirname + '/../../..');
-		browser.sleep(30000);
-		expect(true).toBe(true);
-	});
+    /*
+    	// http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=/home/xavier/work/simple-data-search/edm-webapp/src/test/resources
+    	it('should index some content', function() {
+    		browser.sleep(30000);
+    		browser.driver.get('http://127.0.0.1:9053/crawl/filesystem?edmServerHttpAddress=127.0.0.1:9053&path=' + __dirname + '/../../..');
+    		browser.sleep(30000);
+    		expect(true).toBe(true);
+    	});
 
-	it('searching existing pattern should return 1 result', function() {
-		searchInputBox.sendKeys('edm');
-		seachButton.click();
-		expect(docFoundCount.getText()).toEqual('1');
-	});
-*/
+    	it('searching existing pattern should return 1 result', function() {
+    		searchInputBox.sendKeys('edm');
+    		seachButton.click();
+    		expect(docFoundCount.getText()).toEqual('1');
+    	});
+    */
 });

@@ -1,3 +1,29 @@
+var localEdmDocument = {
+    id: "1ecabcaca5e51752184db6b072cd4a30",
+    edmNodeType: "DOCUMENT",
+    parentId: "AU616Sa7hz1onBRyPC8p",
+    name: "impots_accuseReception",
+    fileExtension: "pdf",
+    fileContentType: "application/pdf",
+    serverDocumentFilePath: "/tmp/impots_accuseReception.pdf",
+    temporaryFileToken: null,
+    date: 1431006862000,
+    nodePath: "/tmp/impots_accuseReception.pdf"
+};
+
+var remoteEdmDocument = {
+    id: "1ecabcaca5e51752184db6b072cd4a31",
+    edmNodeType: "DOCUMENT",
+    parentId: "AU616Sa7hz1onBRyPC8p",
+    name: "impots_accuseReception",
+    fileExtension: "pdf",
+    fileContentType: "application/pdf",
+    serverDocumentFilePath: "http://mydocs.lol/tmp/impots_accuseReception.pdf",
+    temporaryFileToken: null,
+    date: 1431006862000,
+    nodePath: "http://mydocs.lol/tmp/impots_accuseReception.pdf"
+};
+
 describe('DocumentSearchController', function() {
 
     // compatibility : http://www.w3schools.com/jsref/jsref_trim_string.asp
@@ -26,29 +52,18 @@ describe('DocumentSearchController', function() {
     }));
 
     it('should get the correct icon', function() {
-        var iconName = $scope.getDocumentNodeIcon({
-            id: "1ecabcaca5e51752184db6b072cd4a30",
-            edmNodeType: "DOCUMENT",
-            parentId: "AU616Sa7hz1onBRyPC8p",
-            name: "impots_accuseReception",
-            fileExtension: "pdf",
-            fileContentType: "application/pdf",
-            serverDocumentFilePath: "/tmp/impots_accuseReception.pdf",
-            temporaryFileToken: null,
-            date: 1431006862000,
-            nodePath: "/tmp/impots_accuseReception.pdf"
-        });
+        var iconName = $scope.getDocumentNodeIcon(localEdmDocument);
         expect(iconName).toBe('pdf');
     });
 
-    it('should prefix by file:/// local link', function() {
-        var documentPath = $scope.linkToDocument('/tmp/document.pdf');
-        expect(documentPath).toBe('file:////tmp/document.pdf');
+    it('should local file be accessible by link', function() {
+        var documentPath = $scope.linkToDocument(localEdmDocument);
+        expect(documentPath).toBe('/files?docId=1ecabcaca5e51752184db6b072cd4a30');
     });
 
-    it('should not prefix by file:/// web link', function() {
-        var documentPath = $scope.linkToDocument('http://plop.com/document.pdf');
-        expect(documentPath).toBe('http://plop.com/document.pdf');
+    it('should remote document be accessible by his path', function() {
+        var documentPath = $scope.linkToDocument(remoteEdmDocument);
+        expect(documentPath).toBe('http://mydocs.lol/tmp/impots_accuseReception.pdf');
     });
 
     it('should conserve previous search when updating pattern', function() {

@@ -3,8 +3,15 @@ package fr.simple.edm.controller;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import javassist.NotFoundException;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -109,6 +117,21 @@ public class EdmDocumentController {
             document.setFilename(tmpFileLocation);
         }
         return edmDocumentMapper.boToDto(edmDocumentService.save(document));
+    }
+    
+    @RequestMapping(value = "/files", method = RequestMethod.GET, params = {"docId"})
+    public @ResponseBody FileSystemResource getFile(@RequestParam(value = "docId") String docId, HttpServletResponse response) throws NotFoundException, IOException {
+        LOGGER.debug("Downloading file : '{}'", docId);
+        
+        // document does not exists or access is not allowed
+        EdmDocumentFile edmDocumentFile = edmDocumentService.findOne(docId);
+        if (edmDocumentFile == null) {
+            throw new NotFoundException(docId);
+        }
+        
+        Path filePath = Paths.get(edmDocumentFile.getNodePath());
+        response.setContentType(Files.probeContentType(filePath));  
+        return new FileSystemResource(new File(edmDocumentFile.getNodePath()));
     }
 
 }

@@ -68,7 +68,7 @@ describe('DocumentSearchController', function() {
 
     it('should conserve previous search when updating pattern', function() {
         $scope.searchedPattern = 'previous search';
-        $scope.updateSearchPattern('new search element');
+        $scope.addWordAndSubmitSearch('new search element');
         expect($scope.searchedPattern).toBe('previous search AND new search element');
     });
 });

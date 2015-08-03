@@ -4,11 +4,11 @@
     "bootstrap-material-design": "0.3.0",
     "html5shiv": "3.7.2",
     "jquery": "2.1.4",
-    "angular": "1.2.23",
-    "angular-route": "1.2.23",
-    "angular-resource": "1.2.23",
-    "angular-animate": "1.2.23",
-    "angular-mocks": "1.2.23",
+    "angular": "1.4.3",
+    "angular-route": "1.4.3",
+    "angular-resource": "1.4.3",
+    "angular-animate": "1.4.3",
+    "angular-mocks": "1.4.3",
     "bootstrap": "3.3.5",
     "moment": "2.8.3"
   }

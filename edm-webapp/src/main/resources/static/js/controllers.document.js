@@ -1,6 +1,6 @@
 angular.module('edmApp')
-    .controller('DocumentSearchController', ['$scope', '$http', '$location', '$routeParams', '$sce',
-        function($scope, $http, $location, $routeParams, $sce) {
+    .controller('DocumentSearchController', ['$scope', '$http', '$location', '$routeParams', '$sce', '$route',
+        function($scope, $http, $location, $routeParams, $sce, $route) {
 
             $scope.searchedPattern = $routeParams.q || "";
 
@@ -8,15 +8,13 @@ angular.module('edmApp')
             $scope.topTerms = [];
             $scope.aggregations = {};
 
-            $scope.searchSubmit = function() {
-                if ($scope.searchedPattern.trim().length === 0) {
-                    return;
+            // prevent re-loading when searching
+            var lastRoute = $route.current;
+            $scope.$on('$locationChangeSuccess', function(event) {
+                if ($route.current.params.q) {
+                    $route.current = lastRoute;
                 }
-                console.debug("Search : " + $scope.searchedPattern);
-                $location.path('/').search({
-                    'q': $scope.searchedPattern
-                });
-            };
+            });
 
             $scope.getTrustedHtmlContent = function(htmlString) {
                 return $sce.trustAsHtml(htmlString);
@@ -55,19 +53,48 @@ angular.module('edmApp')
                 return "unknown"; // default icon
             };
 
-            $scope.updateSearchPattern = function(pattern) {
+            /**
+             * Submit search, according to the content of `$scope.searchedPattern`
+             */
+            $scope._submitSearch = function() {
+                if (!$scope.searchedPattern || $scope.searchedPattern.trim().length === 0) {
+                    $scope._sendSearchRequest();
+                    return;
+                }
+                console.debug("Search : " + $scope.searchedPattern);
+                $location.path('/').search({
+                    'q': $scope.searchedPattern
+                });
+                $scope._sendSearchRequest();
+            };
+
+            /**
+             * Refresh auto-complete document list
+             */
+            $scope._refreshAutocompleteDocumentList = function() {
+                $http.get('/document/suggest/?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+                    $scope.autocompleteDocumentList = response;
+                });
+            };
+
+            /**
+             * Add some word in the search word and submit search
+             */
+            $scope.addWordAndSubmitSearch = function(word) {
                 var requestPrefix = "";
                 if ($scope.searchedPattern.trim().length !== 0) {
                     requestPrefix = $scope.searchedPattern.trim() + ' AND ';
                 }
-                $scope.searchedPattern = requestPrefix + pattern;
-                $scope.searchSubmit();
+                $scope.searchedPattern = requestPrefix + word;
+                $scope._submitSearch();
             };
 
+            /**
+             * Automatically called when the search pattern is updated in front view
+             */
             $scope.searchPatternHaveBeenUpdated = function() {
-                $http.get('/document/suggest/?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-                    $scope.autocompleteDocumentList = response;
-                });
+                $scope._refreshAutocompleteDocumentList();
+                $scope._submitSearch();
             };
 
             $scope.searchAggregationsHaveBeenUpdated = function() {
@@ -115,25 +142,27 @@ angular.module('edmApp')
                 });
             };
 
-            $scope.updateSearchPatternFromTopTerms = function(term) {
-                $scope.updateSearchPattern(term);
-                $scope.$apply();
+            $scope._sendSearchRequest = function() {
+                console.info("initilizing scope values (top terms, ...)");
+
+                $http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+                    if ($scope.searchedPattern.trim().length === 0) {
+                        return;
+                    }
+                    $scope.searchResults = response;
+                });
+
+                $http.get('/document/top_terms?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+                    $scope.topTerms = response;
+                });
+
+                $http.get('/document/aggregations?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
+                    $scope.aggregations = response;
+                });
             };
 
-            $http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-                if ($scope.searchedPattern.trim().length === 0) {
-                    return;
-                }
-                $scope.searchResults = response;
-            });
-
-            $http.get('/document/top_terms?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-                $scope.topTerms = response;
-            });
-
-            $http.get('/document/aggregations?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-                $scope.aggregations = response;
-            });
+            // initialization
+            $scope._sendSearchRequest();
 
         }
     ]);

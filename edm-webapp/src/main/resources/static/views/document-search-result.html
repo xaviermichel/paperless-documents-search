@@ -4,11 +4,11 @@
             <input size="35" list="suggestions" ng-model="searchedPattern" type="text" class="form-control spec-input-search" placeholder="Que voulez-vous chercher ?" ng-required="true" ng-change="searchPatternHaveBeenUpdated()" ng-model-options="{ debounce: 500 }"
             autofocus />
             <datalist id="suggestions">
-                Votre navigateur ne permets pas d'afficher les suggestions, essayer en un plus récent !
+                Votre navigateur ne permet pas d'afficher les suggestions, essayez en un plus récent !
                 <option ng-value="autocompleteDocument.name" label="{{autocompleteDocument.nodePath}}" ng-repeat="autocompleteDocument in autocompleteDocumentList" />
             </datalist>
         </div>
-        <button style="margin-left:60px" ng-click="_submitSearch()" class="btn btn-primary btn-raised spec-button-search" ng-disabled="searchForm.$invalid">Rechercher !</button>
+        <button style="margin-left:60px" ng-click="submitSearch()" class="btn btn-primary btn-raised spec-button-search" ng-disabled="searchForm.$invalid">Rechercher !</button>
     </form>
 </div>
 

@@ -71,4 +71,9 @@ describe('DocumentSearchController', function() {
         $scope.addWordAndSubmitSearch('new search element');
         expect($scope.searchedPattern).toBe('previous search AND new search element');
     });
+
+    it('should add top word in empty search', function() {
+        $scope.addWordAndSubmitSearch('keyword');
+        expect($scope.searchedPattern).toBe('keyword');
+    });
 });

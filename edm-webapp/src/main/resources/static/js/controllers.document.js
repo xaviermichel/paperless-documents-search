@@ -117,22 +117,10 @@ angular.module('edmApp')
                 console.debug("aggregateFileExtensionFilter = " + aggregateFileExtensionFilter);
 
                 // date
-                var aggregateDateFilter = $scope.aggregations.date
-                    .filter(function isChecked(e) {
-                        return e.isChecked;
-                    })
-                    .map(function formatedQuery(e) {
-                        var from = moment(e.key).startOf("month").format('YYYY-MM-DD');
-                        var to = moment(e.key).endOf("month").format('YYYY-MM-DD');
-                        return "date:[" + from + " TO " + to + "]";
-                    })
-                    .join(" OR ");
-
-                if (aggregateDateFilter.length !== 0) {
-                    aggregateDateFilter = " AND (" + aggregateDateFilter + ")";
-                }
+                var from = moment($("#fromDateFilter").val()).startOf("month").format('YYYY-MM-DD');
+                var to = moment($("#toDateFilter").val()).endOf("month").format('YYYY-MM-DD');
+                var aggregateDateFilter = " AND (date:[" + from + " TO " + to + "])";
                 console.debug("aggregateDateFilter = " + aggregateDateFilter);
-
 
                 // submit request with all filters
                 $http.get('/document?q=' + $scope.searchedPattern + aggregateFileExtensionFilter + aggregateDateFilter).success(function(response, status, headers, config) {
@@ -157,6 +145,10 @@ angular.module('edmApp')
 
                 $http.get('/document/aggregations?q=' + ($scope.searchedPattern || '')).success(function(response, status, headers, config) {
                     $scope.aggregations = response;
+                    $scope.fromDate = new Date($scope.aggregations.date[0].key);
+                    $scope.toDate = new Date($scope.aggregations.date[1].key);
+                    $scope.fromDateFilter = new Date($scope.fromDate);
+                    $scope.toDateFilter = new Date($scope.toDate);
                 });
             };
 

@@ -420,14 +420,17 @@ public class EdmDocumentService {
                 .addAggregation(aggregationBuilder)
                 .execute().actionGet();
 
-        List<EdmAggregationItem> extensions = new ArrayList<>();
+        List<EdmAggregationItem> dates = new ArrayList<>();
 
         InternalDateHistogram buckets = response.getAggregations().get("agg_date");
 
-        for (Histogram.Bucket bucket : buckets.getBuckets()) {
-            extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
-        }
-        return extensions;
+        Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
+        dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
+        
+        Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
+        dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+
+        return dates;
     }
 
     public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {

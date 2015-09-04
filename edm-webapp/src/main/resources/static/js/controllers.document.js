@@ -145,8 +145,8 @@ angular.module('edmApp')
 
                 $http.get('/document/aggregations?q=' + ($scope.searchedPattern || '')).success(function(response, status, headers, config) {
                     $scope.aggregations = response;
-                    $scope.fromDate = new Date($scope.aggregations.date[0].key);
-                    $scope.toDate = new Date($scope.aggregations.date[1].key);
+                    $scope.fromDate = ($scope.aggregations.date[0] ? new Date($scope.aggregations.date[0].key) : new Date());
+                    $scope.toDate = ($scope.aggregations.date[1] ? new Date($scope.aggregations.date[1].key) : new Date());
                     $scope.fromDateFilter = new Date($scope.fromDate);
                     $scope.toDateFilter = new Date($scope.toDate);
                 });

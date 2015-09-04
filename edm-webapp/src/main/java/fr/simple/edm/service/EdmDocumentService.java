@@ -424,11 +424,13 @@ public class EdmDocumentService {
 
         InternalDateHistogram buckets = response.getAggregations().get("agg_date");
 
-        Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
-        dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
-        
-        Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
-        dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+        if (buckets.getBuckets().size() > 0) {
+            Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
+            dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
+
+            Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
+            dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+        }
 
         return dates;
     }

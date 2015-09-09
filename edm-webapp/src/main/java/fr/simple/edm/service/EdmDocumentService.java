@@ -202,7 +202,7 @@ public class EdmDocumentService {
 
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryString(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
         return qb;
     }
 
@@ -386,7 +386,7 @@ public class EdmDocumentService {
 
     public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryString(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
+        qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
         LOGGER.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
         return Lists.newArrayList(edmDocumentRepository.search(qb));
     }

@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Base64;
@@ -66,10 +67,7 @@ import fr.simple.edm.model.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
-@PropertySources(value = {
-        @PropertySource("classpath:/application.properties")
-    }
-)
+@PropertySources(value = { @PropertySource("classpath:/application.properties") })
 public class EdmDocumentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
@@ -188,11 +186,10 @@ public class EdmDocumentService {
 
     /**
      * When you search a document, this query is executed
-     *
+     * 
      * @param pattern
-     *             The searched pattern
-     * @return
-     *             The adapted query
+     *            The searched pattern
+     * @return The adapted query
      */
     private QueryBuilder getEdmQueryForPattern(String pattern) {
         // in case of invalid query
@@ -254,47 +251,52 @@ public class EdmDocumentService {
 
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
-        // Highlight result
-        elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
-            @Override
-            public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
-                List<EdmDocumentFile> chunk = new ArrayList<>();
+        try {
+            // Highlight result
+            elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
+                @Override
+                public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
+                    List<EdmDocumentFile> chunk = new ArrayList<>();
 
-                searchResult.setTookTime(response.getTookInMillis());
-                searchResult.setTotalHitsCount(response.getHits().getTotalHits());
+                    searchResult.setTookTime(response.getTookInMillis());
+                    searchResult.setTotalHitsCount(response.getHits().getTotalHits());
 
-                for (SearchHit searchHit : response.getHits()) {
-                    if (response.getHits().getHits().length <= 0) {
-                        return new FacetedPageImpl<T>((List<T>) chunk);
+                    for (SearchHit searchHit : response.getHits()) {
+                        if (response.getHits().getHits().length <= 0) {
+                            return new FacetedPageImpl<T>((List<T>) chunk);
+                        }
+
+                        EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
+
+                        // fill every fields
+                        EdmDocumentFile doc = edmDocumentRepository.findOne(searchHit.getId());
+                        edmDocumentSearchResult.setEdmDocument(doc);
+
+                        // override custom elements, see
+                        // https://groups.google.com/forum/#!topic/spring-data-elasticsearch-devs/se3yCfVnRiE
+                        if (searchHit.getHighlightFields().get("name") != null) {
+                            edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
+                        }
+                        if (searchHit.getHighlightFields().get("description") != null) {
+                            edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
+                        }
+                        if (searchHit.getHighlightFields().get("file") != null) {
+                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file").fragments()[0].toString());
+                        }
+                        if (searchHit.getHighlightFields().get("nodePath") != null) {
+                            edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
+                        }
+
+                        searchResult.add(edmDocumentSearchResult);
+                        chunk.add(doc);
                     }
-
-                    EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
-
-                    // fill every fields
-                    EdmDocumentFile doc = edmDocumentRepository.findOne(searchHit.getId());
-                    edmDocumentSearchResult.setEdmDocument(doc);
-
-                    // override custom elements, see
-                    // https://groups.google.com/forum/#!topic/spring-data-elasticsearch-devs/se3yCfVnRiE
-                    if (searchHit.getHighlightFields().get("name") != null) {
-                        edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
-                    }
-                    if (searchHit.getHighlightFields().get("description") != null) {
-                        edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
-                    }
-                    if (searchHit.getHighlightFields().get("file") != null) {
-                        edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file").fragments()[0].toString());
-                    }
-                    if (searchHit.getHighlightFields().get("nodePath") != null) {
-                        edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
-                    }
-
-                    searchResult.add(edmDocumentSearchResult);
-                    chunk.add(doc);
+                    return new FacetedPageImpl<T>((List<T>) chunk);
                 }
-                return new FacetedPageImpl<T>((List<T>) chunk);
-            }
-        });
+            });
+
+        } catch (SearchPhaseExecutionException e) {
+            LOGGER.warn("Failed to submit query, empty result ; may failed to parse query (more log to debug it !) : {}", pattern);
+        }
 
         // return modified result with highlighting
         return searchResult;
@@ -315,7 +317,7 @@ public class EdmDocumentService {
 
     /**
      * Convert the file path to a node path.
-     *
+     * 
      * Actually, the idea is the file path has just document.fileExtension more
      * than node path
      */
@@ -391,23 +393,27 @@ public class EdmDocumentService {
         return Lists.newArrayList(edmDocumentRepository.search(qb));
     }
 
-
     private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
         TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
 
-        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
-                .setQuery(query)
-                .addAggregation(aggregationBuilder)
-                .execute().actionGet();
-
         List<EdmAggregationItem> extensions = new ArrayList<>();
+        
+        try {
+            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                    .setQuery(query)
+                    .addAggregation(aggregationBuilder)
+                    .execute().actionGet();
+    
+            Terms terms = response.getAggregations().get("agg_fileExtension");
 
-        Terms terms = response.getAggregations().get("agg_fileExtension");
-
-        for (Terms.Bucket bucket : terms.getBuckets()) {
-            extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+            for (Terms.Bucket bucket : terms.getBuckets()) {
+                extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+            }
+        } catch (SearchPhaseExecutionException e) {
+            LOGGER.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
+
         return extensions;
     }
 
@@ -415,21 +421,25 @@ public class EdmDocumentService {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
         DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
 
-        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
-                .setQuery(query)
-                .addAggregation(aggregationBuilder)
-                .execute().actionGet();
-
         List<EdmAggregationItem> dates = new ArrayList<>();
+        
+        try {
+            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                    .setQuery(query)
+                    .addAggregation(aggregationBuilder)
+                    .execute().actionGet();
 
-        InternalDateHistogram buckets = response.getAggregations().get("agg_date");
-
-        if (buckets.getBuckets().size() > 0) {
-            Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
-            dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
-
-            Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
-            dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+            InternalDateHistogram buckets = response.getAggregations().get("agg_date");
+    
+            if (buckets.getBuckets().size() > 0) {
+                Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
+                dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
+    
+                Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
+                dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+            }
+        } catch (SearchPhaseExecutionException e) {
+            LOGGER.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
 
         return dates;
@@ -450,20 +460,25 @@ public class EdmDocumentService {
 
         TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
 
-        // execute
-        SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
-                .setQuery(query)
-                .addAggregation(aggregationBuilder)
-                .execute().actionGet();
-
         List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
 
-        Terms terms = response.getAggregations().get("agg_nodePath");
-        Collection<Terms.Bucket> buckets = terms.getBuckets();
+        try {
+            // execute
+            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+                    .setQuery(query)
+                    .addAggregation(aggregationBuilder)
+                    .execute().actionGet();
 
-        for (Terms.Bucket bucket : buckets) {
-            mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+            Terms terms = response.getAggregations().get("agg_nodePath");
+            Collection<Terms.Bucket> buckets = terms.getBuckets();
+
+            for (Terms.Bucket bucket : buckets) {
+                mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+            }
+        } catch (SearchPhaseExecutionException e) {
+            LOGGER.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
+
         return mostCommonTerms;
     }
 

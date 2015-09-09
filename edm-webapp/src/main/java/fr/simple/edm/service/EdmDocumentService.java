@@ -67,7 +67,7 @@ import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
 @PropertySources(value = {
-        @PropertySource("classpath:/edm-configuration.properties")
+        @PropertySource("classpath:/application.properties")
     }
 )
 public class EdmDocumentService {

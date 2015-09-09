@@ -17,7 +17,7 @@ import fr.simple.edm.model.EdmNode;
 import fr.simple.edm.model.EdmSource;
 
 @Service
-@PropertySources(value = { @PropertySource("classpath:/edm-configuration.properties") })
+@PropertySources(value = { @PropertySource("classpath:/application.properties") })
 public class EdmNodeService {
 
     @Inject

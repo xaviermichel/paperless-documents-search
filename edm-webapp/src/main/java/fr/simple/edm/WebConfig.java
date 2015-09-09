@@ -21,7 +21,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 @EnableWebMvc
 @Configuration
 @PropertySources(value = {
-        @PropertySource("classpath:/edm-configuration.properties")
+        @PropertySource("classpath:/application.properties")
     }
 )
 public class WebConfig extends WebMvcConfigurerAdapter {

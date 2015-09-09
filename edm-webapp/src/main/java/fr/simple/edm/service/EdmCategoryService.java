@@ -14,7 +14,7 @@ import fr.simple.edm.repository.EdmCategoryRepository;
 
 @Service
 @PropertySources(value = {
-        @PropertySource("classpath:/edm-configuration.properties")
+        @PropertySource("classpath:/application.properties")
 })
 public class EdmCategoryService {
 

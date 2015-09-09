@@ -15,7 +15,6 @@ import org.springframework.core.env.Environment;
 @SpringBootApplication
 @PropertySources(value = {
         @PropertySource("classpath:/properties/constants.properties"),
-        @PropertySource("classpath:/edm-configuration.properties"),
         @PropertySource("classpath:/application.properties")
     }
 )

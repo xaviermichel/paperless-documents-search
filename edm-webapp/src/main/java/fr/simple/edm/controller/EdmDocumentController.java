@@ -46,7 +46,7 @@ import fr.simple.edm.service.EdmDocumentService;
 
 @RestController
 @PropertySources(value = {
-        @PropertySource("classpath:/edm-configuration.properties")
+        @PropertySource("classpath:/application.properties")
 })
 public class EdmDocumentController {
 

@@ -33,7 +33,7 @@
                         <span ng-repeat="aggItem in aggregations.fileExtension">
 					<input	type="checkbox"
 							ng-checked="true"
-							ng-change="searchAggregationsHaveBeenUpdated()"
+							ng-change="submitSearchWithFilters()"
 							ng-model="aggItem.isChecked"
 							ng-init="aggItem.isChecked = true"
 					/>
@@ -48,8 +48,8 @@
                     <br/> Les fichiers vont de {{fromDate | moment:'MMMM YYYY'}} à {{toDate | moment:'MMMM YYYY'}}
                     <br/> Du
                     <form name="input_fileDate">
-                        <input type="date" id="fromDateFilter" name="fromDateFilter" ng-model="fromDateFilter" ng-change="searchAggregationsHaveBeenUpdated()" ng-model-options="{ debounce: 500 }" required /> au
-                        <input type="date" id="toDateFilter" name="toDateFilter" ng-model="toDateFilter" ng-change="searchAggregationsHaveBeenUpdated()" ng-model-options="{ debounce: 500 }" required />
+                        <input type="date" id="fromDateFilter" name="fromDateFilter" ng-model="fromDateFilter" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" required /> au
+                        <input type="date" id="toDateFilter" name="toDateFilter" ng-model="toDateFilter" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" required />
                     </form>
                 </div>
 

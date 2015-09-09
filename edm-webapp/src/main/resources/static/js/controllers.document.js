@@ -95,7 +95,11 @@ angular.module('edmApp')
                 $scope.submitSearch();
             };
 
-            $scope.searchAggregationsHaveBeenUpdated = function() {
+            /**
+             * Get query filter as string
+             * For example : " AND (date:[2015-09-01 TO 2015-09-30])"
+             */
+            $scope._getQueryFilters = function() {
                 if ($scope.searchedPattern.trim().length === 0) {
                     return;
                 }
@@ -117,24 +121,34 @@ angular.module('edmApp')
                 console.debug("aggregateFileExtensionFilter = " + aggregateFileExtensionFilter);
 
                 // date
-                var from = moment($("#fromDateFilter").val()).startOf("month").format('YYYY-MM-DD');
-                var to = moment($("#toDateFilter").val()).endOf("month").format('YYYY-MM-DD');
-                var aggregateDateFilter = " AND (date:[" + from + " TO " + to + "])";
+                var aggregateDateFilter = "";
+                if (!$("#fromDateFilter").val() || !$("#toDateFilter").val()) {
+                    console.warn("fromDateFilter or/and toDateFilter is not defined, won't apply date filter");
+                } else {
+                    var from = moment($("#fromDateFilter").val()).startOf("month").format('YYYY-MM-DD');
+                    var to = moment($("#toDateFilter").val()).endOf("month").format('YYYY-MM-DD');
+                    aggregateDateFilter = " AND (date:[" + from + " TO " + to + "])";
+                }
                 console.debug("aggregateDateFilter = " + aggregateDateFilter);
 
+                // final filter
+                return aggregateFileExtensionFilter + aggregateDateFilter;
+            };
+
+            $scope.submitSearchWithFilters = function() {
+                var filters = $scope._getQueryFilters();
+
                 // submit request with all filters
-                $http.get('/document?q=' + $scope.searchedPattern + aggregateFileExtensionFilter + aggregateDateFilter).success(function(response, status, headers, config) {
+                $http.get('/document?q=' + $scope.searchedPattern + filters).success(function(response, status, headers, config) {
                     $scope.searchResults = response;
                 });
-            };
+            }
 
             $scope._sendSearchRequest = function() {
                 console.info("initilizing scope values (top terms, ...)");
 
                 if ($scope.searchedPattern && $scope.searchedPattern.trim().length !== 0) {
-                    $http.get('/document?q=' + $scope.searchedPattern).success(function(response, status, headers, config) {
-                        $scope.searchResults = response;
-                    });
+                    $scope.submitSearchWithFilters();
                 } else {
                     $scope.searchResults = null;
                 }

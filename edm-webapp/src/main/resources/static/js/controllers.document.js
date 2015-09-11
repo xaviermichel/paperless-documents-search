@@ -6,7 +6,16 @@ angular.module('edmApp')
 
             $scope.autocompleteDocumentList = [];
             $scope.topTerms = [];
-            $scope.aggregations = {};
+            $scope.aggregations = {
+                date: [],
+                fileExtension: []
+            };
+            $scope.dateFilter = {
+                initialFrom: new Date(),
+                initialTo: new Date(),
+                from: new Date(),
+                to: new Date()
+            };
 
             // prevent re-loading when searching
             var lastRoute = $route.current;
@@ -122,12 +131,10 @@ angular.module('edmApp')
 
                 // date
                 var aggregateDateFilter = "";
-                if (!$("#fromDateFilter").val() || !$("#toDateFilter").val()) {
-                    console.warn("fromDateFilter or/and toDateFilter is not defined, won't apply date filter");
-                } else {
-                    var from = moment($("#fromDateFilter").val()).startOf("month").format('YYYY-MM-DD');
-                    var to = moment($("#toDateFilter").val()).endOf("month").format('YYYY-MM-DD');
-                    aggregateDateFilter = " AND (date:[" + from + " TO " + to + "])";
+                if ($scope.dateFilter.initialFrom.getTime() !== $scope.dateFilter.from.getTime() || $scope.dateFilter.initialTo.getTime() !== $scope.dateFilter.to.getTime()) {
+                    var fromDate = moment($scope.dateFilter.from).startOf("month").format('YYYY-MM-DD');
+                    var toDate = moment($scope.dateFilter.to).endOf("month").format('YYYY-MM-DD');
+                    aggregateDateFilter = " AND (date:[" + fromDate + " TO " + toDate + "])";
                 }
                 console.debug("aggregateDateFilter = " + aggregateDateFilter);
 
@@ -142,7 +149,7 @@ angular.module('edmApp')
                 $http.get('/document?q=' + $scope.searchedPattern + filters).success(function(response, status, headers, config) {
                     $scope.searchResults = response;
                 });
-            }
+            };
 
             $scope._sendSearchRequest = function() {
                 console.info("initilizing scope values (top terms, ...)");
@@ -163,11 +170,19 @@ angular.module('edmApp')
                     $scope.toDate = ($scope.aggregations.date[1] ? new Date($scope.aggregations.date[1].key) : new Date());
                     $scope.fromDateFilter = new Date($scope.fromDate);
                     $scope.toDateFilter = new Date($scope.toDate);
+
+                    var initialFromDate = ($scope.aggregations.date[0] ? new Date($scope.aggregations.date[0].key) : new Date());
+                    var initialToDate = ($scope.aggregations.date[1] ? new Date($scope.aggregations.date[1].key) : new Date());
+                    $scope.dateFilter = {
+                        initialFrom: initialFromDate,
+                        initialTo: initialToDate,
+                        from: initialFromDate,
+                        to: initialToDate
+                    };
                 });
             };
 
             // initialization
             $scope._sendSearchRequest();
-
         }
     ]);

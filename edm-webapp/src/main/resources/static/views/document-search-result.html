@@ -45,11 +45,11 @@
 
                 <div class="k-content col-md-8">
                     <strong>Date des fichiers</strong>
-                    <br/> Les fichiers vont de {{fromDate | moment:'MMMM YYYY'}} à {{toDate | moment:'MMMM YYYY'}}
+                    <br/> Les fichiers vont de {{dateFilter.initialFrom | moment:'MMMM YYYY'}} à {{dateFilter.initialTo | moment:'MMMM YYYY'}}
                     <br/> Du
                     <form name="input_fileDate">
-                        <input type="date" id="fromDateFilter" name="fromDateFilter" ng-model="fromDateFilter" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" required /> au
-                        <input type="date" id="toDateFilter" name="toDateFilter" ng-model="toDateFilter" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" required />
+                        <input type="date" ng-model="dateFilter.from" ng-change="submitSearchWithFilters()" ng-required="true" /> au
+                        <input type="date" ng-model="dateFilter.to" ng-change="submitSearchWithFilters()" ng-required="true" />
                     </form>
                 </div>
 

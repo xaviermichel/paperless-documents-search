@@ -19,7 +19,7 @@ angular.module('momentFilter', []).filter('moment', function() {
     return function(input, format) {
         format = format || 'll';
         return moment(input).format(format);
-    }
+    };
 });
 
 // see also https://github.com/tchatel/angular-notifications

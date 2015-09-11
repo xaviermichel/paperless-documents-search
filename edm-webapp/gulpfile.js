@@ -131,6 +131,10 @@ gulp.task('minify-code', function() {
     );
 });
 
+gulp.task('watch', function() {
+    gulp.watch(paths.minify, ['minify-code']);
+});
+
 gulp.task('karma', skipTests(function() {
     return gulp
         .src(paths.unitTestFiles)

@@ -48,9 +48,13 @@
                     <br/> Les fichiers vont de {{dateFilter.initialFrom | moment:'MMMM YYYY'}} à {{dateFilter.initialTo | moment:'MMMM YYYY'}}
                     <br/> Du
                     <form name="input_fileDate">
-                        <input type="date" ng-model="dateFilter.from" ng-change="submitSearchWithFilters()" ng-required="true" /> au
-                        <input type="date" ng-model="dateFilter.to" ng-change="submitSearchWithFilters()" ng-required="true" />
+                        <input type="date" name="dateFilter_from" ng-model="dateFilter.from" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" ng-required="true" /> au
+                        <input type="date" name="dateFilter_to" ng-model="dateFilter.to" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" ng-required="true" />
                     </form>
+                    <div class="text-warning">
+                        <span ng-show="input_fileDate.dateFilter_from.$error.date">Woops, il faut saisir une date de début valide !</span>
+                        <span ng-show="input_fileDate.dateFilter_to.$error.date">Woops, il faut saisir une date de fin valide !</span>
+                    </div>
                 </div>
 
             </div>

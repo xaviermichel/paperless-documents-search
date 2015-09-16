@@ -64,6 +64,7 @@
 	<modules>
 		<module>edm-embedded-crawler-bridge</module>
 		<module>edm-embedded-crawler-filesystem</module>
+		<module>edm-embedded-crawler-url</module>
 	</modules>
 
 </project>

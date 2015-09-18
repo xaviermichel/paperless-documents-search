@@ -39,7 +39,7 @@ public class EdmConnector {
         builder.addPart("file", new FileBody(file));
         HttpEntity entity = builder.build();
 
-        HttpPost request = new HttpPost("http://" + server + "/document/upload");
+        HttpPost request = new HttpPost(server + "/document/upload");
         request.setEntity(entity);
 
         String edmFileToken = "";
@@ -81,17 +81,17 @@ public class EdmConnector {
      */
     public void saveEdmDocument(String server, EdmDocumentFileDto doc) {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity("http://" + server + "/document", doc, EdmDocumentFileDto.class);
+        restTemplate.postForEntity(server + "/document", doc, EdmDocumentFileDto.class);
     }
 
     public void notifyStartCrawling(String server, String source) throws ClientProtocolException, IOException {
-        HttpGet request = new HttpGet("http://" + server + "/crawl/start?source=" + sanitizeSourceName(source));
+        HttpGet request = new HttpGet(server + "/crawl/start?source=" + sanitizeSourceName(source));
         HttpClient client = HttpClientBuilder.create().build();
         client.execute(request);
     }
 
     public void notifyEndOfCrawling(String server, String source) throws ClientProtocolException, IOException {
-        HttpGet request = new HttpGet("http://" + server + "/crawl/stop?source=" + sanitizeSourceName(source));
+        HttpGet request = new HttpGet(server + "/crawl/stop?source=" + sanitizeSourceName(source));
         HttpClient client = HttpClientBuilder.create().build();
         client.execute(request);
     }
@@ -103,7 +103,7 @@ public class EdmConnector {
     public String getIdFromSourceBySourceName(String server, String sourceName, String categoryId) {
         // get Node
         RestTemplate restTemplate = new RestTemplate();
-        EdmSourceDto result = restTemplate.getForObject("http://" + server + "/source/name/{sourceName}", EdmSourceDto.class, sourceName);
+        EdmSourceDto result = restTemplate.getForObject(server + "/source/name/{sourceName}", EdmSourceDto.class, sourceName);
 
         // if exits, nothing to do !
         if (result.getId() != null && ! result.getId().isEmpty()) {
@@ -115,14 +115,14 @@ public class EdmConnector {
         directory.setDescription("");
         directory.setName(sourceName);
         directory.setParentId(categoryId);
-        ResponseEntity<EdmSourceDto> createdSource = restTemplate.postForEntity("http://" + server + "/source", directory, EdmSourceDto.class);
+        ResponseEntity<EdmSourceDto> createdSource = restTemplate.postForEntity(server + "/source", directory, EdmSourceDto.class);
         return createdSource.getBody().getId();
     }
 
     public String getIdFromCategoryByCategoryName(String server, String categoryName) {
         // get Node
         RestTemplate restTemplate = new RestTemplate();
-        EdmCategoryDto result = restTemplate.getForObject("http://" + server + "/category/name/{categoryName}", EdmCategoryDto.class, categoryName);
+        EdmCategoryDto result = restTemplate.getForObject(server + "/category/name/{categoryName}", EdmCategoryDto.class, categoryName);
 
         // if exits, nothing to do !
         if (result.getId() != null && ! result.getId().isEmpty()) {
@@ -133,7 +133,7 @@ public class EdmConnector {
         EdmCategoryDto category = new EdmCategoryDto();
         category.setDescription("");
         category.setName(categoryName);
-        ResponseEntity<EdmCategoryDto> createdSource = restTemplate.postForEntity("http://" + server + "/category", category, EdmCategoryDto.class);
+        ResponseEntity<EdmCategoryDto> createdSource = restTemplate.postForEntity(server + "/category", category, EdmCategoryDto.class);
         return createdSource.getBody().getId();
     }
 }

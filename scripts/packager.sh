@@ -93,7 +93,11 @@ zip -r ${RELEASE_FINAL_FILE} ${TMP_RELEASE_DIR}
 # remove tmp dir
 rm -fr ${TMP_RELEASE_DIR}
 
+# merge on master
+git co master
+git merge develop
+
 xlog INFO "${RELEASE_FINAL_FILE} is ready to be released"
-xlog INFO "If all sounds goods, just run : git push --tags"
+xlog INFO "If all sounds goods, just run : git push ; git push --tags"
 
 

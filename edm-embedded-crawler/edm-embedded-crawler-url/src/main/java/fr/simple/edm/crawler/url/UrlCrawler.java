@@ -71,7 +71,7 @@ public class UrlCrawler {
         }
         
         // Download the file
-        File file = File.createTempFile(url.replaceFirst("[.][^.]+$", ""), FilenameUtils.getExtension(url)); 
+        File file = File.createTempFile(url.replaceFirst("[.][^.]+$", ""), "." + FilenameUtils.getExtension(url)); 
         FileUtils.copyURLToFile(new URL(url), file);
        
         // add files
@@ -93,7 +93,7 @@ public class UrlCrawler {
         document.setDate(new Date(file.lastModified()));
         document.setNodePath(url);
         document.setEdmNodeType(EdmNodeType.DOCUMENT);
-        document.setName(file.getName().replaceFirst("[.][^.]+$", ""));
+        document.setName(url.replaceFirst("[.][^.]+$", ""));
         document.setParentId(sourceId);
         document.setTemporaryFileToken(fileToken);
 

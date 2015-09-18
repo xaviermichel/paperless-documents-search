@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# override bin with mock
+export PATH=${OPENSHIFT_REPO_DIR}/.openshift/mock:${PATH}
+
+cd $OPENSHIFT_REPO_DIR
+mvn clean install -s $OPENSHIFT_REPO_DIR/.openshift/settings.xml -DskipTests
+cd edm-webapp
+mvn package -s $OPENSHIFT_REPO_DIR/.openshift/settings.xml -DskipTests
+

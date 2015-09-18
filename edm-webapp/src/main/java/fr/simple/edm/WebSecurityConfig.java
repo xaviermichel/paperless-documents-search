@@ -55,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             LOGGER.warn("No 'edm.crawler.login' defined, will not configure global auth !");
             return;
         }
-        LOGGER.info("configuring auth; adding user {}", env.getProperty("edm.crawler.login"));
+        LOGGER.info("configuring auth : adding user {}", env.getProperty("edm.crawler.login"));
         auth
             .inMemoryAuthentication()
                 .withUser(env.getProperty("edm.crawler.login")).password(env.getProperty("edm.crawler.pass")).roles("CRAWLER")

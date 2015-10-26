@@ -1,16 +1,13 @@
 package fr.simple.edm;
 
-import javax.inject.Inject;
 import javax.servlet.MultipartConfigElement;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -20,15 +17,14 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @EnableWebMvc
 @Configuration
-@PropertySources(value = {
-        @PropertySource("classpath:/application.properties")
-    }
-)
 public class WebConfig extends WebMvcConfigurerAdapter {
 
-    @Inject
-    Environment env;
+	@Value("${edm.upload.maxFileSize}")
+	private String edmUploadmMaxFileSize;
     
+	@Value("${edm.upload.maxRequestSize}")
+	private String edmUploadmmMxRequestSize;
+	
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/static/");
@@ -69,8 +65,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize(env.getProperty("edm.upload.maxFileSize"));
-        factory.setMaxRequestSize(env.getProperty("edm.upload.maxRequestSize"));
+        factory.setMaxFileSize(edmUploadmMaxFileSize);
+        factory.setMaxRequestSize(edmUploadmmMxRequestSize);
         return factory.createMultipartConfig();
     }
 }

@@ -39,9 +39,7 @@ import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -67,7 +65,6 @@ import fr.simple.edm.model.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
-@PropertySources(value = { @PropertySource("classpath:/application.properties") })
 public class EdmDocumentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
@@ -94,9 +91,9 @@ public class EdmDocumentService {
     @Inject
     private ElasticsearchConfig elasticsearchConfig;
 
-    @Inject
-    private Environment env;
-
+    @Value("${edm.top_terms.exlusion_regex}")
+    private String edmTopTermsExlusionRegex;
+    
     // Map<source, List<documentId>>, is used to delete removed document at re-indexation
     private static Map<String, List<String>> sourceDocumentsIds;
 
@@ -449,16 +446,13 @@ public class EdmDocumentService {
         // the query
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
-        // the aggregation, with exclusions
-        String userExclusionList = env.getProperty("edm.top_terms.exlusion_regex");
-
         List<String> filesExtensions = new ArrayList<>();
         for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
             filesExtensions.add(edmAggregationItem.getKey());
         }
         String filesExtension = Joiner.on("|").join(filesExtensions);
 
-        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(userExclusionList + "|" + filesExtension).size(10);
+        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(edmTopTermsExlusionRegex + "|" + filesExtension).size(10);
 
         List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
 

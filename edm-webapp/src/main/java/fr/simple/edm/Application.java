@@ -2,32 +2,21 @@ package fr.simple.edm;
 
 import java.io.File;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 
 @SpringBootApplication
-@PropertySources(value = {
-        @PropertySource("classpath:/properties/constants.properties"),
-        @PropertySource("classpath:/application.properties")
-    }
-)
+@PropertySource("classpath:/properties/constants.properties")
 public class Application {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-
-    private static Environment env;
-    
-    @Inject
-    public void setEnv(Environment env) {
-        Application.env = env;
-    }
     
     private static ElasticsearchConfig elasticsearchConfig;
     
@@ -37,16 +26,17 @@ public class Application {
     }
 
 	
-    private static String getEnvPropertyWithSilentDeathOnError(String property) {
-        String propertyValue = "";
-        try {
-            propertyValue = env.getProperty(property);
-        }
-        catch (Exception e) {
-            LOGGER.warn(e.getMessage());
-        }
-        return propertyValue;
-    }
+    @Value("${APPLICATION_NAME:''}")
+    private String applicationName;
+    
+    @Value("${APPLICATION_VERSION:''}")
+    private String applicationVersion;
+    
+    @Value("${APPLICATION_ISSUES_URL:''}")
+    private String applicationIssueUrl;
+    
+    @Value("${edm.tmpdir}")
+    private String edmTmpsdir;
 
 
     public static void main(String[] args) {
@@ -54,11 +44,14 @@ public class Application {
         SpringApplication app = new SpringApplication(Application.class);
         app.setShowBanner(false);
         app.run(args);
-        
+    }
+    
+    @PostConstruct
+    public void init() {    
         // Run this logs AFTER spring bean injection !
         LOGGER.info("==================================================================================");
-        LOGGER.info("Hi, this is {} version {}", getEnvPropertyWithSilentDeathOnError("APPLICATION_NAME"), getEnvPropertyWithSilentDeathOnError("APPLICATION_VERSION"));
-        LOGGER.info("You can report issues on {}", getEnvPropertyWithSilentDeathOnError("APPLICATION_ISSUES_URL"));
+        LOGGER.info("Hi, this is {} version {}", applicationName, applicationVersion);
+        LOGGER.info("You can report issues on {}", applicationIssueUrl);
         LOGGER.info("----------------------------------------------------------------------------------");
         LOGGER.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
         LOGGER.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));
@@ -78,10 +71,10 @@ public class Application {
         elasticsearchConfig.updateMappingIfLocalNode();
         
         // create temporary directory
-        if (! new File(env.getProperty("edm.tmpdir")).mkdirs()) {
-            LOGGER.warn("Failed to create temporary directory ({}), may already exists ?", env.getProperty("edm.tmpdir"));
+        if (! new File(edmTmpsdir).mkdirs()) {
+            LOGGER.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
         }
         
-        LOGGER.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", env.getProperty("server.port"));
+        LOGGER.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", edmTmpsdir);
     }
 }

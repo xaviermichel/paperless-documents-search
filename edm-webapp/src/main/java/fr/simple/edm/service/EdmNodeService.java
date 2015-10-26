@@ -7,8 +7,6 @@ import javax.inject.Inject;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
 
 import fr.simple.edm.model.EdmCategory;
@@ -17,7 +15,6 @@ import fr.simple.edm.model.EdmNode;
 import fr.simple.edm.model.EdmSource;
 
 @Service
-@PropertySources(value = { @PropertySource("classpath:/application.properties") })
 public class EdmNodeService {
 
     @Inject

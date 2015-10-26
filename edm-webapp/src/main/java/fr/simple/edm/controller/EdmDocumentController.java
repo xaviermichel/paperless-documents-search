@@ -18,9 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,15 +42,12 @@ import fr.simple.edm.model.EdmDocumentFile;
 import fr.simple.edm.service.EdmDocumentService;
 
 @RestController
-@PropertySources(value = {
-        @PropertySource("classpath:/application.properties")
-})
 public class EdmDocumentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentController.class);
 
-    @Inject
-    private Environment env;
+    @Value("${edm.tmpdir}")
+    private String edmpTmpdir;
 
     @Inject
     private EdmDocumentService edmDocumentService;
@@ -98,7 +93,7 @@ public class EdmDocumentController {
         String temporaryFileToken =  String.valueOf(System.currentTimeMillis()) + String.valueOf(Math.random() + "." + fileExtension);
 
         byte[] bytes = multipartFile.getBytes();
-        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(env.getProperty("edm.tmpdir") + temporaryFileToken)));
+        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(edmpTmpdir + temporaryFileToken)));
         stream.write(bytes);
         stream.close();
 
@@ -112,7 +107,7 @@ public class EdmDocumentController {
     public @ResponseBody EdmDocumentFileDto create(@RequestBody EdmDocumentFileDto edmDocument) {
         EdmDocumentFile document = edmDocumentMapper.dtoToBo(edmDocument);
         if (edmDocument.getTemporaryFileToken() != null) {
-            String tmpFileLocation = env.getProperty("edm.tmpdir") + edmDocument.getTemporaryFileToken();
+            String tmpFileLocation = edmpTmpdir + edmDocument.getTemporaryFileToken();
             document.setFilename(tmpFileLocation);
         }
         return edmDocumentMapper.boToDto(edmDocumentService.save(document));

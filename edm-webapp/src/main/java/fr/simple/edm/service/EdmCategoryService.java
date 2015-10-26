@@ -5,17 +5,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
 
 import fr.simple.edm.model.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 
 @Service
-@PropertySources(value = {
-        @PropertySource("classpath:/application.properties")
-})
 public class EdmCategoryService {
 
     @Inject

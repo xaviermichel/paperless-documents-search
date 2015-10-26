@@ -1,10 +1,8 @@
 package fr.simple.edm.controller;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public class IndexController {
 
-    @Inject
-    private Environment env;
+	@Value("${APPLICATION_NAME}")
+	private String applicationName;
+	
+	@Value("${APPLICATION_ENV}")
+	private String applicationEnv;
     
     @RequestMapping("/")
     public String home(Model model, @RequestParam(value = "debug", defaultValue = "") String debug) {
@@ -31,8 +32,8 @@ public class IndexController {
         model.addAttribute("debug", ! debug.isEmpty());
         
         // application informations
-        model.addAttribute("APPLICATION_NAME", env.getProperty("APPLICATION_NAME"));
-        model.addAttribute("APPLICATION_ENV", env.getProperty("APPLICATION_ENV"));
+        model.addAttribute("APPLICATION_NAME", applicationName);
+        model.addAttribute("APPLICATION_ENV", applicationEnv);
         
         return "home";
     }

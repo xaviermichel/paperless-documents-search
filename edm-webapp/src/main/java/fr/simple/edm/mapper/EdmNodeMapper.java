@@ -6,7 +6,7 @@ import javax.inject.Named;
 import org.apache.commons.lang3.ObjectUtils;
 
 import fr.simple.edm.common.dto.EdmNodeDto;
-import fr.simple.edm.model.EdmNode;
+import fr.simple.edm.domain.EdmNode;
 
 /**
  * Mapper is override because I wan't to keep all json properties (children customed properties), not only EdmProperty

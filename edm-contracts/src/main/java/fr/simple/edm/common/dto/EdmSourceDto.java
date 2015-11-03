@@ -3,7 +3,13 @@ package fr.simple.edm.common.dto;
 import java.io.Serializable;
 
 import fr.simple.edm.common.EdmNodeType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@AllArgsConstructor
+@Builder
+@Data
 public class EdmSourceDto extends EdmNodeDto implements Serializable {
 
     private String description;

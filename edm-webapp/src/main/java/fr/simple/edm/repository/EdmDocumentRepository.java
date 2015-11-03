@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import fr.simple.edm.model.EdmDocumentFile;
+import fr.simple.edm.domain.EdmDocumentFile;
 
 
 public interface EdmDocumentRepository extends ElasticsearchRepository<EdmDocumentFile, String> {

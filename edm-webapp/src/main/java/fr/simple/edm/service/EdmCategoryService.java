@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.model.EdmCategory;
+import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 
 @Service

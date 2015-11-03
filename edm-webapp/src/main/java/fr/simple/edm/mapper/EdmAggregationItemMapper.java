@@ -3,7 +3,7 @@ package fr.simple.edm.mapper;
 import javax.inject.Named;
 
 import fr.simple.edm.common.dto.EdmAggregationItemDto;
-import fr.simple.edm.model.EdmAggregationItem;
+import fr.simple.edm.domain.EdmAggregationItem;
 
 @Named
 public class EdmAggregationItemMapper extends AbstractMapper<EdmAggregationItem, EdmAggregationItemDto> {

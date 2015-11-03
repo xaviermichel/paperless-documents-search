@@ -6,8 +6,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,14 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import fr.simple.edm.common.dto.EdmNodeDto;
+import fr.simple.edm.domain.EdmNode;
 import fr.simple.edm.mapper.EdmNodeMapper;
-import fr.simple.edm.model.EdmNode;
 import fr.simple.edm.service.EdmNodeService;
 
 @RestController
+@Slf4j
 public class EdmNodeController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EdmNodeController.class);
 
     @Inject
     private EdmNodeService edmNodeService;
@@ -56,7 +55,7 @@ public class EdmNodeController {
     public @ResponseBody EdmNodeDto read(HttpServletRequest request) {
         String nodepath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         nodepath = nodepath.replaceFirst("/node/path/", "");
-        LOGGER.debug("get node for path : '{}'", nodepath);
+        log.debug("get node for path : '{}'", nodepath);
         return edmNodeMapper.boToDto(edmNodeService.findOneByPath(nodepath));
     }
 

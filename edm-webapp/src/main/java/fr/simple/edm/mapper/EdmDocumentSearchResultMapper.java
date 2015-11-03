@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import fr.simple.edm.common.dto.EdmDocumentSearchResultDto;
-import fr.simple.edm.model.EdmDocumentSearchResult;
+import fr.simple.edm.domain.EdmDocumentSearchResult;
 
 @Named
 public class EdmDocumentSearchResultMapper extends AbstractMapper<EdmDocumentSearchResult, EdmDocumentSearchResultDto> {

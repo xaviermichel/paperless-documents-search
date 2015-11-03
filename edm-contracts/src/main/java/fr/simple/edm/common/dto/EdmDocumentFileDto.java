@@ -4,7 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import fr.simple.edm.common.EdmNodeType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@AllArgsConstructor
+@Builder
+@Data
 public class EdmDocumentFileDto extends EdmNodeDto implements Serializable {
 
     private String fileExtension;
@@ -24,51 +30,4 @@ public class EdmDocumentFileDto extends EdmNodeDto implements Serializable {
         super(EdmNodeType.DOCUMENT);
     }
 
-    public String getFileExtension() {
-        return fileExtension;
-    }
-
-    public void setFileExtension(String fileExtension) {
-        this.fileExtension = fileExtension;
-    }
-
-    public String getFileContentType() {
-        return fileContentType;
-    }
-
-    public void setFileContentType(String fileContentType) {
-        this.fileContentType = fileContentType;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public String getTemporaryFileToken() {
-        return temporaryFileToken;
-    }
-
-    public void setTemporaryFileToken(String temporaryFileToken) {
-        this.temporaryFileToken = temporaryFileToken;
-    }
-
-    public String getServerDocumentFilePath() {
-        return serverDocumentFilePath;
-    }
-
-    public void setServerDocumentFilePath(String serverDocumentFilePath) {
-        this.serverDocumentFilePath = serverDocumentFilePath;
-    }
-    
-    public String getNodePath() {
-        return nodePath;
-    }
-
-    public void setNodePath(String nodePath) {
-        this.nodePath = nodePath;
-    }
 }

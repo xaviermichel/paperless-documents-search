@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.model.EdmSource;
+import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.repository.EdmSourceRepository;
 
 @Service

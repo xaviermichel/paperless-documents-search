@@ -4,8 +4,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import fr.simple.edm.common.dto.EdmDocumentSearchResultWrapperDto;
-import fr.simple.edm.model.EdmDocumentSearchResult;
-import fr.simple.edm.model.EdmDocumentSearchResultWrapper;
+import fr.simple.edm.domain.EdmDocumentSearchResult;
+import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 
 @Named
 public class EdmDocumentSearchResultWrapperMapper extends AbstractMapper<EdmDocumentSearchResultWrapper, EdmDocumentSearchResultWrapperDto> {

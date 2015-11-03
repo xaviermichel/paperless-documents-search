@@ -1,15 +1,11 @@
 package fr.simple.edm;
 
-import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,33 +13,33 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @Configuration
 @EnableWebSecurity
-@PropertySources(value = { @PropertySource("classpath:/application.properties") })
+@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
-    @Inject
-    private Environment env;
+    @Value("${edm.crawler.login:#{null}}")
+    private String edmCrawlerLogin;
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
+    @Value("${edm.crawler.pass:#{null}}")
+    private String edmCrawlerPassword;
     
     private boolean isAuthConfigured() {
-        return ! StringUtils.isEmpty(env.getProperty("edm.crawler.login"));
+        return ! StringUtils.isEmpty(edmCrawlerLogin);
     }
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         if (! isAuthConfigured()) {
-            LOGGER.warn("No 'edm.crawler.login' defined, will not filter /crawl url !");
+            log.warn("No 'edm.crawler.login' defined, will not filter /crawl url !");
             return;
         }
-        LOGGER.info("configuring http -> '/crawl/**' have to be 'CRAWLER'");
+        log.info("configuring http -> '/crawl/**' have to be 'CRAWLER'");
         http
             .authorizeRequests()
               .antMatchers("/crawl/**")
                   .hasAnyRole("CRAWLER")
               .anyRequest()
                   .permitAll()
-              
                   .and() // very important for curl !
                   .httpBasic()  
         ;
@@ -52,13 +48,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         if (! isAuthConfigured()) {
-            LOGGER.warn("No 'edm.crawler.login' defined, will not configure global auth !");
+            log.warn("No 'edm.crawler.login' defined, will not configure global auth !");
             return;
         }
-        LOGGER.info("configuring auth : adding user {}", env.getProperty("edm.crawler.login"));
+        log.info("configuring auth : adding user {}", edmCrawlerLogin);
         auth
             .inMemoryAuthentication()
-                .withUser(env.getProperty("edm.crawler.login")).password(env.getProperty("edm.crawler.pass")).roles("CRAWLER")
+                .withUser(edmCrawlerLogin).password(edmCrawlerPassword).roles("CRAWLER")
         ;
     }
 }

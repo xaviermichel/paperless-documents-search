@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import fr.simple.edm.model.EdmCategory;
+import fr.simple.edm.domain.EdmCategory;
 
 
 public interface EdmCategoryRepository extends ElasticsearchRepository<EdmCategory, String> {

@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -17,13 +18,14 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @EnableWebMvc
 @Configuration
+@Component
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${edm.upload.maxFileSize}")
 	private String edmUploadmMaxFileSize;
     
 	@Value("${edm.upload.maxRequestSize}")
-	private String edmUploadmmMxRequestSize;
+	private String edmUploadMaxRequestSize;
 	
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -66,7 +68,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         factory.setMaxFileSize(edmUploadmMaxFileSize);
-        factory.setMaxRequestSize(edmUploadmmMxRequestSize);
+        factory.setMaxRequestSize(edmUploadMaxRequestSize);
         return factory.createMultipartConfig();
     }
 }

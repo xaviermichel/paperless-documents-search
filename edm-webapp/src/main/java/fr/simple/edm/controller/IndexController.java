@@ -1,8 +1,6 @@
 package fr.simple.edm.controller;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,16 +8,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
-@PropertySources(value = {
-        @PropertySource("classpath:/properties/constants.properties")
-    }
-)
 public class IndexController {
 
-	@Value("${APPLICATION_NAME}")
+	@Value("${info.app.name}")
 	private String applicationName;
 	
-	@Value("${APPLICATION_ENV}")
+	@Value("${info.app.env}")
 	private String applicationEnv;
     
     @RequestMapping("/")

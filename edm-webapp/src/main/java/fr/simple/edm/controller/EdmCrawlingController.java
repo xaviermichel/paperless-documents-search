@@ -2,8 +2,8 @@ package fr.simple.edm.controller;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +17,8 @@ import fr.simple.edm.crawler.url.UrlCrawler;
 import fr.simple.edm.service.EdmDocumentService;
 
 @Controller
+@Slf4j
 public class EdmCrawlingController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EdmCrawlingController.class);
 
     @Inject
     private EdmDocumentService edmDocumentService;
@@ -27,14 +26,14 @@ public class EdmCrawlingController {
     @RequestMapping(value = "/crawl/start", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
-        LOGGER.info("Begin crawling for source : {}", source);
+        log.info("Begin crawling for source : {}", source);
         edmDocumentService.snapshotCurrentDocumentsForSource(source);
     }
 
     @RequestMapping(value = "/crawl/stop", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
-        LOGGER.info("End of crawling for source : {}", source);
+        log.info("End of crawling for source : {}", source);
         edmDocumentService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
     }
 
@@ -47,11 +46,11 @@ public class EdmCrawlingController {
             @RequestParam(value = "categoryName", defaultValue = "unmanned category") String categoryName,
             @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
        ) {
-        LOGGER.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
+        log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
         } catch (Exception e) {
-            LOGGER.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
+            log.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
         }
 
         return "OK";
@@ -67,11 +66,11 @@ public class EdmCrawlingController {
             @RequestParam(value = "categoryName", defaultValue = "unmanned category") String categoryName,
             @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
        ) {
-        LOGGER.info("[crawlUrl] Starting crawling on path : '{}'  (exclusion = '{}')", url, exclusionRegex);
+        log.info("[crawlUrl] Starting crawling on path : '{}'  (exclusion = '{}')", url, exclusionRegex);
         try {
             UrlCrawler.importFilesAtUrl(url, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
         } catch (Exception e) {
-            LOGGER.error("[crawlUrl] Failed to crawl '{}' with embedded crawler", url, e);
+            log.error("[crawlUrl] Failed to crawl '{}' with embedded crawler", url, e);
         }
 
         return "OK";

@@ -3,7 +3,7 @@ package fr.simple.edm.mapper;
 import javax.inject.Named;
 
 import fr.simple.edm.common.dto.EdmSourceDto;
-import fr.simple.edm.model.EdmSource;
+import fr.simple.edm.domain.EdmSource;
 
 @Named
 public class EdmSourceMapper extends AbstractMapper<EdmSource, EdmSourceDto> {

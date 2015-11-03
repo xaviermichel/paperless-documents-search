@@ -8,8 +8,6 @@ import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fr.simple.edm.ElasticsearchConfig;
-
 
 @Component
 public class ElasticsearchTestingHelper {

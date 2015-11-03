@@ -9,10 +9,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.model.EdmCategory;
-import fr.simple.edm.model.EdmDocumentFile;
-import fr.simple.edm.model.EdmNode;
-import fr.simple.edm.model.EdmSource;
+import fr.simple.edm.domain.EdmCategory;
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmNode;
+import fr.simple.edm.domain.EdmSource;
 
 @Service
 public class EdmNodeService {

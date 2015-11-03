@@ -3,7 +3,13 @@ package fr.simple.edm.common.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@AllArgsConstructor
+@Builder
+@Data
 public class EdmDocumentSearchResultWrapperDto {
     
     // took time in MS
@@ -19,29 +25,5 @@ public class EdmDocumentSearchResultWrapperDto {
     
     public void add(EdmDocumentSearchResultDto edmDocumentSearchResultDto) {
         searchResults.add(edmDocumentSearchResultDto);
-    }
-    
-    public long getTookTime() {
-        return tookTime;
-    }
-
-    public void setTookTime(long tookTime) {
-        this.tookTime = tookTime;
-    }
-
-    public long getTotalHitsCount() {
-        return totalHitsCount;
-    }
-
-    public void setTotalHitsCount(long totalHitsCount) {
-        this.totalHitsCount = totalHitsCount;
-    }
-
-    public List<EdmDocumentSearchResultDto> getSearchResults() {
-        return searchResults;
-    }
-
-    public void setSearchResults(List<EdmDocumentSearchResultDto> searchResults) {
-        this.searchResults = searchResults;
     }
 }

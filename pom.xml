@@ -12,25 +12,37 @@
 
 
 	<developers>
-        <developer>
-            <id>xaviermichel</id>
-            <name>Xavier MICHEL</name>
-        </developer>
-    </developers>
+		<developer>
+			<id>xaviermichel</id>
+			<name>Xavier MICHEL</name>
+		</developer>
+	</developers>
 
 
-    <licenses>
-        <license>
-            <name>zlib License</name>
-            <url>http://en.wikipedia.org/wiki/Zlib_License</url>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>zlib License</name>
+			<url>http://en.wikipedia.org/wiki/Zlib_License</url>
+		</license>
+	</licenses>
 
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<org.projectlombok.lombok.version>1.16.6</org.projectlombok.lombok.version>
 	</properties>
 
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${org.projectlombok.lombok.version}</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -79,9 +91,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jxr-maven-plugin</artifactId>
-      		</plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</reporting>
 

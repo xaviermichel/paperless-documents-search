@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -17,8 +19,6 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,9 +26,8 @@ import fr.simple.edm.common.dto.EdmCategoryDto;
 import fr.simple.edm.common.dto.EdmDocumentFileDto;
 import fr.simple.edm.common.dto.EdmSourceDto;
 
+@Slf4j
 public class EdmConnector {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EdmConnector.class);
 
     /**
      * Upload the given file and returns EDM token
@@ -60,7 +59,7 @@ public class EdmConnector {
                }
             }
 
-            LOGGER.debug("Upload response : {} ", pageString);
+            log.debug("Upload response : {} ", pageString);
 
             Pattern p = Pattern.compile("\\{\"temporaryFileToken\":\"(.*)\"\\}");
             Matcher m = p.matcher(pageString);
@@ -68,10 +67,10 @@ public class EdmConnector {
                 edmFileToken = m.group(1);
             }
 
-            LOGGER.debug("Edm file token : {} ", edmFileToken);
+            log.debug("Edm file token : {} ", edmFileToken);
 
         } catch (IOException e) {
-            LOGGER.error("Failed to upload file", e);
+        	log.error("Failed to upload file", e);
         }
         return edmFileToken;
     }

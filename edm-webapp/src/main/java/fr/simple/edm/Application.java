@@ -5,34 +5,26 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@PropertySource("classpath:/properties/constants.properties")
+@Slf4j
 public class Application {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-    
-    private static ElasticsearchConfig elasticsearchConfig;
-    
-    @Inject
-    public void setElasticsearchConfig(ElasticsearchConfig elasticsearchConfig) {
-        Application.elasticsearchConfig = elasticsearchConfig;
-    }
 
-	
-    @Value("${APPLICATION_NAME:''}")
+	@Inject
+    private ElasticsearchConfig elasticsearchConfig;
+    
+    @Value("${info.app.name:''}")
     private String applicationName;
     
-    @Value("${APPLICATION_VERSION:''}")
+    @Value("${info.app.version:''}")
     private String applicationVersion;
     
-    @Value("${APPLICATION_ISSUES_URL:''}")
+    @Value("${info.app.issue.url:''}")
     private String applicationIssueUrl;
     
     @Value("${edm.tmpdir}")
@@ -40,41 +32,38 @@ public class Application {
 
 
     public static void main(String[] args) {
-
         SpringApplication app = new SpringApplication(Application.class);
-        app.setShowBanner(false);
         app.run(args);
     }
     
     @PostConstruct
-    public void init() {    
-        // Run this logs AFTER spring bean injection !
-        LOGGER.info("==================================================================================");
-        LOGGER.info("Hi, this is {} version {}", applicationName, applicationVersion);
-        LOGGER.info("You can report issues on {}", applicationIssueUrl);
-        LOGGER.info("----------------------------------------------------------------------------------");
-        LOGGER.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
-        LOGGER.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));
-        LOGGER.info("java.specification.name    : " + System.getProperty("java.specification.name"));
-        LOGGER.info("java.specification.vendor  : " + System.getProperty("java.specification.vendor"));
-        LOGGER.info("java.specification.version : " + System.getProperty("java.specification.version"));
-        LOGGER.info("java.vendor                : " + System.getProperty("java.vendor"));
-        LOGGER.info("java.version               : " + System.getProperty("java.version"));
-        LOGGER.info("java.vm.info               : " + System.getProperty("java.vm.info"));
-        LOGGER.info("java.vm.name               : " + System.getProperty("java.vm.name"));
-        LOGGER.info("java.vm.version            : " + System.getProperty("java.vm.version"));
-        LOGGER.info("os.arch                    : " + System.getProperty("os.arch"));
-        LOGGER.info("os.name                    : " + System.getProperty("os.name"));
-        LOGGER.info("os.version                 : " + System.getProperty("os.version"));
-        LOGGER.info("==================================================================================");
+    public void init() {
+        log.info("==================================================================================");
+        log.info("Hi, this is {} version {}", applicationName, applicationVersion);
+        log.info("You can report issues on {}", applicationIssueUrl);
+        log.info("----------------------------------------------------------------------------------");
+        log.info("java.runtime.name          : " + System.getProperty("java.runtime.name"));
+        log.info("java.runtime.version       : " + System.getProperty("java.runtime.version"));
+        log.info("java.specification.name    : " + System.getProperty("java.specification.name"));
+        log.info("java.specification.vendor  : " + System.getProperty("java.specification.vendor"));
+        log.info("java.specification.version : " + System.getProperty("java.specification.version"));
+        log.info("java.vendor                : " + System.getProperty("java.vendor"));
+        log.info("java.version               : " + System.getProperty("java.version"));
+        log.info("java.vm.info               : " + System.getProperty("java.vm.info"));
+        log.info("java.vm.name               : " + System.getProperty("java.vm.name"));
+        log.info("java.vm.version            : " + System.getProperty("java.vm.version"));
+        log.info("os.arch                    : " + System.getProperty("os.arch"));
+        log.info("os.name                    : " + System.getProperty("os.name"));
+        log.info("os.version                 : " + System.getProperty("os.version"));
+        log.info("==================================================================================");
 
         elasticsearchConfig.updateMappingIfLocalNode();
         
         // create temporary directory
         if (! new File(edmTmpsdir).mkdirs()) {
-            LOGGER.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
+            log.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
         }
         
-        LOGGER.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", edmTmpsdir);
+        log.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", edmTmpsdir);
     }
 }

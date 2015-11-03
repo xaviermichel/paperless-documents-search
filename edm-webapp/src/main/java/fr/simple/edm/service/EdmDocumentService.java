@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
@@ -37,8 +39,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,19 +56,18 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
 import fr.simple.edm.ElasticsearchConfig;
-import fr.simple.edm.model.EdmAggregationItem;
-import fr.simple.edm.model.EdmDocumentFile;
-import fr.simple.edm.model.EdmDocumentSearchResult;
-import fr.simple.edm.model.EdmDocumentSearchResultWrapper;
-import fr.simple.edm.model.EdmNode;
-import fr.simple.edm.model.EdmSource;
+import fr.simple.edm.domain.EdmAggregationItem;
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmDocumentSearchResult;
+import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
+import fr.simple.edm.domain.EdmNode;
+import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 
 @Service
+@Slf4j
 public class EdmDocumentService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EdmDocumentService.class);
-
+	
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
     private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
@@ -169,9 +168,9 @@ public class EdmDocumentService {
 
             edmDocument.setId(ir.getId());
 
-            LOGGER.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
+            log.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
         } catch (Exception e) {
-            LOGGER.error("Failed to index document", e);
+            log.error("Failed to index document", e);
         }
 
         if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
@@ -230,7 +229,7 @@ public class EdmDocumentService {
 
         // basic query
         QueryBuilder qb = getEdmQueryForPattern(pattern);
-        LOGGER.debug("The search query for pattern '{}' is : {}", pattern, qb);
+        log.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
         // custom query for highlight
         String preTag = "<" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
@@ -292,7 +291,7 @@ public class EdmDocumentService {
             });
 
         } catch (SearchPhaseExecutionException e) {
-            LOGGER.warn("Failed to submit query, empty result ; may failed to parse query (more log to debug it !) : {}", pattern);
+            log.warn("Failed to submit query, empty result ; may failed to parse query (more log to debug it !) : {}", pattern);
         }
 
         // return modified result with highlighting
@@ -324,7 +323,7 @@ public class EdmDocumentService {
 
     public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
         String nodePath = filePathToNodePath(filePath);
-        LOGGER.debug("Get server file path for node path : '{}'", nodePath);
+        log.debug("Get server file path for node path : '{}'", nodePath);
         return (EdmDocumentFile) edmNodeService.findOneByPath(nodePath);
     }
 
@@ -344,7 +343,7 @@ public class EdmDocumentService {
         Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
 
         while (edmDocumentPage.getSize() > 0) {
-            LOGGER.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
+            log.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
 
             for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
                 edmDocumentsIds.add(doc.getId());
@@ -358,7 +357,7 @@ public class EdmDocumentService {
         }
         sourceDocumentsIds.put(sourceId, edmDocumentsIds);
 
-        LOGGER.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
+        log.info("The snapshot contains {} documents for source {}", edmDocumentsIds.size(), source);
     }
 
     public void deleteUnusedDocumentsBeforeSnapshotForSource(String sourceName) {
@@ -372,11 +371,11 @@ public class EdmDocumentService {
             return;
         }
 
-        LOGGER.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
+        log.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
         // loop on removed documents
         for (String documentId : sourceDocumentsIds.get(sourceId)) {
             EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
-            LOGGER.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
+            log.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
             delete(edmDocumentFile);
         }
         // reset map to be sur new ids won't be deleted
@@ -386,7 +385,7 @@ public class EdmDocumentService {
     public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
-        LOGGER.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
+        log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
         return Lists.newArrayList(edmDocumentRepository.search(qb));
     }
 
@@ -408,7 +407,7 @@ public class EdmDocumentService {
                 extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            LOGGER.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
 
         return extensions;
@@ -436,7 +435,7 @@ public class EdmDocumentService {
                 dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            LOGGER.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
 
         return dates;
@@ -470,7 +469,7 @@ public class EdmDocumentService {
                 mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            LOGGER.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
         }
 
         return mostCommonTerms;

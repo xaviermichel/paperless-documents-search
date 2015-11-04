@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 
+@Slf4j
 public class AbstractMapper<T, S> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMapper.class);
 
     private Class<T> tt;
     private Class<S> ss;
@@ -28,7 +27,7 @@ public class AbstractMapper<T, S> {
             t = tt.newInstance();
             BeanUtils.copyProperties(dto, t);
         } catch (Exception e) {
-            LOGGER.error("Failed to convert dto to bo", e);
+            log.error("Failed to convert dto to bo", e);
         }
         return t;
     }
@@ -39,7 +38,7 @@ public class AbstractMapper<T, S> {
             s = ss.newInstance();
             BeanUtils.copyProperties(bo, s);
         } catch (Exception e) {
-            LOGGER.error("Failed to convert bo to dto", e);
+            log.error("Failed to convert bo to dto", e);
         }
         return s;
     }

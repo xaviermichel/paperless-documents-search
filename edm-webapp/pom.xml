@@ -32,10 +32,9 @@
 
 		<commons-io.version>2.4</commons-io.version>
 		<org.apache.commons.commons-lang3.version>3.3.2</org.apache.commons.commons-lang3.version>
+		<com.google.guava.version>18.0</com.google.guava.version>
 
 		<commons-fileupload.version>1.3.1</commons-fileupload.version>
-
-		<com.google.guava.version>18.0</com.google.guava.version>
 	</properties>
 
 	<dependencyManagement>
@@ -191,14 +190,6 @@
 
 	<dependencies>
 
-		<!-- Jetty -->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
-
-
 		<!-- modules -->
 
 		<dependency>
@@ -232,36 +223,9 @@
 			<artifactId>persistence-api</artifactId>
 			<version>${javax.persistence.persistence-api.version}</version>
 		</dependency>
-
-
-		<!-- logger -->
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
+		
 
 		<!-- Spring -->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -274,6 +238,11 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -294,22 +263,27 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+		</dependency>
+		
+		
 		<!-- Elastic search -->
-
+		
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>${org.elasticsearch.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch-mapper-attachments</artifactId>
@@ -323,17 +297,8 @@
 		</dependency>
 
 
-		<!-- junit -->
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-
 		<!-- easytesting -->
-
+		
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
@@ -342,43 +307,37 @@
 		</dependency>
 
 
-		<!-- apache -->
-
+		<!-- tools -->
+		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${org.apache.commons.commons-lang3.version}</version>
 		</dependency>
-
-
-		<!-- File upload -->
-
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${commons-fileupload.version}</version>
-		</dependency>
-
-
-		<!-- google -->
-
+		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${com.google.guava.version}</version>
 		</dependency>
-
-		<!-- lombok -->
-
+		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+		
+		<!-- File upload -->
+		
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons-fileupload.version}</version>
 		</dependency>
 
 	</dependencies>

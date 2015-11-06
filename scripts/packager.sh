@@ -48,7 +48,7 @@ fi
 
 cd edm-webapp
 echo "Maven packaging..."
-mvn package -Dmaven.test.skip=true > /dev/null
+mvn package ${MAVEN_TEST} > /dev/null
 if [ $? -eq 0 ]
 then
 	xlog INFO "maven packaging success"

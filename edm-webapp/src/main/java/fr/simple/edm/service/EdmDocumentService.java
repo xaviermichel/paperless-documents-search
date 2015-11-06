@@ -18,6 +18,9 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
@@ -51,9 +54,6 @@ import org.springframework.data.elasticsearch.core.SearchResultMapper;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
 
 import fr.simple.edm.ElasticsearchConfig;
 import fr.simple.edm.domain.EdmAggregationItem;
@@ -128,7 +128,7 @@ public class EdmDocumentService {
                             continue;
                         }
                         Object oo = m.invoke(edmDocument);
-                        String fieldName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, m.getName().substring(3));
+                        String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
                         contentBuilder.field(fieldName, oo);
                     }
                 }
@@ -137,7 +137,7 @@ public class EdmDocumentService {
             if (!edmDocument.getFilename().isEmpty()) {
 
                 // computed values
-                String thisDocumentFileExtension = com.google.common.io.Files.getFileExtension(edmDocument.getFilename());
+                String thisDocumentFileExtension = FilenameUtils.getExtension(edmDocument.getFilename());
                 edmDocument.setFileExtension(thisDocumentFileExtension);
 
                 String from = edmDocument.getFilename();
@@ -318,7 +318,7 @@ public class EdmDocumentService {
      * than node path
      */
     public String filePathToNodePath(String filePath) {
-        return new File(filePath).getParent().replace("\\", "/") + "/" + com.google.common.io.Files.getNameWithoutExtension(filePath);
+        return new File(filePath).getParent().replace("\\", "/") + "/" + FilenameUtils.getBaseName(filePath);
     }
 
     public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
@@ -449,7 +449,7 @@ public class EdmDocumentService {
         for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
             filesExtensions.add(edmAggregationItem.getKey());
         }
-        String filesExtension = Joiner.on("|").join(filesExtensions);
+        String filesExtension = StringUtils.join(filesExtensions, "|");
 
         TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(edmTopTermsExlusionRegex + "|" + filesExtension).size(10);
 

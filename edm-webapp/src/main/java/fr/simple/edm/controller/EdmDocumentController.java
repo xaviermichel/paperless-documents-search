@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -88,7 +89,7 @@ public class EdmDocumentController {
     @ResponseStatus(value=HttpStatus.OK)
     public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String fileExtension = com.google.common.io.Files.getFileExtension(multipartFile.getOriginalFilename());
+        String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
         String temporaryFileToken =  String.valueOf(System.currentTimeMillis()) + String.valueOf(Math.random() + "." + fileExtension);
 
         byte[] bytes = multipartFile.getBytes();

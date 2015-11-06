@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -18,7 +17,6 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @EnableWebMvc
 @Configuration
-@Component
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${edm.upload.maxFileSize}")

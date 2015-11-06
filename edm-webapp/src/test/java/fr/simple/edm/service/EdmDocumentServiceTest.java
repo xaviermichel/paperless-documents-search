@@ -16,6 +16,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
@@ -102,6 +103,13 @@ public class EdmDocumentServiceTest {
         return result;
     }
 
+    
+    @Test
+    public void exclustionRegexShouldBeFilled() {
+    	String exclusionRegexValue = (String) ReflectionTestUtils.getField(edmDocumentService, "edmTopTermsExlusionRegex");
+    	assertThat(exclusionRegexValue).isEqualTo("[a-z]{1,2}|[dlmcs]es|data|docs|documents|edm|files|simple|page");
+    }
+    
     /**
      * Search on doc name, very basic
      */
@@ -301,4 +309,5 @@ public class EdmDocumentServiceTest {
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
     }
+
 }

@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.simple.edm.common.dto.EdmCategoryDto;
-import fr.simple.edm.mapper.EdmCategoryMapper;
+import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.service.EdmCategoryService;
 
 @RestController
@@ -22,23 +21,19 @@ public class EdmCategoryController {
     @Inject
     private EdmCategoryService edmCategoryService;
 
-    @Inject
-    private EdmCategoryMapper edmCategoryMapper;
-
-
     @RequestMapping(value = "/category", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<EdmCategoryDto> list() {
-        return edmCategoryMapper.boToDto(edmCategoryService.getEdmCategories());
+    public @ResponseBody List<EdmCategory> list() {
+        return edmCategoryService.getEdmCategories();
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmCategoryDto create(@RequestBody EdmCategoryDto edmLibraryDto) {
-        return edmCategoryMapper.boToDto(edmCategoryService.save(edmCategoryMapper.dtoToBo(edmLibraryDto)));
+    public @ResponseBody EdmCategory create(@RequestBody EdmCategory edmLibrary) {
+        return edmCategoryService.save(edmLibrary);
     }
 
     @RequestMapping(value = "/category/name/{categoryName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmCategoryDto getOneByName(@PathVariable String categoryName) {
-        return edmCategoryMapper.boToDto(edmCategoryService.findOneByName(categoryName));
+    public @ResponseBody EdmCategory getOneByName(@PathVariable String categoryName) {
+        return edmCategoryService.findOneByName(categoryName);
     }
 }
 

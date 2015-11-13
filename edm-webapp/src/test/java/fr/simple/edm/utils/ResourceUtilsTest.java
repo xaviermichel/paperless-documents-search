@@ -10,8 +10,8 @@ public class ResourceUtilsTest {
 
     @Test
     public void embeddedFileContentShouldBeLoaded() {
-        String fileContent = ResourceUtils.getContentOfEmbeddedFile("resourceUtilsTest.txt");
+        String fileContent = ResourceUtils.getContent("resourceUtilsTest.txt");
         assertThat(fileContent).isEqualTo("This is a simple content for a test");
     }
-	
+    
 }

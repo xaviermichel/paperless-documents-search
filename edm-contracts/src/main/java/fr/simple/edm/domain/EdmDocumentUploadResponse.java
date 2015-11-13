@@ -1,4 +1,4 @@
-package fr.simple.edm.common.dto;
+package fr.simple.edm.domain;
 
 import java.io.Serializable;
 
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
  * @author xavier
  *
  */
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class EdmDocumentUploadResponse implements Serializable {
 
     private String temporaryFileToken;

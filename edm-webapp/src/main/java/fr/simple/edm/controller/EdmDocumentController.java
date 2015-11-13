@@ -13,7 +13,6 @@ import java.util.Map;
 import javassist.NotFoundException;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +31,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.simple.edm.common.dto.EdmAggregationItemDto;
-import fr.simple.edm.common.dto.EdmDocumentFileDto;
-import fr.simple.edm.common.dto.EdmDocumentSearchResultWrapperDto;
-import fr.simple.edm.common.dto.EdmDocumentUploadResponse;
+import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.mapper.EdmAggregationItemMapper;
-import fr.simple.edm.mapper.EdmDocumentMapper;
-import fr.simple.edm.mapper.EdmDocumentSearchResultWrapperMapper;
+import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
+import fr.simple.edm.domain.EdmDocumentUploadResponse;
 import fr.simple.edm.service.EdmDocumentService;
 
 @RestController
@@ -52,42 +47,33 @@ public class EdmDocumentController {
     @Inject
     private EdmDocumentService edmDocumentService;
 
-    @Inject
-    private EdmDocumentMapper edmDocumentMapper;
-
-    @Inject
-    private EdmAggregationItemMapper edmAggregationItemMapper;
-
-    @Inject
-    private EdmDocumentSearchResultWrapperMapper edmDocumentSearchResultWrapperMapper;
-
     @RequestMapping(value = "/document", method = RequestMethod.GET, params = {"q"})
-    public @ResponseBody EdmDocumentSearchResultWrapperDto search(@RequestParam(value = "q") String pattern) {
+    public @ResponseBody EdmDocumentSearchResultWrapper search(@RequestParam(value = "q") String pattern) {
         log.debug("Searched pattern : '{}'", pattern);
-        return edmDocumentSearchResultWrapperMapper.boToDto(edmDocumentService.search(pattern));
+        return edmDocumentService.search(pattern);
     }
 
     @RequestMapping(value = "/document/suggest", method = RequestMethod.GET, params = {"q"})
-    public @ResponseBody List<EdmDocumentFileDto> getSuggestions(@RequestParam(value = "q") String pattern) {
+    public @ResponseBody List<EdmDocumentFile> getSuggestions(@RequestParam(value = "q") String pattern) {
         log.debug("Suggestions pattern : '{}'", pattern);
-        return edmDocumentMapper.boToDto(edmDocumentService.getSuggestions(pattern));
+        return edmDocumentService.getSuggestions(pattern);
     }
 
     @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
-    public @ResponseBody List<EdmAggregationItemDto> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    public @ResponseBody List<EdmAggregationItem> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
-        return edmAggregationItemMapper.boToDto(edmDocumentService.getTopTerms(pattern));
+        return edmDocumentService.getTopTerms(pattern);
     }
 
     @RequestMapping(value = "/document/aggregations", method = RequestMethod.GET)
-    public @ResponseBody Map<String, List<EdmAggregationItemDto>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    public @ResponseBody Map<String, List<EdmAggregationItem>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
-        return edmAggregationItemMapper.boToDto(edmDocumentService.getAggregations(pattern));
+        return edmDocumentService.getAggregations(pattern);
     }
 
-    @RequestMapping(value="/document/upload", method=RequestMethod.POST , headers = "content-type=multipart/*")
+    @RequestMapping(value="/document/upload", method=RequestMethod.POST)
     @ResponseStatus(value=HttpStatus.OK)
-    public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam(value = "file", required = true) MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public @ResponseBody EdmDocumentUploadResponse executeUpload(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
         String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
         String temporaryFileToken =  String.valueOf(System.currentTimeMillis()) + String.valueOf(Math.random() + "." + fileExtension);
@@ -104,13 +90,12 @@ public class EdmDocumentController {
 
 
     @RequestMapping(method=RequestMethod.POST, value="/document", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmDocumentFileDto create(@RequestBody EdmDocumentFileDto edmDocument) {
-        EdmDocumentFile document = edmDocumentMapper.dtoToBo(edmDocument);
+    public @ResponseBody EdmDocumentFile create(@RequestBody EdmDocumentFile edmDocument) {
         if (edmDocument.getTemporaryFileToken() != null) {
             String tmpFileLocation = edmpTmpdir + edmDocument.getTemporaryFileToken();
-            document.setFilename(tmpFileLocation);
+            edmDocument.setFilename(tmpFileLocation);
         }
-        return edmDocumentMapper.boToDto(edmDocumentService.save(document));
+        return edmDocumentService.save(edmDocument);
     }
     
     @RequestMapping(value = "/files", method = RequestMethod.GET, params = {"docId"})

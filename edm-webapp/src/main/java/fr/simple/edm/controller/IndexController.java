@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class IndexController {
 
-	@Value("${info.app.name}")
-	private String applicationName;
-	
-	@Value("${info.app.env}")
-	private String applicationEnv;
+    @Value("${info.app.name}")
+    private String applicationName;
+    
+    @Value("${info.app.env}")
+    private String applicationEnv;
     
     @RequestMapping("/")
     public String home(Model model, @RequestParam(value = "debug", defaultValue = "") String debug) {

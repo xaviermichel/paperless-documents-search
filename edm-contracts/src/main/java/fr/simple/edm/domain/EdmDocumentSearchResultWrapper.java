@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EdmDocumentSearchResultWrapper {
-    
+
     // took time in MS
     private long tookTime;
-    
+
     private long totalHitsCount;
-    
-    private List<EdmDocumentSearchResult> searchResults = new ArrayList<>();
-    
+
+    private List<EdmDocumentSearchResult> searchResults = new ArrayList<>();;
+
     public void add(EdmDocumentSearchResult edmDocumentSearchResult) {
         searchResults.add(edmDocumentSearchResult);
     }

@@ -13,16 +13,16 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
-import fr.simple.edm.common.EdmNodeType;
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.domain.EdmNode;
+import fr.simple.edm.domain.EdmNodeType;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @ComponentScan(basePackages = { "fr.simple.edm" })
-public class GedLibraryServiceTest {
+public class EdmLibraryServiceTest {
 
     @Autowired
     private EdmCategoryService edmCategoryService;

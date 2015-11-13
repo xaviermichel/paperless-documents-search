@@ -5,11 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Search result
- * 
- * @author xavier
- */
 @Data
 @Builder
 @NoArgsConstructor

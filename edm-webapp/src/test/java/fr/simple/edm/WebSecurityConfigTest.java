@@ -18,30 +18,30 @@ import org.springframework.web.context.WebApplicationContext;
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class WebSecurityConfigTest {
 
-	WebSecurityConfig webSecurityConfig = new WebSecurityConfig();
+    WebSecurityConfig webSecurityConfig = new WebSecurityConfig();
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	@Test
-	public void crawlerLoginShouldBeNullByDefault() {
-		Object defaultLogin = ReflectionTestUtils.getField(webSecurityConfig,
-				"edmCrawlerLogin");
-		assertThat(defaultLogin).isNull();
-	}
+    @Test
+    public void crawlerLoginShouldBeNullByDefault() {
+        Object defaultLogin = ReflectionTestUtils.getField(webSecurityConfig,
+                "edmCrawlerLogin");
+        assertThat(defaultLogin).isNull();
+    }
 
-	@Test
-	public void crawlerPasswordShouldBeNullByDefault() {
-		Object defaultPassword = ReflectionTestUtils.getField(
-				webSecurityConfig, "edmCrawlerPassword");
-		assertThat(defaultPassword).isNull();
-	}
+    @Test
+    public void crawlerPasswordShouldBeNullByDefault() {
+        Object defaultPassword = ReflectionTestUtils.getField(
+                webSecurityConfig, "edmCrawlerPassword");
+        assertThat(defaultPassword).isNull();
+    }
 
-	@Test
-	public void authentificatonShouldBeDisabledByDefault() {
-		Boolean isAuthConfigured = ReflectionTestUtils.invokeMethod(
-				webSecurityConfig, "isAuthConfigured");
-		assertThat(isAuthConfigured).isFalse();
-	}
+    @Test
+    public void authentificatonShouldBeDisabledByDefault() {
+        Boolean isAuthConfigured = ReflectionTestUtils.invokeMethod(
+                webSecurityConfig, "isAuthConfigured");
+        assertThat(isAuthConfigured).isFalse();
+    }
 
 }

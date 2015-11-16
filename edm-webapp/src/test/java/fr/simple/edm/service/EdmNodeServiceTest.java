@@ -18,10 +18,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
-import fr.simple.edm.common.EdmNodeType;
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmNode;
+import fr.simple.edm.domain.EdmNodeType;
 import fr.simple.edm.domain.EdmSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)

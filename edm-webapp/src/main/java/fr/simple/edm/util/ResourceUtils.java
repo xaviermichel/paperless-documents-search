@@ -1,22 +1,37 @@
 package fr.simple.edm.util;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 @Slf4j
 public class ResourceUtils {
-	
+
     /**
      * @warning returns null if cannot get content
      */
-    public static String getContentOfEmbeddedFile(String embeddedPath) {
+    public static String getContent(String path) {
         try {
-        	return FileUtils.readFileToString(org.springframework.util.ResourceUtils.getFile(org.springframework.util.ResourceUtils.CLASSPATH_URL_PREFIX + embeddedPath), "UTF-8");
+            URL url = getResource(path);
+            return IOUtils.toString(url, StandardCharsets.UTF_8);
         }
         catch (Exception e) {
-            log.warn("Failed to get content of file " + embeddedPath, e);
+            log.warn("Failed to get content of file " + path, e);
         }
         return null;
+    }
+    
+    
+    private static URL getResource(String resourceName) {
+        ClassLoader loader = ObjectUtils.firstNonNull(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
+        URL url = loader.getResource(resourceName);
+        if (url == null) {
+            log.warn("Resource '{}' not found", resourceName);
+        }
+        return url;
     }
 }

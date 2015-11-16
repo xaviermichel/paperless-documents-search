@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.simple.edm.common.dto.EdmSourceDto;
-import fr.simple.edm.mapper.EdmSourceMapper;
+import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.service.EdmSourceService;
 
 @RestController
@@ -20,17 +19,14 @@ public class EdmSourceController {
     @Inject
     private EdmSourceService edmSourceService;
     
-    @Inject
-    private EdmSourceMapper edmSourceMapper;
-    
     @RequestMapping(method=RequestMethod.POST, value="/source", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmSourceDto create(@RequestBody EdmSourceDto edmDirectoryDto) {
-        return edmSourceMapper.boToDto(edmSourceService.save(edmSourceMapper.dtoToBo(edmDirectoryDto)));
+    public @ResponseBody EdmSource create(@RequestBody EdmSource edmDirectory) {
+        return edmSourceService.save(edmDirectory);
     }
     
     @RequestMapping(value = "/source/name/{sourceName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmSourceDto getOneByName(@PathVariable String sourceName) {
-        return edmSourceMapper.boToDto(edmSourceService.findOneByName(sourceName));
+    public @ResponseBody EdmSource getOneByName(@PathVariable String sourceName) {
+        return edmSourceService.findOneByName(sourceName);
     }
     
 }

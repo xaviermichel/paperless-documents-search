@@ -12,4 +12,5 @@ public class EdmAggregationItem {
     private String key;
     
     private long docCount;
+    
 }

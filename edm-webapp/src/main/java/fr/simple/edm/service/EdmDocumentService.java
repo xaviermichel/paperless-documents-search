@@ -55,7 +55,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.ElasticsearchConfig;
 import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
@@ -67,7 +66,7 @@ import fr.simple.edm.repository.EdmDocumentRepository;
 @Service
 @Slf4j
 public class EdmDocumentService {
-	
+    
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
     private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
@@ -86,9 +85,6 @@ public class EdmDocumentService {
 
     @Inject
     private ElasticsearchOperations elasticsearchTemplate;
-
-    @Inject
-    private ElasticsearchConfig elasticsearchConfig;
 
     @Value("${edm.top_terms.exlusion_regex}")
     private String edmTopTermsExlusionRegex;
@@ -124,7 +120,7 @@ public class EdmDocumentService {
             for (Class<?> clazz : classes) {
                 for (Method m : clazz.getDeclaredMethods()) {
                     if (m.getName().startsWith("get")) {
-                        if (m.getName().equalsIgnoreCase("getFilename")) { // ignore this type
+                        if ("getFilename".equalsIgnoreCase(m.getName())) { // ignore this type
                             continue;
                         }
                         Object oo = m.invoke(edmDocument);
@@ -134,7 +130,7 @@ public class EdmDocumentService {
                 }
             }
 
-            if (!edmDocument.getFilename().isEmpty()) {
+            if (! StringUtils.isEmpty(edmDocument.getFilename())) {
 
                 // computed values
                 String thisDocumentFileExtension = FilenameUtils.getExtension(edmDocument.getFilename());
@@ -189,7 +185,7 @@ public class EdmDocumentService {
      */
     private QueryBuilder getEdmQueryForPattern(String pattern) {
         // in case of invalid query
-        if (pattern == null || pattern.trim().isEmpty()) {
+        if (StringUtils.isBlank(pattern)) {
             return QueryBuilders.matchAllQuery();
         }
 
@@ -291,7 +287,7 @@ public class EdmDocumentService {
             });
 
         } catch (SearchPhaseExecutionException e) {
-            log.warn("Failed to submit query, empty result ; may failed to parse query (more log to debug it !) : {}", pattern);
+            log.warn("Failed to submit query, empty result ; may failed to parse query ({}, more log to debug it !) : {}", e.getMessage(), pattern);
         }
 
         // return modified result with highlighting
@@ -396,7 +392,7 @@ public class EdmDocumentService {
         List<EdmAggregationItem> extensions = new ArrayList<>();
         
         try {
-            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
@@ -407,7 +403,7 @@ public class EdmDocumentService {
                 extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
         return extensions;
@@ -420,14 +416,14 @@ public class EdmDocumentService {
         List<EdmAggregationItem> dates = new ArrayList<>();
         
         try {
-            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
 
             InternalDateHistogram buckets = response.getAggregations().get("agg_date");
     
-            if (buckets.getBuckets().size() > 0) {
+            if (! buckets.getBuckets().isEmpty()) {
                 Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
                 dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
     
@@ -435,7 +431,7 @@ public class EdmDocumentService {
                 dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
         return dates;
@@ -457,7 +453,7 @@ public class EdmDocumentService {
 
         try {
             // execute
-            SearchResponse response = elasticsearchConfig.getClient().prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
@@ -469,7 +465,7 @@ public class EdmDocumentService {
                 mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
-            log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch (more log to debug it !) : {}", relativeWordSearch);
+            log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
         return mostCommonTerms;

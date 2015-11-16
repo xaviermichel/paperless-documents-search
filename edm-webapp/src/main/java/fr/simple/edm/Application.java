@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class Application {
 
-	@Inject
+    @Inject
     private ElasticsearchConfig elasticsearchConfig;
     
     @Value("${info.app.name:''}")
@@ -30,6 +30,11 @@ public class Application {
     @Value("${edm.tmpdir}")
     private String edmTmpsdir;
 
+    @Value("${server.address:127.0.0.1}")
+    private String serverAddress;
+    
+    @Value("${server.port}")
+    private Integer serverPort;
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(Application.class);
@@ -64,6 +69,6 @@ public class Application {
             log.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
         }
         
-        log.info("Startup is finished ! Waiting for some user on http://127.0.0.1:{}", edmTmpsdir);
+        log.info("Startup is finished ! Waiting for some user on {}:{}", serverAddress, serverPort);
     }
 }

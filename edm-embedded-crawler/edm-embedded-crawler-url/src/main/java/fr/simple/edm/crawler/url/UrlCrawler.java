@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -13,9 +12,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.simple.edm.common.EdmNodeType;
-import fr.simple.edm.common.dto.EdmDocumentFileDto;
 import fr.simple.edm.crawler.bridge.EdmConnector;
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmNodeType;
 
 
 /**
@@ -76,8 +75,8 @@ public class UrlCrawler {
        
         // add files
         double bytes = file.length();
-        double kilobytes = (bytes / 1024);
-        double megabytes = (kilobytes / 1024);
+        double kilobytes = bytes / 1024;
+        double megabytes = kilobytes / 1024;
 
         if (megabytes > 100) {
             LOGGER.warn("Skipping too big file ({})", url);
@@ -89,7 +88,7 @@ public class UrlCrawler {
         String fileToken = edmConnector.uploadFile(edmServerHttpAddress, file);
 
         // construct DTO
-        EdmDocumentFileDto document = new EdmDocumentFileDto();
+        EdmDocumentFile document = new EdmDocumentFile();
         document.setDate(new Date(file.lastModified()));
         document.setNodePath(url);
         document.setEdmNodeType(EdmNodeType.DOCUMENT);

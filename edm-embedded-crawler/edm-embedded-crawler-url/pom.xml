@@ -33,7 +33,6 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${commons-io.version}</version>
 		</dependency>
 
 		<!-- junit -->
@@ -51,7 +50,6 @@
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
-			<version>${org.easytesting.version}</version>
 			<scope>test</scope>
 		</dependency>
 

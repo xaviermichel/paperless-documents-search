@@ -106,8 +106,8 @@ public class EdmDocumentServiceTest {
     
     @Test
     public void exclustionRegexShouldBeFilled() {
-    	String exclusionRegexValue = (String) ReflectionTestUtils.getField(edmDocumentService, "edmTopTermsExlusionRegex");
-    	assertThat(exclusionRegexValue).isEqualTo("[a-z]{1,2}|[dlmcs]es|data|docs|documents|edm|files|simple|page");
+        String exclusionRegexValue = (String) ReflectionTestUtils.getField(edmDocumentService, "edmTopTermsExlusionRegex");
+        assertThat(exclusionRegexValue).isEqualTo("[a-z]{1,2}|[dlmcs]es|data|docs|documents|edm|files|simple|page");
     }
     
     /**

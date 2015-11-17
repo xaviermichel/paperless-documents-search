@@ -97,20 +97,23 @@ public class EdmDocumentController {
         }
         return edmDocumentService.save(edmDocument);
     }
-    
+
     @RequestMapping(value = "/files", method = RequestMethod.GET, params = {"docId"})
     public @ResponseBody FileSystemResource getFile(@RequestParam(value = "docId") String docId, HttpServletResponse response) throws NotFoundException, IOException {
         log.debug("Downloading file : '{}'", docId);
-        
+
         // document does not exists or access is not allowed
         EdmDocumentFile edmDocumentFile = edmDocumentService.findOne(docId);
         if (edmDocumentFile == null) {
             throw new NotFoundException(docId);
         }
-        
+
         Path filePath = Paths.get(edmDocumentFile.getNodePath());
-        response.setContentType(Files.probeContentType(filePath));  
-        return new FileSystemResource(new File(edmDocumentFile.getNodePath()));
+        File file = new File(edmDocumentFile.getNodePath());
+
+		response.setContentType(Files.probeContentType(filePath));
+        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+        return new FileSystemResource(file);
     }
 
 }

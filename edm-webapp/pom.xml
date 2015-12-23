@@ -206,7 +206,7 @@
 		</dependency>
 
 
-		<!-- Spring -->
+		<!-- spring -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -261,11 +261,6 @@
 
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch-mapper-attachments</artifactId>
 			<exclusions>
 				<exclusion>
@@ -303,7 +298,7 @@
 		</dependency>
 
 
-		<!-- File upload -->
+		<!-- file upload -->
 
 		<dependency>
 			<groupId>commons-fileupload</groupId>

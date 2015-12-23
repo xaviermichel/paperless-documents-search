@@ -18,8 +18,9 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<version>${org.springframework.springboot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>

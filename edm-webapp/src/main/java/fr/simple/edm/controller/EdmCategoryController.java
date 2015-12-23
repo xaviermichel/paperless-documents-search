@@ -14,16 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.service.EdmCategoryService;
+import lombok.Setter;
 
 @RestController
 public class EdmCategoryController {
 
     @Inject
+    @Setter
     private EdmCategoryService edmCategoryService;
 
     @RequestMapping(value = "/category", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<EdmCategory> list() {
-        return edmCategoryService.getEdmCategories();
+        return edmCategoryService.findAll();
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)

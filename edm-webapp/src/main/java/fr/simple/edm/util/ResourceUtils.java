@@ -1,5 +1,6 @@
 package fr.simple.edm.util;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -11,18 +12,18 @@ import org.apache.commons.lang3.ObjectUtils;
 @Slf4j
 public class ResourceUtils {
 
-    /**
-     * @warning returns null if cannot get content
-     */
-    public static String getContent(String path) {
+    public static String getContent(String path) throws IOException {
         try {
             URL url = getResource(path);
+            if (url == null) {
+            	throw new IOException("file was not found in classloader path");
+            }
             return IOUtils.toString(url, StandardCharsets.UTF_8);
         }
-        catch (Exception e) {
+        catch (IOException e) {
             log.warn("Failed to get content of file " + path, e);
+            throw e;
         }
-        return null;
     }
     
     

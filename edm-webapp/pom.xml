@@ -47,64 +47,46 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+					<installDirectory>target</installDirectory>
+				</configuration>
 				<executions>
 					<execution>
-						<id>exec-npm-install</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<executable>npm</executable>
-							<arguments>
-								<argument>install</argument>
-							</arguments>
-						</configuration>
+						<id>install node and npm</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v4.2.1</nodeVersion>
+							<npmVersion>2.14.7</npmVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>exec-bower-install</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<executable>bower</executable>
-							<arguments>
-								<argument>install</argument>
-							</arguments>
-						</configuration>
+						<id>bower install</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>bower</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>exec-gulp</id>
-						<phase>process-resources</phase>
-						<configuration>
-							<executable>gulp</executable>
-							<arguments>
-								<argument>minify-code</argument>
-							</arguments>
-						</configuration>
+						<id>gulp minify-code</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>gulp</goal>
 						</goals>
-					</execution>
-					<execution>
-						<id>exec-front-test</id>
-						<phase>test</phase>
 						<configuration>
-							<executable>gulp</executable>
-							<arguments>
-								<argument>test</argument>
-								<argument>--skipTests=${skipTests}</argument>
-							</arguments>
-						</configuration>
-						<goals>
-							<goal>exec</goal>
-						</goals>
+					        <arguments>minify-code</arguments>
+					    </configuration>
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
@@ -271,12 +253,18 @@
 		</dependency>
 
 
-		<!-- easytesting -->
+		<!-- test -->
 
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.jayway.jsonpath</groupId>
+		    <artifactId>json-path-assert</artifactId>
+		    <scope>test</scope>
 		</dependency>
 
 

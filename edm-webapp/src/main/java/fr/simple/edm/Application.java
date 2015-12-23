@@ -1,6 +1,7 @@
 package fr.simple.edm;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -62,7 +63,11 @@ public class Application {
         log.info("os.version                 : " + System.getProperty("os.version"));
         log.info("==================================================================================");
 
-        elasticsearchConfig.updateMappingIfLocalNode();
+        try {
+			elasticsearchConfig.updateMappingIfLocalNode();
+		} catch (IOException e) {
+			log.error("something failed while configuring elastic", e);
+		}
         
         // create temporary directory
         if (! new File(edmTmpsdir).mkdirs()) {

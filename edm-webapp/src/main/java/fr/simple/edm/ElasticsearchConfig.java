@@ -1,5 +1,6 @@
 package fr.simple.edm;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ElasticsearchConfig {
         elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
     }
 
-    private void buildOrUpdateEsMapping() {
+    private void buildOrUpdateEsMapping() throws IOException {
 
         log.info("Updating ES mapping because you're using a local node");
 
@@ -86,7 +87,7 @@ public class ElasticsearchConfig {
         log.info("Building is over !");
     }
 
-    public void updateMappingIfLocalNode() {
+    public void updateMappingIfLocalNode() throws IOException {
         log.info("Wan't update mapping...");
         if (elasticsearchClient != null && elasticsearchClient instanceof NodeClient) {
             buildOrUpdateEsMapping();

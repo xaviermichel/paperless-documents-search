@@ -42,7 +42,7 @@ import fr.simple.edm.service.EdmCategoryService;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class EdmCategoryControllerTest {
-
+	
 	private MockMvc mockMvc;
 
 	private HttpMessageConverter mappingJackson2HttpMessageConverter;

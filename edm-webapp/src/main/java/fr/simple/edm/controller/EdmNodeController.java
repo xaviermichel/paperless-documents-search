@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import fr.simple.edm.service.EdmNodeService;
 public class EdmNodeController {
 
     @Inject
+    @Setter
     private EdmNodeService edmNodeService;
 
     @RequestMapping(value = "/node/{nodeid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

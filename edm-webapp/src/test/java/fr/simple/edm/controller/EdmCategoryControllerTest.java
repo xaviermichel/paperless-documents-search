@@ -115,7 +115,7 @@ public class EdmCategoryControllerTest {
     	mockMvc.perform(post("/category").contentType(contentType).content(categoryJson))
     		.andExpect(status().isOk());
         
-        verify(edmCategoryService, times(1)).save(any(EdmCategory.class));
+        verify(edmCategoryService, times(1)).save(category1);
         verifyNoMoreInteractions(edmCategoryService);
     }
     
@@ -128,7 +128,7 @@ public class EdmCategoryControllerTest {
 			.andExpect(jsonPath("$.name", is(category2.getName())))
 			.andExpect(jsonPath("$.description", is(category2.getDescription())));
     	
-        verify(edmCategoryService, times(1)).findOneByName(any(String.class));
+        verify(edmCategoryService, times(1)).findOneByName(category2.getName());
         verifyNoMoreInteractions(edmCategoryService);
     }
     

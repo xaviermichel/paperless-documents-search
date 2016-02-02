@@ -30,7 +30,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<org.springframework.springboot.version>1.3.1.RELEASE</org.springframework.springboot.version>
+		<org.springframework.springboot.version>1.3.2.RELEASE</org.springframework.springboot.version>
 
 		<org.elasticsearch.elasticsearch-mapper-attachments.version>2.5.0</org.elasticsearch.elasticsearch-mapper-attachments.version>
 

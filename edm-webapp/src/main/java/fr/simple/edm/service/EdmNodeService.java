@@ -35,14 +35,10 @@ public class EdmNodeService {
         // not the best way, but may one of the fastest
         //
 
-        // find the node name (last non empty item)
+        // find the node name (last item)
         String[] fragmentedPath = path.split("/");
         ArrayUtils.reverse(fragmentedPath);
-        int index = 0;
-        while (fragmentedPath[index].isEmpty()) {
-            ++index;
-        }
-        String nodeName = fragmentedPath[index];
+        String nodeName = fragmentedPath[0];
 
         // candidates have the right name
         List<EdmNode> candidates = ListUtils.union(ListUtils.union(edmCategoryService.findByName(nodeName), edmSourceService.findByName(nodeName)), edmDocumentService.findByName(nodeName));

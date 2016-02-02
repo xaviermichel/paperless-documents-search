@@ -273,6 +273,24 @@ public class EdmNodeServiceTest {
         assertThat(node).isEqualTo(directoryWithDirectoryParent);
     }
     
+    
+    @Test
+    public void findOneByPathShouldReturnTheCorrectChild() {
+        EdmSource otherSubdirectory = new EdmSource();
+        otherSubdirectory.setName("subdirectory");
+        otherSubdirectory.setParentId(libraryId);
+        otherSubdirectory = edmSourceService.save(otherSubdirectory);
+    	
+        EdmNode resultForSubdirectory = edmNodeService.findOneByPath("library/directory/subdirectory");
+        EdmNode resultForOtherSubdirectory = edmNodeService.findOneByPath("library/subdirectory");
+        
+        assertThat(resultForSubdirectory).isNotNull();
+        assertThat(resultForSubdirectory).isEqualTo(directoryWithDirectoryParent);
+        
+        assertThat(resultForOtherSubdirectory).isNotNull();
+        assertThat(resultForOtherSubdirectory).isEqualTo(otherSubdirectory);
+    }
+    
     @Test
     public void nodeIdStartingWithDashIsAccepted() {
         EdmSource newDirectory = new EdmSource();
@@ -288,5 +306,4 @@ public class EdmNodeServiceTest {
         List<EdmNode> nodes = edmNodeService.getChildren(newDirectory.getId());
         assertThat(nodes).isEmpty();
     }
-   
 }

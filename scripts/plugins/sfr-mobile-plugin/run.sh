@@ -11,7 +11,7 @@ rm -fv ${SYNTHESE_TMP_FILE}
 rm -fv ${DETAILS_TMP_FILE}
 
 # download new files
-casperjs dl_invoice.js "${sfr_user}" "${sfr_pass}" "${SYNTHESE_TMP_FILE}" "${DETAILS_TMP_FILE}"
+casperjs --ignore-ssl-errors=true --ssl-protocol=tlsv1 dl_invoice.js "${sfr_user}" "${sfr_pass}" "${SYNTHESE_TMP_FILE}" "${DETAILS_TMP_FILE}"
 sleep 60
 
 if grep -qv "%PDF" <<< $(head -c 4 "${SYNTHESE_TMP_FILE}" 2>&1); then

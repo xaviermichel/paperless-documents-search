@@ -15,8 +15,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.WordUtils;
@@ -34,10 +32,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.date.InternalDateRange;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
@@ -62,6 +61,7 @@ import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.domain.EdmNode;
 import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -411,8 +411,17 @@ public class EdmDocumentService {
 
     private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-        DateHistogramBuilder aggregationBuilder = AggregationBuilders.dateHistogram("agg_date").field("date").interval(DateHistogram.Interval.MONTH);
-
+        DateRangeBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("date");
+        
+        // last month
+        aggregationBuilder.addUnboundedFrom("last_month", "now-1M/M");
+        // last 2 months
+        aggregationBuilder.addUnboundedFrom("last_2_month", "now-2M/M");
+        // last 6 months
+        aggregationBuilder.addUnboundedFrom("last_6_month", "now-6M/M");
+        // last year
+        aggregationBuilder.addUnboundedFrom("last_year", "now-12M/M");
+        
         List<EdmAggregationItem> dates = new ArrayList<>();
         
         try {
@@ -421,14 +430,10 @@ public class EdmDocumentService {
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
 
-            InternalDateHistogram buckets = response.getAggregations().get("agg_date");
-    
-            if (! buckets.getBuckets().isEmpty()) {
-                Histogram.Bucket firstBucket = buckets.getBuckets().get(0);
-                dates.add(new EdmAggregationItem(firstBucket.getKey(), firstBucket.getDocCount()));
-    
-                Histogram.Bucket lastBucket = buckets.getBuckets().get(buckets.getBuckets().size() - 1);
-                dates.add(new EdmAggregationItem(lastBucket.getKey(), lastBucket.getDocCount()));
+            InternalDateRange buckets = response.getAggregations().get("agg_date");
+            
+            for (DateRange.Bucket bucket : buckets.getBuckets()) {
+            	dates.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);

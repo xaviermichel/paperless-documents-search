@@ -32,8 +32,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.date.InternalDateRange;
@@ -416,9 +414,9 @@ public class EdmDocumentService {
         // last month
         aggregationBuilder.addUnboundedFrom("last_month", "now-1M/M");
         // last 2 months
-        aggregationBuilder.addUnboundedFrom("last_2_month", "now-2M/M");
+        aggregationBuilder.addUnboundedFrom("last_2_months", "now-2M/M");
         // last 6 months
-        aggregationBuilder.addUnboundedFrom("last_6_month", "now-6M/M");
+        aggregationBuilder.addUnboundedFrom("last_6_months", "now-6M/M");
         // last year
         aggregationBuilder.addUnboundedFrom("last_year", "now-12M/M");
         

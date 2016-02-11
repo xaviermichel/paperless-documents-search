@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -65,7 +66,7 @@ public class ElasticsearchConfig {
                 elasticsearchClient.admin().indices().updateSettings(usrb.setSettings(indexSettings).request()).actionGet();
                 elasticsearchClient.admin().indices().open(new OpenIndexRequest(index)).actionGet();
 
-            } catch (Exception e) {
+            } catch (ElasticsearchException e) {
                 log.error("Failed to rebuild index {}", index, e);
             }
 
@@ -75,7 +76,7 @@ public class ElasticsearchConfig {
                     String typeMapping = ResourceUtils.getContent(MAPPING_DIR + "/" + index + "/" + type + ".json");
                     log.info("Updating mapping for {}/{}", index, type);
                     elasticsearchClient.admin().indices().preparePutMapping(index).setType(type).setSource(typeMapping).execute().actionGet();
-                } catch (Exception e) {
+                } catch (ElasticsearchException e) {
                     log.error("Failed to read mapping or update mapping for ES", e);
                     log.error("This mode is deteriored, you may have to manualy update mapping !");
                 }

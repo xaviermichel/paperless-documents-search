@@ -1,34 +1,39 @@
 package fr.simple.edm.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import fr.simple.edm.TemplateResourcesConfig;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Controller
+@Slf4j
 public class IndexController {
 
     @Value("${info.app.name}")
     private String applicationName;
-    
-    @Value("${info.app.env}")
-    private String applicationEnv;
+
+    @Autowired
+    private TemplateResourcesConfig templateResourcesConfig;
     
     @RequestMapping("/")
-    public String home(Model model, @RequestParam(value = "debug", defaultValue = "") String debug) {
-        
+    public String home(Model model) {
+
         // current page
         model.addAttribute("section_document", true);
-        
-        // debug mode flag
-        model.addAttribute("debug", ! debug.isEmpty());
-        
+
+        // template resource configuration
+        model.mergeAttributes(templateResourcesConfig.asMap());
+
         // application informations
-        model.addAttribute("APPLICATION_NAME", applicationName);
-        model.addAttribute("APPLICATION_ENV", applicationEnv);
-        
+        model.addAttribute("app_name", applicationName);
+
+        log.debug("generating index page for client {}", model.asMap());
+
         return "home";
     }
 

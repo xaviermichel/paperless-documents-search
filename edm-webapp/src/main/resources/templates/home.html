@@ -1,44 +1,44 @@
 <html ng-app="edmApp">
 
-<head>
+<head th:with="min=(${minified} ? '.min' : '')">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title th:text="${APPLICATION_NAME}">Simple EDM</title>
+    <title th:text="${app_name}">Simple EDM</title>
 
     <!-- Scripts -->
-    <script src="/resources/bower_inc/jquery/dist/jquery.min.js"></script>
-    <script src="/resources/bower_inc/angular/angular.min.js"></script>
-    <script src="/resources/bower_inc/angular-route/angular-route.min.js"></script>
-    <script src="/resources/bower_inc/angular-resource/angular-resource.min.js"></script>
-    <script src="/resources/bower_inc/angular-animate/angular-animate.min.js"></script>
-    <script src="/resources/bower_inc/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/resources/bower_inc/moment/min/moment.min.js"></script>
-    <script src="/resources/bower_inc/moment/locale/fr.js"></script>
-    <script src="/resources/bower_inc/bootstrap-material-design/dist/js/ripples.min.js"></script>
-    <script src="/resources/bower_inc/bootstrap-material-design/dist/js/material.min.js"></script>
+    <script th:src="@{'/resources/bower_inc/jquery/dist/jquery' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular/angular' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-route/angular-route' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-resource/angular-resource' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-animate/angular-animate' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap/dist/js/bootstrap' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/moment/min/moment' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/moment/locale/fr.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/ripples' + ${min} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/material' + ${min} + '.js'}"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/resources/bower_inc/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/resources/bower_inc/bootstrap-material-design/dist/css/roboto.min.css" />
-    <link rel="stylesheet" href="/resources/bower_inc/bootstrap-material-design/dist/css/material.min.css" />
-    <link rel="stylesheet" href="/resources/bower_inc/bootstrap-material-design/dist/css/ripples.min.css" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap/dist/css/bootstrap' + ${min} + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/roboto' + ${min} + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/material' + ${min} + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/ripples' + ${min} + '.css'}" />
 
-    <span th:unless="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
-	<!-- Production resources -->
-	<link rel="stylesheet" href="/resources/build/css/production.min.css" />
+    <!-- Production resources -->
+    <span th:if="${concated}" th:remove="tag">
+		<link rel="stylesheet" th:href="@{'/resources/build/css/production' + ${min} + '.css'}" />
+		<script th:src="@{'/resources/build/js/production' + ${min} + '.js'}"></script>
+    </span>
 
-	<script th:unless="${debug}" src="/resources/build/js/production.min.js"></script>
-	<script th:if="${debug}"  src="/resources/build/js/production.js"></script>
-</span>
-    <span th:if="${APPLICATION_ENV} == 'DEV'" th:remove="tag">
-	<link rel="stylesheet" href="/resources/css/style.css"/>
-	<link rel="stylesheet" href="/resources/css/icons-sprite.css"/>
-
-	<script src="/resources/js/application.js"></script>
-	<script src="/resources/js/controllers.document.js"></script>
-	<script src="/resources/js/services.js"></script>
-</span>
+    <!-- Development resources -->
+    <span th:unless="${concated}" th:remove="tag">
+		<link rel="stylesheet" href="/resources/css/style.css"/>
+		<link rel="stylesheet" href="/resources/css/icons-sprite.css"/>
+	
+		<script src="/resources/js/application.js"></script>
+		<script src="/resources/js/controllers.document.js"></script>
+		<script src="/resources/js/services.js"></script>
+    </span>
 
 </head>
 
@@ -47,7 +47,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand spec-title" href="/" ng-href="#/" th:text="${APPLICATION_NAME}">Simple EDM</a>
+                <a class="navbar-brand spec-title" href="/" ng-href="#/" th:text="${app_name}">Simple EDM</a>
             </div>
 
             <div class="nav navbar-nav navbar-right">

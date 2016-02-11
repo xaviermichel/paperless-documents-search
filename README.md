@@ -139,6 +139,12 @@ mvn sonar:sonar
 
 Just add `?debug=true` in url : http://127.0.0.1:8053/?debug=true/#/
 
+To work with un-merged resources, you can activate `local` profile :
+```code:bash
+mvn spring-boot:run -Drun.profiles=local
+# or
+java -jar -Dspring.profiles.active=local target/simple-data-search-webapp*.jar
+```
 
 **Front tests with protractor**
 

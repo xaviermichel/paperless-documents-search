@@ -1,5 +1,7 @@
 package fr.simple.edm.controller;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +51,7 @@ public class EdmCrawlingController {
         log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
         }
 
@@ -69,7 +71,7 @@ public class EdmCrawlingController {
         log.info("[crawlUrl] Starting crawling on path : '{}'  (exclusion = '{}')", url, exclusionRegex);
         try {
             UrlCrawler.importFilesAtUrl(url, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("[crawlUrl] Failed to crawl '{}' with embedded crawler", url, e);
         }
 

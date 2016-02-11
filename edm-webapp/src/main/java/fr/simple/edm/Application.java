@@ -25,7 +25,7 @@ public class Application {
     @Value("${info.app.version:''}")
     private String applicationVersion;
     
-    @Value("${info.app.issue.url:''}")
+    @Value("${info.app.issues_url:''}")
     private String applicationIssueUrl;
     
     @Value("${edm.tmpdir}")
@@ -71,9 +71,9 @@ public class Application {
         
         // create temporary directory
         if (! new File(edmTmpsdir).mkdirs()) {
-            log.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
+            log.warn("failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
         }
         
-        log.info("Startup is finished ! Waiting for some user on {}:{}", serverAddress, serverPort);
+        log.info("server is starting and listening on {}:{}", serverAddress, serverPort);
     }
 }

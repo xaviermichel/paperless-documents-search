@@ -40,7 +40,8 @@ public class EdmSourceService {
     }
 
     public EdmSource findOneByName(String sourceName) {
-        List<EdmSource> candidates = edmSourceRepository.findByName(sourceName);
-        return candidates.isEmpty() ? new EdmSource() : candidates.get(0);
+        return edmSourceRepository.findByName(sourceName).stream()
+        		.findFirst()
+        		.orElse(new EdmSource());
     }
 }

@@ -2,7 +2,6 @@ package fr.simple.edm.service;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,8 +31,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.date.InternalDateRange;
@@ -76,9 +73,6 @@ public class EdmDocumentService {
 
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
-
-    @Inject
-    private EdmNodeService edmNodeService;
 
     @Inject
     private EdmSourceService edmSourceService;
@@ -305,22 +299,6 @@ public class EdmDocumentService {
 
     public void delete(EdmDocumentFile edmDocument) {
         edmDocumentRepository.delete(edmDocument);
-    }
-
-    /**
-     * Convert the file path to a node path.
-     * 
-     * Actually, the idea is the file path has just document.fileExtension more
-     * than node path
-     */
-    public String filePathToNodePath(String filePath) {
-        return new File(filePath).getParent().replace("\\", "/") + "/" + FilenameUtils.getBaseName(filePath);
-    }
-
-    public EdmDocumentFile findEdmDocumentByFilePath(String filePath) {
-        String nodePath = filePathToNodePath(filePath);
-        log.debug("Get server file path for node path : '{}'", nodePath);
-        return (EdmDocumentFile) edmNodeService.findOneByPath(nodePath);
     }
 
     public void snapshotCurrentDocumentsForSource(String sourceName) {

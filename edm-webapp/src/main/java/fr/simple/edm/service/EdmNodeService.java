@@ -44,13 +44,10 @@ public class EdmNodeService {
         List<EdmNode> candidates = ListUtils.union(ListUtils.union(edmCategoryService.findByName(nodeName), edmSourceService.findByName(nodeName)), edmDocumentService.findByName(nodeName));
 
         // the winner is the one which has the right path
-        for (EdmNode node : candidates) {
-            if (getPathOfNode(node).equalsIgnoreCase(path)) {
-                return node;
-            }
-        }
-
-        return null;
+        return candidates.stream()
+	        	.filter(node -> getPathOfNode(node).equalsIgnoreCase(path))
+	        	.findAny()
+	        	.orElse(null);
     }
 
     /**

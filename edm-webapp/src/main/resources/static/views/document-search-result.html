@@ -16,53 +16,6 @@
 <br/>
 <br/>
 
-<div class="k-content col-md-12" ng-if="searchedPattern.trim().length !== 0">
-
-    <button class="btn btn-default btn-raised" type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter">
-        Filtrer les résultats
-    </button>
-
-    <div class="collapse" id="collapseFilter">
-
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="k-content col-md-4">
-                    <strong>Extension des fichiers</strong>
-                    <br/>
-                    <form name="input_fileExtension" class="filetype-columns">
-                        <span ng-repeat="aggItem in aggregations.fileExtension">
-					<input	type="checkbox"
-							ng-checked="true"
-							ng-change="submitSearchWithFilters()"
-							ng-model="aggItem.isChecked"
-							ng-init="aggItem.isChecked = true"
-					/>
-					{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
-                        <br/>
-                        </span>
-                    </form>
-                </div>
-
-                <div class="k-content col-md-8">
-                    <strong>Date des fichiers</strong>
-                    <br/> Les fichiers vont de {{dateFilter.initialFrom | moment:'MMMM YYYY'}} à {{dateFilter.initialTo | moment:'MMMM YYYY'}}
-                    <br/> Du
-                    <form name="input_fileDate">
-                        <input type="date" name="dateFilter_from" ng-model="dateFilter.from" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" ng-required="true" /> au
-                        <input type="date" name="dateFilter_to" ng-model="dateFilter.to" ng-change="submitSearchWithFilters()" ng-model-options="{ debounce: 500 }" ng-required="true" />
-                    </form>
-                    <div class="text-warning">
-                        <span ng-show="input_fileDate.dateFilter_from.$error.date">Woops, il faut saisir une date de début valide !</span>
-                        <span ng-show="input_fileDate.dateFilter_to.$error.date">Woops, il faut saisir une date de fin valide !</span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <div class="k-content col-md-8">
 
     <div class="pull-right" ng-show="searchResults"><small><em class="text-muted"><span class="spec-doc-found-count">{{searchResults.totalHitsCount}}</span> documents trouvés en {{searchResults.tookTime}} ms</em></small></div>
@@ -96,4 +49,42 @@
             <a href="" ng-click="addWordAndSubmitSearch(topTerm.key)">{{topTerm.key}} <span class="badge">{{topTerm.docCount}}</span></a>
         </li>
     </ul>
+
+    <span ng-if="searchedPattern">
+
+ 	<hr/>
+
+    <strong>Date</strong>
+	<br/>
+	<form name="input_fileDate" class="filetype-columns">
+	    <span ng-repeat="aggItem in aggregations.date" ng-init="currentData = extractAggregationInfoFromDateAgg(aggItem.key)">
+			<input	type="radio"
+			        ng-change="submitSearchWithFilters()"
+					ng-model="$parent.$parent.dateAggregationFilter"
+					name="dateAggregationFilter"
+					ng-value="currentData.value"
+			/>
+			{{currentData.label}} <span class="badge">{{aggItem.docCount}}</span>
+    <br/>
+    </span>
+    </form>
+
+    <hr/>
+
+    <strong>Type</strong>
+    <br/>
+    <form name="input_fileExtension" class="filetype-columns">
+        <span ng-repeat="aggItem in aggregations.fileExtension">
+			<input	type="checkbox"
+					ng-checked="true"
+					ng-change="submitSearchWithFilters()"
+					ng-model="aggItem.isChecked"
+					ng-init="aggItem.isChecked = true"
+			/>
+			{{aggItem.key}} <span class="badge">{{aggItem.docCount}}</span>
+        <br/>
+        </span>
+    </form>
+
+    </span>
 </div>

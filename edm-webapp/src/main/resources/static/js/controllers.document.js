@@ -10,12 +10,6 @@ angular.module('edmApp')
                 date: [],
                 fileExtension: []
             };
-            $scope.dateFilter = {
-                initialFrom: new Date(),
-                initialTo: new Date(),
-                from: new Date(),
-                to: new Date()
-            };
 
             // prevent re-loading when searching
             var lastRoute = $route.current;
@@ -104,6 +98,35 @@ angular.module('edmApp')
                 $scope.submitSearch();
             };
 
+            $scope.extractAggregationInfoFromDateAgg = function(key) {
+                computeValue = function(monthToRemove) {
+                    var fromDate = moment().subtract(monthToRemove, 'months').startOf("month").format('YYYY-MM-DD');
+                    var toDate = moment().endOf("month").format('YYYY-MM-DD'); // can be removed for '*' ?
+                    return "(date:[" + fromDate + " TO " + toDate + "])";
+                };
+
+                var candidates = {
+                    last_year: {
+                        label: "Durant l'année passée",
+                        value: computeValue(12)
+                    },
+                    last_6_months: {
+                        label: "Durant ces 6 derniers mois",
+                        value: computeValue(6)
+                    },
+                    last_2_months: {
+                        label: "Durant ces 2 derniers mois",
+                        value: computeValue(2)
+                    },
+                    last_month: {
+                        label: "Durant le mois qui vient de s'écouler",
+                        value: computeValue(1)
+                    }
+                };
+
+                return candidates[key];
+            };
+
             /**
              * Get query filter as string
              * For example : " AND (date:[2015-09-01 TO 2015-09-30])"
@@ -123,18 +146,15 @@ angular.module('edmApp')
                         return "fileExtension:" + e.key;
                     })
                     .join(" OR ");
-
-                if (aggregateFileExtensionFilter.length !== 0) {
+                if (aggregateFileExtensionFilter) {
                     aggregateFileExtensionFilter = " AND (" + aggregateFileExtensionFilter + ")";
                 }
                 console.debug("aggregateFileExtensionFilter = " + aggregateFileExtensionFilter);
 
-                // date
+                // date 
                 var aggregateDateFilter = "";
-                if ($scope.dateFilter.initialFrom.getTime() !== $scope.dateFilter.from.getTime() || $scope.dateFilter.initialTo.getTime() !== $scope.dateFilter.to.getTime()) {
-                    var fromDate = moment($scope.dateFilter.from).startOf("month").format('YYYY-MM-DD');
-                    var toDate = moment($scope.dateFilter.to).endOf("month").format('YYYY-MM-DD');
-                    aggregateDateFilter = " AND (date:[" + fromDate + " TO " + toDate + "])";
+                if ($scope.dateAggregationFilter) {
+                    aggregateDateFilter = " AND " + $scope.dateAggregationFilter;
                 }
                 console.debug("aggregateDateFilter = " + aggregateDateFilter);
 
@@ -166,19 +186,6 @@ angular.module('edmApp')
 
                 $http.get('/document/aggregations?q=' + ($scope.searchedPattern || '')).success(function(response, status, headers, config) {
                     $scope.aggregations = response;
-                    $scope.fromDate = ($scope.aggregations.date[0] ? new Date($scope.aggregations.date[0].key) : new Date());
-                    $scope.toDate = ($scope.aggregations.date[1] ? new Date($scope.aggregations.date[1].key) : new Date());
-                    $scope.fromDateFilter = new Date($scope.fromDate);
-                    $scope.toDateFilter = new Date($scope.toDate);
-
-                    var initialFromDate = ($scope.aggregations.date[0] ? new Date($scope.aggregations.date[0].key) : new Date());
-                    var initialToDate = ($scope.aggregations.date[1] ? new Date($scope.aggregations.date[1].key) : new Date());
-                    $scope.dateFilter = {
-                        initialFrom: initialFromDate,
-                        initialTo: initialToDate,
-                        from: initialFromDate,
-                        to: initialToDate
-                    };
                 });
             };
 

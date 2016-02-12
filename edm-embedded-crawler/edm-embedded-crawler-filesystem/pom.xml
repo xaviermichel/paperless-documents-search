@@ -12,13 +12,6 @@
 	<artifactId>simple-data-search-embedded-crawler-filesystem</artifactId>
 	<name>Filesystem crawler</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		
-		<junit.version>4.11</junit.version>
-		<org.easytesting.version>2.0M8</org.easytesting.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>fr.simple.edm</groupId>
@@ -26,12 +19,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		
 		<!-- junit -->
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 

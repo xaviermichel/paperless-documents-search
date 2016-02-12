@@ -2,16 +2,15 @@ package fr.simple.edm.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.http.client.ClientProtocolException;
+import org.apache.commons.io.FilenameUtils;
 
 import fr.simple.edm.crawler.bridge.EdmConnector;
 import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmNodeType;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FilesystemCrawler {
@@ -61,7 +60,7 @@ public class FilesystemCrawler {
 
     private static void importFilesInDir(String filePath,
             final String edmServerHttpAddress, final String sourceId,
-            final String exclusionRegex) throws ClientProtocolException {
+            final String exclusionRegex) {
 
         log.info("Embedded crawler looks for : " + filePath);
 
@@ -96,20 +95,22 @@ public class FilesystemCrawler {
             if (megabytes > 100) {
                 log.warn("Skipping too big file ({})", filePath);
             } else {
-                // upload the file
-                String fileToken = edmConnector.uploadFile(
-                        edmServerHttpAddress, file);
-
                 // construct DTO
-                EdmDocumentFile document = new EdmDocumentFile();
+            	EdmDocumentFile document = new EdmDocumentFile();
                 document.setDate(new Date(file.lastModified()));
                 document.setNodePath(filePath.replaceAll("\\\\", "/"));
-                document.setEdmNodeType(EdmNodeType.DOCUMENT);
                 document.setParentId(sourceId);
-                document.setTemporaryFileToken(fileToken);
-
+                document.setName(FilenameUtils.removeExtension(file.getName()));
+                document.setFileExtension(FilenameUtils.getExtension(filePath).toLowerCase());
+                
                 // save DTO
-                edmConnector.saveEdmDocument(edmServerHttpAddress, document);
+                try {
+                	document.setFileContentType(Files.probeContentType(file.toPath()));
+                	edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
+                }
+                catch (IOException e) {
+                	log.error("failed to save edm docuement '{}'", filePath, e);
+                }
             }
 
             // release memory

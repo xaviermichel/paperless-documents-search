@@ -3,9 +3,6 @@ package fr.simple.edm.service;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +12,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.index.IndexResponse;
@@ -124,31 +120,11 @@ public class EdmDocumentService {
                 }
             }
 
-            if (! StringUtils.isEmpty(edmDocument.getFilename())) {
-
-                // computed values
-                String thisDocumentFileExtension = FilenameUtils.getExtension(edmDocument.getFilename());
-                edmDocument.setFileExtension(thisDocumentFileExtension);
-
-                String from = edmDocument.getFilename();
-                edmDocument.setFilename("");
-                Path filePath = Paths.get(from);
-
-                contentBuilder.startObject("file");
-
-                String contentType = Files.probeContentType(filePath);
-                String content = Base64.encodeBytes(Files.readAllBytes(filePath));
-
-                contentBuilder.field("_content", content);
-                contentBuilder.field("_language", "fr");
-
-                contentBuilder.endObject();
-
-                contentBuilder.field("fileExtension", thisDocumentFileExtension);
-                contentBuilder.field("fileContentType", contentType);
-
-                // remove temporary document
-                Files.deleteIfExists(filePath);
+            if (edmDocument.getFileContent() != null && edmDocument.getFileContent().length > 0) {
+	            contentBuilder.startObject("file");
+	            contentBuilder.field("_content", Base64.encodeBytes(edmDocument.getFileContent()));
+	            contentBuilder.field("_language", "fr");
+	            contentBuilder.endObject();
             }
 
             // and that's all folks

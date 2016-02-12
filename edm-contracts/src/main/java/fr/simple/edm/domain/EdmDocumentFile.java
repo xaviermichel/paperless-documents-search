@@ -22,15 +22,12 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Document(indexName = "documents", type = "document_file")
 public class EdmDocumentFile extends EdmNode implements Serializable {
 
-    private String filename;
-    
     private String fileExtension;
 
     private String fileContentType;
     
-    // only used to make a bridge with uploaded file
     @Transient
-    private String temporaryFileToken;
+    private byte[] fileContent;
     
     private Date date;
     

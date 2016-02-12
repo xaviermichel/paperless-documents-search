@@ -73,9 +73,7 @@ public class EdmNodeServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        
-        String targetDirAbsolutePath = System.getProperty("user.dir") + (System.getProperty("user.dir").contains("edm-webapp") ? "" : "/edm-webapp") + "/target/test-classes/";
-        
+
         elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 
         // building a fake environment
@@ -95,9 +93,9 @@ public class EdmNodeServiceTest {
         edmDocument = new EdmDocumentFile();
         edmDocument.setName("document");
         edmDocument.setParentId(edmDirectory.getId());
-        // make a copy because moving test file is not acceptable (someone may come after and require this file) ! 
-        Files.copy(Paths.get(targetDirAbsolutePath + "demo_pdf.pdf"), Paths.get(targetDirAbsolutePath + "demo_pdf_tmp.pdf"));
-        edmDocument.setFilename(targetDirAbsolutePath + "demo_pdf_tmp.pdf");
+        edmDocument.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/demo_pdf.pdf").toURI())));
+        edmDocument.setFileContentType("application/pdf");
+        edmDocument.setFileExtension("pdf");
         edmDocument.setNodePath("/documents/1");
         
         edmDocument = edmDocumentService.save(edmDocument);

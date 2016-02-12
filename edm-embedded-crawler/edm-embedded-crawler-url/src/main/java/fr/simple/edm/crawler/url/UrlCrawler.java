@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.simple.edm.crawler.bridge.EdmConnector;
 import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmNodeType;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -23,6 +23,7 @@ import fr.simple.edm.domain.EdmNodeType;
  * @author xavier
  * 
  */
+@Slf4j
 public class UrlCrawler {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(UrlCrawler.class);
@@ -84,20 +85,22 @@ public class UrlCrawler {
             return;
         }
         
-        // upload the file
-        String fileToken = edmConnector.uploadFile(edmServerHttpAddress, file);
-
         // construct DTO
         EdmDocumentFile document = new EdmDocumentFile();
         document.setDate(new Date(file.lastModified()));
         document.setNodePath(url);
-        document.setEdmNodeType(EdmNodeType.DOCUMENT);
         document.setName(url.replaceFirst("[.][^.]+$", ""));
         document.setParentId(sourceId);
-        document.setTemporaryFileToken(fileToken);
+        document.setFileExtension(FilenameUtils.getExtension(url).toLowerCase());
 
         // save DTO
-        edmConnector.saveEdmDocument(edmServerHttpAddress, document);
+        try {
+        	document.setFileContentType(Files.probeContentType(file.toPath()));
+        	edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
+        }
+        catch (IOException e) {
+        	log.error("failed to save edm docuement : {}", url);
+        }
         
         // cleaning
         Files.delete(file.toPath());

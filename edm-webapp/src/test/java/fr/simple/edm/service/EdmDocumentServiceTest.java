@@ -35,7 +35,7 @@ public class EdmDocumentServiceTest {
 
     @Autowired
     private EdmDocumentService edmDocumentService;
-
+    
     private EdmDocumentFile docBac;
     private EdmDocumentFile docBrevet;
     private EdmDocumentFile docBacNotes;
@@ -48,8 +48,6 @@ public class EdmDocumentServiceTest {
     @Before
     public void setUp() throws Exception {
         elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-
-        String targetDirAbsolutePath = System.getProperty("user.dir") + (System.getProperty("user.dir").contains("edm-webapp") ? "" : "/edm-webapp") + "/target/test-classes/";
 
         docBac = new EdmDocumentFile();
         docBac.setName("Diplome du bac");
@@ -66,12 +64,14 @@ public class EdmDocumentServiceTest {
         docBulletinSalaire = new EdmDocumentFile();
         docBulletinSalaire.setName("Bulletin de paye");
         docBulletinSalaire.setNodePath("/salaire/02.pdf");
+        docBulletinSalaire.setFileContentType("application/pdf");
+        docBulletinSalaire.setFileExtension("pdf");
 
         docLatex = new EdmDocumentFile();
         docLatex.setName("Un template de document");
-        // make a copy because moving test file is not acceptable (someone may come after and require this file) !
-        Files.copy(Paths.get(targetDirAbsolutePath + "demo_pdf.pdf"), Paths.get(targetDirAbsolutePath + "demo_pdf_tmp.pdf"));
-        docLatex.setFilename(targetDirAbsolutePath + "demo_pdf_tmp.pdf");
+        docLatex.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/demo_pdf.pdf").toURI())));
+        docLatex.setFileContentType("application/pdf");
+        docLatex.setFileExtension("pdf");
         docLatex.setNodePath("/documents/4");
 
         docBac = edmDocumentService.save(docBac);

@@ -1,13 +1,13 @@
 {
   "source": {
     "properties": {
-      "parentId": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
       "name": {
         "type": "string",
-        "analyzer": "edm_analyzer_french"
+        "analyzer":"edm_analyzer_french"
+      },
+      "description": {
+        "type": "string",
+        "index": "not_analyzed"
       }
     }
   }

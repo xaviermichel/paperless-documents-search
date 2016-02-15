@@ -45,8 +45,7 @@ public class FilesystemCrawler {
         // index
         log.debug("The source ID is {}", sourceId);
         edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
-        importFilesInDir(filePath, edmServerHttpAddress, sourceId,
-                exclusionRegex);
+        _importFilesInDir(filePath, edmServerHttpAddress, sourceId, categoryId, exclusionRegex);
         edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
     }
 
@@ -58,9 +57,8 @@ public class FilesystemCrawler {
         return toExclude;
     }
 
-    private static void importFilesInDir(String filePath,
-            final String edmServerHttpAddress, final String sourceId,
-            final String exclusionRegex) {
+    private static void _importFilesInDir(String filePath, final String edmServerHttpAddress, 
+            final String sourceId, final String categoryId,  final String exclusionRegex) {
 
         log.info("Embedded crawler looks for : " + filePath);
 
@@ -76,8 +74,7 @@ public class FilesystemCrawler {
         if (file != null && file.isDirectory()) {
             log.debug("... is a directory !");
             for (File subFile : file.listFiles()) {
-                importFilesInDir(filePath + "/" + subFile.getName(),
-                        edmServerHttpAddress, sourceId, exclusionRegex);
+                _importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId, categoryId, exclusionRegex);
             }
 
             // release memory
@@ -96,20 +93,21 @@ public class FilesystemCrawler {
                 log.warn("Skipping too big file ({})", filePath);
             } else {
                 // construct DTO
-            	EdmDocumentFile document = new EdmDocumentFile();
+                EdmDocumentFile document = new EdmDocumentFile();
                 document.setDate(new Date(file.lastModified()));
                 document.setNodePath(filePath.replaceAll("\\\\", "/"));
-                document.setParentId(sourceId);
+                document.setSourceId(sourceId);
+                document.setCategoryId(categoryId);
                 document.setName(FilenameUtils.removeExtension(file.getName()));
                 document.setFileExtension(FilenameUtils.getExtension(filePath).toLowerCase());
                 
                 // save DTO
                 try {
-                	document.setFileContentType(Files.probeContentType(file.toPath()));
-                	edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
+                    document.setFileContentType(Files.probeContentType(file.toPath()));
+                    edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
                 }
                 catch (IOException e) {
-                	log.error("failed to save edm docuement '{}'", filePath, e);
+                    log.error("failed to save edm docuement '{}'", filePath, e);
                 }
             }
 

@@ -29,8 +29,8 @@ public class EdmCategoryController {
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmCategory create(@RequestBody EdmCategory edmLibrary) {
-        return edmCategoryService.save(edmLibrary);
+    public @ResponseBody EdmCategory create(@RequestBody EdmCategory edmCategory) {
+        return edmCategoryService.save(edmCategory);
     }
 
     @RequestMapping(value = "/category/name/{categoryName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import fr.simple.edm.crawler.filesystem.FilesystemCrawler;
 import fr.simple.edm.crawler.url.UrlCrawler;
 import fr.simple.edm.service.EdmDocumentService;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j

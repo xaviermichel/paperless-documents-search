@@ -1,7 +1,11 @@
 {
   "document_file":{
     "properties":{
-      "parentId":{
+      "sourceId":{
+        "type":"string",
+        "index":"not_analyzed"
+      },
+      "categoryId":{
         "type":"string",
         "index":"not_analyzed"
       },

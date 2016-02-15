@@ -1,5 +1,7 @@
 package fr.simple.edm.controller;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.springframework.http.MediaType;
@@ -18,6 +20,11 @@ public class EdmSourceController {
 
     @Inject
     private EdmSourceService edmSourceService;
+    
+    @RequestMapping(value = "/source", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody List<EdmSource> list() {
+        return edmSourceService.findAll();
+    }
     
     @RequestMapping(method=RequestMethod.POST, value="/source", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody EdmSource create(@RequestBody EdmSource edmDirectory) {

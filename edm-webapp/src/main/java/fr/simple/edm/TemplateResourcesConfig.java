@@ -15,25 +15,25 @@ public class TemplateResourcesConfig {
     private boolean minified;
 
     public boolean isConcated() {
-		return concated;
-	}
+        return concated;
+    }
 
-	public void setConcated(boolean concated) {
-		this.concated = concated;
-	}
+    public void setConcated(boolean concated) {
+        this.concated = concated;
+    }
 
-	public boolean isMinified() {
-		return minified;
-	}
+    public boolean isMinified() {
+        return minified;
+    }
 
-	public void setMinified(boolean minified) {
-		this.minified = minified;
-	}
+    public void setMinified(boolean minified) {
+        this.minified = minified;
+    }
 
-	public Map<String, Object> asMap() {
-		Map<String, Object> conf = new HashMap<>();
-		conf.put("concated", concated);
-		conf.put("minified", minified);
-		return conf;
+    public Map<String, Object> asMap() {
+        Map<String, Object> conf = new HashMap<>();
+        conf.put("concated", concated);
+        conf.put("minified", minified);
+        return conf;
     }
 }

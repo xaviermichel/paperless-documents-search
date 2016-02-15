@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * Crawl a ressource which is behind an url
+ * Crawl a resource which is behind an url
  * 
  * @author xavier
  * 
@@ -50,7 +50,7 @@ public class UrlCrawler {
         // index
         LOGGER.debug("The source ID is {}", sourceId);
         edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
-        importFilesAtUrl(url, edmServerHttpAddress, sourceId, exclusionRegex);
+        _importFilesAtUrl(url, edmServerHttpAddress, sourceId, categoryId, exclusionRegex);
         edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
     }
     
@@ -60,7 +60,7 @@ public class UrlCrawler {
         return toExclude;
     }
 
-    private static void importFilesAtUrl(String url, final String edmServerHttpAddress, final String sourceId, final String exclusionRegex) throws IOException {
+    private static void _importFilesAtUrl(String url, final String edmServerHttpAddress, final String sourceId, final String categoryId, final String exclusionRegex) throws IOException {
 
         LOGGER.info("Embedded crawler looks for : " + url);
 
@@ -90,16 +90,17 @@ public class UrlCrawler {
         document.setDate(new Date(file.lastModified()));
         document.setNodePath(url);
         document.setName(url.replaceFirst("[.][^.]+$", ""));
-        document.setParentId(sourceId);
+        document.setSourceId(sourceId);
+        document.setCategoryId(categoryId);
         document.setFileExtension(FilenameUtils.getExtension(url).toLowerCase());
 
         // save DTO
         try {
-        	document.setFileContentType(Files.probeContentType(file.toPath()));
-        	edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
+            document.setFileContentType(Files.probeContentType(file.toPath()));
+            edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
         }
         catch (IOException e) {
-        	log.error("failed to save edm docuement : {}", url);
+            log.error("failed to save edm docuement : {}", url);
         }
         
         // cleaning

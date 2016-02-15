@@ -2,7 +2,6 @@ package fr.simple.edm.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,50 +41,50 @@ import fr.simple.edm.service.EdmCategoryService;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class EdmCategoryControllerTest {
-	
-	private MockMvc mockMvc;
+    
+    private MockMvc mockMvc;
 
-	private HttpMessageConverter mappingJackson2HttpMessageConverter;
-	
-	@Autowired
+    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    
+    @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
         Assert.assertNotNull("the JSON message converter must not be null", this.mappingJackson2HttpMessageConverter);
     }
-	
-	private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    
+    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
-	
-	
-	@Autowired
+    
+    
+    @Autowired
     private WebApplicationContext webApplicationContext;
-	
-	@Autowired
-	private EdmCategoryController edmCategoryController;
-	
-	private EdmCategoryService edmCategoryService;
-	
-	private EdmCategory category1;
-	
-	private EdmCategory category2;
-	
-	@Before
+    
+    @Autowired
+    private EdmCategoryController edmCategoryController;
+    
+    private EdmCategoryService edmCategoryService;
+    
+    private EdmCategory category1;
+    
+    private EdmCategory category2;
+    
+    @Before
     public void setup() {
-		mockMvc = webAppContextSetup(webApplicationContext).build();
-		
-    	edmCategoryService = mock(EdmCategoryService.class);    
-    	
-    	category1 = new EdmCategory();
-    	category1.setId("category_id_1");
-    	category1.setName("category_name_1");
-    	category1.setDescription("category_description_1");
-    	
-    	category2 = new EdmCategory();
-    	category2.setId("category_id_2");
-    	category2.setName("category_name_2");
-    	category2.setDescription("category_description_2");
+        mockMvc = webAppContextSetup(webApplicationContext).build();
+        
+        edmCategoryService = mock(EdmCategoryService.class);    
+        
+        category1 = new EdmCategory();
+        category1.setId("category_id_1");
+        category1.setName("category_name_1");
+        category1.setDescription("category_description_1");
+        
+        category2 = new EdmCategory();
+        category2.setId("category_id_2");
+        category2.setName("category_name_2");
+        category2.setDescription("category_description_2");
 
         when(edmCategoryService.findAll()).thenReturn(Arrays.asList(category1, category2));
         when(edmCategoryService.findOneByName(category1.getName())).thenReturn(category1);
@@ -93,15 +92,15 @@ public class EdmCategoryControllerTest {
         
         edmCategoryController.setEdmCategoryService(edmCategoryService);
     }
-	
+    
     @Test
     public void findAllShouldReturnsAllCategories() throws Exception {
-    	mockMvc.perform(get("/category").accept(contentType))
-        		.andExpect(status().isOk())
-        		.andExpect(content().contentType("application/json;charset=UTF-8"))
-        		.andExpect(jsonPath("$", hasSize(2)))
-        		.andExpect(jsonPath("$[0].id", is(category1.getId())))
-        		.andExpect(jsonPath("$[1].id", is(category2.getId())));
+        mockMvc.perform(get("/category").accept(contentType))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(category1.getId())))
+                .andExpect(jsonPath("$[1].id", is(category2.getId())));
         
         verify(edmCategoryService, times(1)).findAll();
         verifyNoMoreInteractions(edmCategoryService);
@@ -110,10 +109,10 @@ public class EdmCategoryControllerTest {
     
     @Test
     public void postCategoryShouldCallCategoryService() throws Exception {
-    	 String categoryJson = json(category1);
-    	
-    	mockMvc.perform(post("/category").contentType(contentType).content(categoryJson))
-    		.andExpect(status().isOk());
+         String categoryJson = json(category1);
+        
+        mockMvc.perform(post("/category").contentType(contentType).content(categoryJson))
+            .andExpect(status().isOk());
         
         verify(edmCategoryService, times(1)).save(category1);
         verifyNoMoreInteractions(edmCategoryService);
@@ -121,13 +120,13 @@ public class EdmCategoryControllerTest {
     
     @Test
     public void getCategoryByNameShouldCallCategoryService() throws Exception {
-    	mockMvc.perform(get("/category/name/" + category2.getName()).accept(contentType))
-			.andExpect(status().isOk())
-			.andExpect(content().contentType("application/json;charset=UTF-8"))
-			.andExpect(jsonPath("$.id", is(category2.getId())))
-			.andExpect(jsonPath("$.name", is(category2.getName())))
-			.andExpect(jsonPath("$.description", is(category2.getDescription())));
-    	
+        mockMvc.perform(get("/category/name/" + category2.getName()).accept(contentType))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.id", is(category2.getId())))
+            .andExpect(jsonPath("$.name", is(category2.getName())))
+            .andExpect(jsonPath("$.description", is(category2.getDescription())));
+        
         verify(edmCategoryService, times(1)).findOneByName(category2.getName());
         verifyNoMoreInteractions(edmCategoryService);
     }

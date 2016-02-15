@@ -4,6 +4,12 @@
 	column-count: 2;
 }
 
+.filecategory-columns {
+	-webkit-column-count: 1;
+	-moz-column-count: 1;
+	column-count: 1;
+}
+
 .filedate-columns {
 	-webkit-column-count: 1;
 	-moz-column-count: 1;

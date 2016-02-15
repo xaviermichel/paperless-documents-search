@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.persistence.Transient;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.WordUtils;
@@ -38,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.data.elasticsearch.core.FacetedPageImpl;
@@ -51,7 +51,6 @@ import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
-import fr.simple.edm.domain.EdmNode;
 import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +71,7 @@ public class EdmDocumentService {
 
     @Inject
     private EdmSourceService edmSourceService;
-
+    
     @Inject
     private ElasticsearchOperations elasticsearchTemplate;
 
@@ -93,8 +92,10 @@ public class EdmDocumentService {
     public EdmDocumentFile save(EdmDocumentFile edmDocument) {
 
         // unique identifier for updating
-        String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getParentId());
+        String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getSourceId());
         edmDocument.setId(id);
+
+        edmDocument.setCategoryId(edmDocument.getCategoryId());
 
         try {
             // the document is build manually to
@@ -106,25 +107,25 @@ public class EdmDocumentService {
             // add document attributes
             contentBuilder.startObject();
 
-            Class<?>[] classes = new Class[] { EdmNode.class, EdmDocumentFile.class };
-            for (Class<?> clazz : classes) {
-                for (Method m : clazz.getDeclaredMethods()) {
-                    if (m.getName().startsWith("get")) {
-                        if ("getFilename".equalsIgnoreCase(m.getName())) { // ignore this type
-                            continue;
-                        }
-                        Object oo = m.invoke(edmDocument);
-                        String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
-                        contentBuilder.field(fieldName, oo);
+            for (Method m : EdmDocumentFile.class.getDeclaredMethods()) {
+                if (m.getName().startsWith("get")) {
+                    Object oo = m.invoke(edmDocument);
+                    String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
+                   
+                    // ignore if transient
+                    if (EdmDocumentFile.class.getDeclaredField(fieldName).isAnnotationPresent(Transient.class)) {
+                        continue;
                     }
+                    
+                    contentBuilder.field(fieldName, oo);
                 }
             }
 
             if (edmDocument.getFileContent() != null && edmDocument.getFileContent().length > 0) {
-	            contentBuilder.startObject("file");
-	            contentBuilder.field("_content", Base64.encodeBytes(edmDocument.getFileContent()));
-	            contentBuilder.field("_language", "fr");
-	            contentBuilder.endObject();
+                contentBuilder.startObject("file");
+                contentBuilder.field("_content", Base64.encodeBytes(edmDocument.getFileContent()));
+                contentBuilder.field("_language", "fr");
+                contentBuilder.endObject();
             }
 
             // and that's all folks
@@ -139,8 +140,8 @@ public class EdmDocumentService {
             log.error("Failed to index document", e);
         }
 
-        if (sourceDocumentsIds.get(edmDocument.getParentId()) != null) {
-            sourceDocumentsIds.get(edmDocument.getParentId()).remove(edmDocument.getId());
+        if (sourceDocumentsIds.get(edmDocument.getSourceId()) != null) {
+            sourceDocumentsIds.get(edmDocument.getSourceId()).remove(edmDocument.getId());
         }
 
         return edmDocument;
@@ -264,11 +265,6 @@ public class EdmDocumentService {
         return searchResult;
     }
 
-    public List<EdmDocumentFile> findByParent(String parentId) {
-        Page<EdmDocumentFile> page = edmDocumentRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
-        return page.getContent();
-    }
-
     public List<EdmDocumentFile> findByName(String name) {
         return edmDocumentRepository.findByName(name);
     }
@@ -290,10 +286,10 @@ public class EdmDocumentService {
         int pageSize = 10;
 
         Pageable pageRequest = new PageRequest(0, pageSize);
-        Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
+        Page<EdmDocumentFile> edmDocumentPage = edmDocumentRepository.findBySourceId(sourceId, pageRequest);
 
         while (edmDocumentPage.getSize() > 0) {
-            log.debug("EdmDocumentFile, findByParentId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
+            log.debug("EdmDocumentFile, findBySourceId page {} on {}", edmDocumentPage.getNumber() + 1, edmDocumentPage.getTotalPages());
 
             for (EdmDocumentFile doc : edmDocumentPage.getContent()) {
                 edmDocumentsIds.add(doc.getId());
@@ -303,7 +299,7 @@ public class EdmDocumentService {
                 break;
             }
             pageRequest = edmDocumentPage.nextPageable();
-            edmDocumentPage = edmDocumentRepository.findByParentId(sourceId, pageRequest);
+            edmDocumentPage = edmDocumentRepository.findBySourceId(sourceId, pageRequest);
         }
         sourceDocumentsIds.put(sourceId, edmDocumentsIds);
 
@@ -387,7 +383,7 @@ public class EdmDocumentService {
             InternalDateRange buckets = response.getAggregations().get("agg_date");
             
             for (DateRange.Bucket bucket : buckets.getBuckets()) {
-            	dates.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+                dates.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);

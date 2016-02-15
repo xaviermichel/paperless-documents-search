@@ -13,15 +13,11 @@ import org.springframework.web.client.RestTemplate;
 
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmNodeType;
 import fr.simple.edm.domain.EdmSource;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class EdmConnector {
 
     public void saveEdmDocument(String server, EdmDocumentFile doc, File file) throws IOException {
-        doc.setEdmNodeType(EdmNodeType.DOCUMENT);
         doc.setFileContent(Files.readAllBytes(file.toPath()));
 
         RestTemplate restTemplate = new RestTemplate();
@@ -58,7 +54,6 @@ public class EdmConnector {
         EdmSource directory = new EdmSource();
         directory.setDescription("");
         directory.setName(sourceName);
-        directory.setParentId(categoryId);
         ResponseEntity<EdmSource> createdSource = restTemplate.postForEntity(server + "/source", directory, EdmSource.class);
         return createdSource.getBody().getId();
     }

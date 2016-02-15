@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 public class EdmDocumentController {
-
-    @Value("${edm.tmpdir}")
-    private String edmpTmpdir;
 
     @Inject
     private EdmDocumentService edmDocumentService;
@@ -80,7 +76,7 @@ public class EdmDocumentController {
         Path filePath = Paths.get(edmDocumentFile.getNodePath());
         File file = new File(edmDocumentFile.getNodePath());
 
-		response.setContentType(Files.probeContentType(filePath));
+        response.setContentType(Files.probeContentType(filePath));
         response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
         return new FileSystemResource(file);
     }

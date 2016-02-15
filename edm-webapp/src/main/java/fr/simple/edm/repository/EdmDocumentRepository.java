@@ -12,9 +12,9 @@ import fr.simple.edm.domain.EdmDocumentFile;
 
 public interface EdmDocumentRepository extends ElasticsearchRepository<EdmDocumentFile, String> {
 
-    @Query("{\"match\": {\"parentId\" : \"?0\"}}")
-    Page<EdmDocumentFile> findByParentId(String parentId, Pageable page);
-
+    @Query("{\"match\": {\"sourceId\" : \"?0\"}}")
+    Page<EdmDocumentFile> findBySourceId(String parentId, Pageable page);
+    
     List<EdmDocumentFile> findByName(String name);
 
 }

@@ -1,12 +1,10 @@
 package fr.simple.edm.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fr.simple.edm.domain.EdmSource;
@@ -25,12 +23,7 @@ public class EdmSourceService {
     public EdmSource save(EdmSource edmSource) {
         return edmSourceRepository.index(edmSource);
     }
-
-    public List<EdmSource> findByParent(String parentId) {
-        Page<EdmSource> page = edmSourceRepository.findByParentId(parentId, new PageRequest(0, 99, new Sort(Sort.Direction.ASC, "name")));
-        return page.getContent();
-    }
-
+    
     public List<EdmSource> findByName(String name) {
         return edmSourceRepository.findByName(name);
     }
@@ -41,7 +34,13 @@ public class EdmSourceService {
 
     public EdmSource findOneByName(String sourceName) {
         return edmSourceRepository.findByName(sourceName).stream()
-        		.findFirst()
-        		.orElse(new EdmSource());
+                .findFirst()
+                .orElse(new EdmSource());
+    }
+
+    public List<EdmSource> findAll() {
+        List<EdmSource> edmSources = new ArrayList<>();
+        edmSourceRepository.findAll().forEach(edmSources::add);
+        return edmSources;
     }
 }

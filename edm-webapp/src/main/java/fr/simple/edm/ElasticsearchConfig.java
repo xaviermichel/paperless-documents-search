@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
@@ -22,6 +20,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.stereotype.Component;
 
 import fr.simple.edm.util.ResourceUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @EnableElasticsearchRepositories(basePackages = "fr.simple.edm.repository")
 @Component

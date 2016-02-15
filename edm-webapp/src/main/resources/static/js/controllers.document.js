@@ -1,9 +1,10 @@
 angular.module('edmApp')
-    .controller('DocumentSearchController', ['$scope', '$http', '$location', '$routeParams', '$sce', '$route',
-        function($scope, $http, $location, $routeParams, $sce, $route) {
+    .controller('DocumentSearchController', ['$scope', '$http', '$location', '$routeParams', '$sce', '$route', 'Category',
+        function($scope, $http, $location, $routeParams, $sce, $route, Category) {
 
             $scope.searchedPattern = $routeParams.q || "";
 
+            $scope.categories = Category.query();
             $scope.autocompleteDocumentList = [];
             $scope.topTerms = [];
             $scope.aggregations = {
@@ -19,14 +20,26 @@ angular.module('edmApp')
                 }
             });
 
+            $scope.findCategoryById = function(categoryId) {
+                return $scope.categories.filter(function(category) {
+                    return category.id === categoryId
+                })[0];
+            };
+
             $scope.getTrustedHtmlContent = function(htmlString) {
                 return $sce.trustAsHtml(htmlString);
             };
 
             $scope.linkToDocument = function(edmDocument) {
+                // web link
                 if (edmDocument.nodePath.indexOf("http") === 0) {
                     return edmDocument.nodePath;
                 }
+                // network link
+                if (edmDocument.nodePath.indexOf("//") === 0) {
+                    return edmDocument.nodePath.replace(/\//g, "\\"); // windows style
+                }
+                // local file
                 return "/files?docId=" + edmDocument.id;
             };
 
@@ -140,7 +153,7 @@ angular.module('edmApp')
                 // file extension
                 var aggregateFileExtensionFilter = $scope.aggregations.fileExtension
                     .filter(function isChecked(e) {
-                        return e.isChecked;
+                        return e.isChecked && e.key;
                     })
                     .map(function formatedQuery(e) {
                         return "fileExtension:" + e.key;
@@ -158,8 +171,24 @@ angular.module('edmApp')
                 }
                 console.debug("aggregateDateFilter = " + aggregateDateFilter);
 
+                // category
+                var categoryFilter = $scope.categories
+                    .filter(function isChecked(e) {
+                        return e.isChecked;
+                    })
+                    .map(function formatedQuery(e) {
+                        return "categoryId:" + e.id;
+                    })
+                    .join(" OR ");
+                if (categoryFilter) {
+                    categoryFilter = " AND (" + categoryFilter + ")";
+                }
+                console.debug("categoryFilter = " + categoryFilter);
+
                 // final filter
-                return aggregateFileExtensionFilter + aggregateDateFilter;
+                var finalFilter = aggregateFileExtensionFilter + aggregateDateFilter + categoryFilter;
+                console.info("final filter : " + finalFilter);
+                return finalFilter;
             };
 
             $scope.submitSearchWithFilters = function() {

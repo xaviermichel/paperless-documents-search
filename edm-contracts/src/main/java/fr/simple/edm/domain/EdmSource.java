@@ -2,34 +2,29 @@ package fr.simple.edm.domain;
 
 import java.io.Serializable;
 
+import org.springframework.data.elasticsearch.annotations.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.springframework.data.elasticsearch.annotations.Document;
 
 @Getter
 @Setter
 @ToString
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Document(indexName = "documents", type = "source")
-public class EdmSource extends EdmNode implements Serializable {
+public class EdmSource implements Serializable {
 
+    private String id;
+    
+    private String name;
+    
     private String description;
-
-    public EdmSource() {
-        super(EdmNodeType.SOURCE);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 }

@@ -1,14 +1,14 @@
 {
-  "source": {
-    "properties": {
-      "name": {
-        "type": "string",
-        "analyzer":"edm_analyzer_french"
-      },
-      "description": {
-        "type": "string",
-        "index": "not_analyzed"
-      }
+    "source": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "analyzer": "edm_analyzer_french"
+            },
+            "description": {
+                "type": "string",
+                "analyzer": "edm_analyzer_french"
+            }
+        }
     }
-  }
 }

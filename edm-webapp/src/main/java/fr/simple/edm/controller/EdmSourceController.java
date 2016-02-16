@@ -22,17 +22,20 @@ public class EdmSourceController {
     private EdmSourceService edmSourceService;
     
     @RequestMapping(value = "/source", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<EdmSource> list() {
+    @ResponseBody
+    public List<EdmSource> list() {
         return edmSourceService.findAll();
     }
     
     @RequestMapping(method=RequestMethod.POST, value="/source", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmSource create(@RequestBody EdmSource edmDirectory) {
+    @ResponseBody
+    public EdmSource create(@RequestBody EdmSource edmDirectory) {
         return edmSourceService.save(edmDirectory);
     }
     
     @RequestMapping(value = "/source/name/{sourceName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmSource getOneByName(@PathVariable String sourceName) {
+    @ResponseBody
+    public EdmSource getOneByName(@PathVariable String sourceName) {
         return edmSourceService.findOneByName(sourceName);
     }
     

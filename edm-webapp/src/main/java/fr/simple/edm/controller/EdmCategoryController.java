@@ -24,17 +24,20 @@ public class EdmCategoryController {
     private EdmCategoryService edmCategoryService;
 
     @RequestMapping(value = "/category", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<EdmCategory> list() {
+    @ResponseBody
+    public List<EdmCategory> list() {
         return edmCategoryService.findAll();
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmCategory create(@RequestBody EdmCategory edmCategory) {
+    @ResponseBody
+    public EdmCategory create(@RequestBody EdmCategory edmCategory) {
         return edmCategoryService.save(edmCategory);
     }
 
     @RequestMapping(value = "/category/name/{categoryName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody EdmCategory getOneByName(@PathVariable String categoryName) {
+    @ResponseBody
+    public EdmCategory getOneByName(@PathVariable String categoryName) {
         return edmCategoryService.findOneByName(categoryName);
     }
 }

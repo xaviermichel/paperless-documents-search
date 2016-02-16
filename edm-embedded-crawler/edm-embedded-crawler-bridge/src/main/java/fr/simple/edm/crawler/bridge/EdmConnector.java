@@ -2,6 +2,7 @@ package fr.simple.edm.crawler.bridge;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 
 import org.apache.http.client.ClientProtocolException;
@@ -25,19 +26,15 @@ public class EdmConnector {
     }
 
     public void notifyStartCrawling(String server, String source) throws ClientProtocolException, IOException {
-        HttpGet request = new HttpGet(server + "/crawl/start?source=" + sanitizeSourceName(source));
+        HttpGet request = new HttpGet(server + "/crawl/start?source=" + URLEncoder.encode(source, "UTF-8"));
         HttpClient client = HttpClientBuilder.create().build();
         client.execute(request);
     }
 
     public void notifyEndOfCrawling(String server, String source) throws ClientProtocolException, IOException {
-        HttpGet request = new HttpGet(server + "/crawl/stop?source=" + sanitizeSourceName(source));
+        HttpGet request = new HttpGet(server + "/crawl/stop?source=" + URLEncoder.encode(source, "UTF-8"));
         HttpClient client = HttpClientBuilder.create().build();
         client.execute(request);
-    }
-
-    private String sanitizeSourceName(String sourceName) {
-        return sourceName.replaceAll(" ", "-");
     }
 
     public String getIdFromSourceBySourceName(String server, String sourceName, String categoryId) {

@@ -1,83 +1,83 @@
 {
-  "analysis":{
-    "analyzer":{
-      "edm_autocomplete":{
-        "type":"custom",
-        "tokenizer":"standard",
-        "filter":[
-          "lowercase",
-          "autocomplete_filter"
-        ]
-      },
-      "edm_analyzer_french":{
-        "type":"custom",
-        "tokenizer":"whitespace",
-        "filter":[
-          "edm_synonym",
-          "lowercase",
-          "asciifolding",
-          "worddelimiter",
-          "french_elision",
-          "french_stop",
-          "french_stemmer"
-        ]
-      }
-    },
-    "filter":{
-      "autocomplete_filter":{
-        "type":"edge_ngram",
-        "min_gram":2,
-        "max_gram":20
-      },
-      "french_elision":{
-        "type":"elision",
-        "articles":[
-          "l",
-          "m",
-          "t",
-          "qu",
-          "n",
-          "s",
-          "j",
-          "d",
-          "c",
-          "jusqu",
-          "quoiqu",
-          "lorsqu",
-          "puisqu"
-        ]
-      },
-      "worddelimiter":{
-        "type":"word_delimiter",
-        "catenate_words":true,
-        "catenate_numbers":true,
-        "split_on_numerics":false
-      },
-      "french_stop":{
-        "type":"stop",
-        "stopwords":"_french_"
-      },
-      "french_stemmer":{
-        "type":"stemmer",
-        "language":"light_french"
-      },
-      "edm_synonym":{
-        "type" : "synonym",
-        "synonyms" : [
-          "01, janvier",
-          "02, février",
-          "03, mars",
-          "04, avril",
-          "05, mai",
-          "06, juin",
-          "07, juillet",
-          "08, août",
-          "09, septembre",
-          "10, octobre",
-          "11, novembre",
-          "12, décembre"
-        ]
-      }
+    "analysis": {
+        "analyzer": {
+            "edm_autocomplete": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": [
+                    "lowercase",
+                    "autocomplete_filter"
+                ]
+            },
+            "edm_analyzer_french": {
+                "type": "custom",
+                "tokenizer": "whitespace",
+                "filter": [
+                    "edm_synonym",
+                    "lowercase",
+                    "asciifolding",
+                    "worddelimiter",
+                    "french_elision",
+                    "french_stop",
+                    "french_stemmer"
+                ]
+            }
+        },
+        "filter": {
+            "autocomplete_filter": {
+                "type": "edge_ngram",
+                "min_gram": 2,
+                "max_gram": 20
+            },
+            "french_elision": {
+                "type": "elision",
+                "articles": [
+                    "l",
+                    "m",
+                    "t",
+                    "qu",
+                    "n",
+                    "s",
+                    "j",
+                    "d",
+                    "c",
+                    "jusqu",
+                    "quoiqu",
+                    "lorsqu",
+                    "puisqu"
+                ]
+            },
+            "worddelimiter": {
+                "type": "word_delimiter",
+                "catenate_words": true,
+                "catenate_numbers": true,
+                "split_on_numerics": false
+            },
+            "french_stop": {
+                "type": "stop",
+                "stopwords": "_french_"
+            },
+            "french_stemmer": {
+                "type": "stemmer",
+                "language": "light_french"
+            },
+            "edm_synonym": {
+                "type": "synonym",
+                "synonyms": [
+                    "01, janvier",
+                    "02, février",
+                    "03, mars",
+                    "04, avril",
+                    "05, mai",
+                    "06, juin",
+                    "07, juillet",
+                    "08, août",
+                    "09, septembre",
+                    "10, octobre",
+                    "11, novembre",
+                    "12, décembre"
+                ]
+            }
+        }
     }
-  }
 }

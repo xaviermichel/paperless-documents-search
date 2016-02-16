@@ -47,7 +47,7 @@ else
 fi
 
 cd edm-webapp
-echo "Maven packaging..."
+xlog INFO "Maven packaging..."
 mvn package ${MAVEN_TEST} > /dev/null
 if [ $? -eq 0 ]
 then

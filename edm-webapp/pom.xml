@@ -59,8 +59,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v5.5.0</nodeVersion>
-							<npmVersion>3.7.1</npmVersion>
+							<nodeVersion>v0.10.41</nodeVersion>
+							<npmVersion>2.7.1</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -91,7 +91,7 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-					        <arguments>test</arguments>
+							<arguments>test --skipTests=${skipTests}</arguments>
 					    </configuration>
 					</execution>
 				</executions>

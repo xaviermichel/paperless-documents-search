@@ -22,7 +22,7 @@ public class EdmConnector {
         doc.setFileContent(Files.readAllBytes(file.toPath()));
 
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity(server + "/document", doc, EdmDocumentFile.class);
+        restTemplate.postForEntity(server + "/crawl/document", doc, EdmDocumentFile.class);
     }
 
     public void notifyStartCrawling(String server, String source) throws ClientProtocolException, IOException {

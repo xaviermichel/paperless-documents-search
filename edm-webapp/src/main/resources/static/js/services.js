@@ -1,6 +1,6 @@
-angular.module('categoryService', ['ngResource']).factory('Category', function($resource) {
+angular.module('categoryService', ['ngResource']).factory('Category', ['$resource', function($resource) {
     return $resource('category/:id', {}, {});
-});
+}]);
 
 // filter for date formatting with moment js
 angular.module('momentFilter', []).filter('moment', function() {

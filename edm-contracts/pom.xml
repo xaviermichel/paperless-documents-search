@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>simple-data-search</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>2.5.0-SNAPSHOT</version>
+		<version>3.1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -18,8 +18,9 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<version>${org.springframework.springboot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -32,3 +33,4 @@
 	</dependencies>
 
 </project>
+

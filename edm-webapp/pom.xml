@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>simple-data-search</artifactId>
 		<groupId>fr.simple.edm</groupId>
-		<version>2.5.0-SNAPSHOT</version>
+		<version>3.1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -47,64 +47,56 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+					<installDirectory>target</installDirectory>
+				</configuration>
 				<executions>
 					<execution>
-						<id>exec-npm-install</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<executable>npm</executable>
-							<arguments>
-								<argument>install</argument>
-							</arguments>
-						</configuration>
+						<id>install node and npm</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v0.10.41</nodeVersion>
+							<npmVersion>2.7.1</npmVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>exec-bower-install</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<executable>bower</executable>
-							<arguments>
-								<argument>install</argument>
-							</arguments>
-						</configuration>
+						<id>bower install</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>bower</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>exec-gulp</id>
-						<phase>process-resources</phase>
-						<configuration>
-							<executable>gulp</executable>
-							<arguments>
-								<argument>minify-code</argument>
-							</arguments>
-						</configuration>
+						<id>gulp minify-code</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>gulp</goal>
 						</goals>
+						<configuration>
+					        <arguments>minify-code</arguments>
+					    </configuration>
 					</execution>
 					<execution>
-						<id>exec-front-test</id>
+						<id>gulp test</id>
+						<goals>
+							<goal>gulp</goal>
+						</goals>
 						<phase>test</phase>
 						<configuration>
-							<executable>gulp</executable>
-							<arguments>
-								<argument>test</argument>
-								<argument>--skipTests=${skipTests}</argument>
-							</arguments>
-						</configuration>
-						<goals>
-							<goal>exec</goal>
-						</goals>
+							<arguments>test --skipTests=${skipTests}</arguments>
+					    </configuration>
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
@@ -206,7 +198,7 @@
 		</dependency>
 
 
-		<!-- Spring -->
+		<!-- spring -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -261,11 +253,6 @@
 
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch-mapper-attachments</artifactId>
 			<exclusions>
 				<exclusion>
@@ -276,12 +263,18 @@
 		</dependency>
 
 
-		<!-- easytesting -->
+		<!-- test -->
 
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.jayway.jsonpath</groupId>
+		    <artifactId>json-path-assert</artifactId>
+		    <scope>test</scope>
 		</dependency>
 
 
@@ -303,7 +296,7 @@
 		</dependency>
 
 
-		<!-- File upload -->
+		<!-- file upload -->
 
 		<dependency>
 			<groupId>commons-fileupload</groupId>

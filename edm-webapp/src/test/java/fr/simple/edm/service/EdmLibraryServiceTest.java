@@ -14,9 +14,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import fr.simple.edm.Application;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.domain.EdmCategory;
-import fr.simple.edm.domain.EdmNode;
-import fr.simple.edm.domain.EdmNodeType;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -49,9 +46,8 @@ public class EdmLibraryServiceTest {
     
     @Test
     public void categoryCanBeFindByHisName() {
-        EdmNode node = edmCategoryService.findOneByName("My category");
+        EdmCategory node = edmCategoryService.findOneByName("My category");
         assertThat(node).isNotNull();
         assertThat(node.getId()).isEqualTo(edmCategory.getId());
-        assertThat(node.getEdmNodeType()).isEqualTo(EdmNodeType.CATEGORY);
     }
 }

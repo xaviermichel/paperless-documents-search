@@ -9,22 +9,22 @@ import org.springframework.stereotype.Service;
 
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
+import lombok.Setter;
 
 @Service
 public class EdmCategoryService {
 
     @Inject
+    @Setter
     private EdmCategoryRepository edmCategoryRepository;
 
     public EdmCategory findOne(String id) {
         return edmCategoryRepository.findOne(id);
     }
 
-    public List<EdmCategory> getEdmCategories() {
+    public List<EdmCategory> findAll() {
         List<EdmCategory> edmLibraries = new ArrayList<>();
-        for (EdmCategory l : edmCategoryRepository.findAll()) {
-            edmLibraries.add(l);
-        }
+        edmCategoryRepository.findAll().forEach(edmLibraries::add);
         return edmLibraries;
     }
 
@@ -41,7 +41,8 @@ public class EdmCategoryService {
     }
 
     public EdmCategory findOneByName(String sourceName) {
-        List<EdmCategory> candidates = edmCategoryRepository.findByName(sourceName);
-        return candidates.isEmpty() ? new EdmCategory() : candidates.get(0);
+        return edmCategoryRepository.findByName(sourceName).stream()
+                .findFirst()
+                .orElse(new EdmCategory());
     }
 }

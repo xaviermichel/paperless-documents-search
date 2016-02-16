@@ -18,7 +18,7 @@ edmsHost=http://127.0.0.1:8053
 ##     curl -XPOST 'http://127.0.0.1:8053/source' -H "Content-Type: application/json" -d '{"name" : "alfresco", "parentId" : "iBhZrF8JTq6FEJvagwsjfQ"}'
 ##    {"id":"dTdWqfXORq2aXiyMPcsnHA","edmNodeType":"SOURCE","parentId":"iBhZrF8JTq6FEJvagwsjfQ","name":"alfresco","description":null}
 ## So the parent is dTdWqfXORq2aXiyMPcsnHA
-edmsSourceId=dTdWqfXORq2aXiyMPcsnHA
+edmsSourceId="AVLVjrO-d9sG1UWtLslM"
 edmsSourceName=alfresco
 
 
@@ -60,18 +60,21 @@ do
 
 		# download file
 		curl -u ${alfrescoUser}:${alfrescoPass} "${url}" -o "${dlFile}"
+		fileContent=$(base64 "${dlFile}" | sed ':a;N;$!ba;s/\n//g')
 
-		# upload in edms
-		temporyFileToken=$(curl -s -XPOST "${edmsHost}/document/upload" -F "file=@${dlFile}" | sed 's/.*temporaryFileToken":"\(.*\)".*/\1/g')
+	    fileBaseName=$(basename "${dlFile}")
+	    fileExtension=$(echo "${dlFile}" | awk -F'[.]' '{print $NF}')
 
 		# send doc informations
 		curl -XPOST "${edmsHost}/document" -d "{
+				\"fileContent\" : \"${fileContent}\",
 				\"date\" : \"${docDate}\",
 				\"nodePath\"	: \"${url}\",
 				\"edmNodeType\" : \"DOCUMENT\",
 				\"name\" : \"${dlFile}\",
-				\"temporaryFileToken\" : \"${temporyFileToken}\",
-				\"parentId\" : \"${edmsSourceId}\"
+				\"parentId\" : \"${edmsSourceId}\",
+				\"fileExtension\"   : \"${fileExtension}\",
+				\"fileContentType\" : \"${fileExtension}\"
 		}" -H "Content-Type: application/json"
 
 

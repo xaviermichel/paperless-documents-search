@@ -1,11 +1,13 @@
 package fr.simple.edm.controller;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,30 +16,33 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.simple.edm.crawler.filesystem.FilesystemCrawler;
 import fr.simple.edm.crawler.url.UrlCrawler;
-import fr.simple.edm.service.EdmDocumentService;
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.service.EdmCrawlingService;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@RequestMapping("/crawl")
 @Slf4j
 public class EdmCrawlingController {
 
-    @Inject
-    private EdmDocumentService edmDocumentService;
+    @Inject 
+    private EdmCrawlingService edmCrawlingService;
 
-    @RequestMapping(value = "/crawl/start", method = RequestMethod.GET, params = {"source"})
+    @RequestMapping(value = "/start", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
         log.info("Begin crawling for source : {}", source);
-        edmDocumentService.snapshotCurrentDocumentsForSource(source);
+        edmCrawlingService.snapshotCurrentDocumentsForSource(source);
     }
 
-    @RequestMapping(value = "/crawl/stop", method = RequestMethod.GET, params = {"source"})
+    @RequestMapping(value = "/stop", method = RequestMethod.GET, params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
         log.info("End of crawling for source : {}", source);
-        edmDocumentService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
+        edmCrawlingService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
     }
 
-    @RequestMapping(value = "/crawl/filesystem", method = RequestMethod.GET, params = {"path"})
+    @RequestMapping(value = "/filesystem", method = RequestMethod.GET, params = {"path"})
     @ResponseBody
     public String crawlFilesystem(
             @RequestParam(value = "path") String path,
@@ -49,15 +54,14 @@ public class EdmCrawlingController {
         log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
         }
 
         return "OK";
     }
 
-
-    @RequestMapping(value = "/crawl/url", method = RequestMethod.GET, params = {"url"})
+    @RequestMapping(value = "/url", method = RequestMethod.GET, params = {"url"})
     @ResponseBody
     public String crawlUrl(
             @RequestParam(value = "url") String url,
@@ -69,10 +73,17 @@ public class EdmCrawlingController {
         log.info("[crawlUrl] Starting crawling on path : '{}'  (exclusion = '{}')", url, exclusionRegex);
         try {
             UrlCrawler.importFilesAtUrl(url, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("[crawlUrl] Failed to crawl '{}' with embedded crawler", url, e);
         }
 
         return "OK";
     }
+    
+    @RequestMapping(method=RequestMethod.POST, value="/document", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public EdmDocumentFile create(@RequestBody EdmDocumentFile edmDocument) {
+        return edmCrawlingService.save(edmDocument);
+    }
+
 }

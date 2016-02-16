@@ -1,5 +1,6 @@
 package fr.simple.edm;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +8,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.stereotype.Component;
 
 import fr.simple.edm.util.ResourceUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @EnableElasticsearchRepositories(basePackages = "fr.simple.edm.repository")
 @Component
@@ -38,7 +39,7 @@ public class ElasticsearchConfig {
         elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
     }
 
-    private void buildOrUpdateEsMapping() {
+    private void buildOrUpdateEsMapping() throws IOException {
 
         log.info("Updating ES mapping because you're using a local node");
 
@@ -64,7 +65,7 @@ public class ElasticsearchConfig {
                 elasticsearchClient.admin().indices().updateSettings(usrb.setSettings(indexSettings).request()).actionGet();
                 elasticsearchClient.admin().indices().open(new OpenIndexRequest(index)).actionGet();
 
-            } catch (Exception e) {
+            } catch (ElasticsearchException e) {
                 log.error("Failed to rebuild index {}", index, e);
             }
 
@@ -74,7 +75,7 @@ public class ElasticsearchConfig {
                     String typeMapping = ResourceUtils.getContent(MAPPING_DIR + "/" + index + "/" + type + ".json");
                     log.info("Updating mapping for {}/{}", index, type);
                     elasticsearchClient.admin().indices().preparePutMapping(index).setType(type).setSource(typeMapping).execute().actionGet();
-                } catch (Exception e) {
+                } catch (ElasticsearchException e) {
                     log.error("Failed to read mapping or update mapping for ES", e);
                     log.error("This mode is deteriored, you may have to manualy update mapping !");
                 }
@@ -86,7 +87,7 @@ public class ElasticsearchConfig {
         log.info("Building is over !");
     }
 
-    public void updateMappingIfLocalNode() {
+    public void updateMappingIfLocalNode() throws IOException {
         log.info("Wan't update mapping...");
         if (elasticsearchClient != null && elasticsearchClient instanceof NodeClient) {
             buildOrUpdateEsMapping();

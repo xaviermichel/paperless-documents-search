@@ -47,7 +47,7 @@ Solution stack
 
 **Compilation**
 
-Wanna compile and run it in two minutes ? You need [nodejs](http://nodejs.org/) and [maven](http://maven.apache.org/download.cgi).
+Wanna compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi).
 
 First, clone the project
 ```bash
@@ -55,14 +55,7 @@ git clone https://github.com/xaviermichel/simple-data-search.git
 cd simple-data-search
 ```
 
-Now, install node required modules
-```bash
-sudo npm install
-sudo npm install -g gulp-cli
-sudo npm install -g bower
-```
-
-Now, you can compile the project core and run it
+Then, you can compile the project core and run it !
 ```bash
 mvn clean install -DskipTests
 cd edm-webapp
@@ -144,8 +137,12 @@ mvn sonar:sonar
 
 **Debug mode (non minified js)**
 
-Just add `?debug=true` in url : http://127.0.0.1:8053/?debug=true/#/
-
+To work with un-merged resources, you can activate `local` profile :
+```code:bash
+mvn spring-boot:run -Drun.profiles=local
+# or
+java -jar -Dspring.profiles.active=local target/simple-data-search-webapp*.jar
+```
 
 **Front tests with protractor**
 

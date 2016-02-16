@@ -2,11 +2,9 @@ package fr.simple.edm.service;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +14,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import fr.simple.edm.Application;
+import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
@@ -34,80 +32,24 @@ public class EdmDocumentServiceTest {
     private ElasticsearchTestingHelper elasticsearchTestingHelper;
 
     @Autowired
-    private EdmNodeService edmNodeService;
-
-    @Autowired
     private EdmDocumentService edmDocumentService;
-
+    
     @Autowired
-    private EdmCategoryService edmLibraryService;
-
-    @Autowired
-    private EdmSourceService edmDirectoryService;
-
-
-    private EdmDocumentFile docBac;
-    private EdmDocumentFile docBrevet;
-    private EdmDocumentFile docBacNotes;
-    private EdmDocumentFile docBulletinSalaire;
-    private EdmDocumentFile docLatex;
-
+    private EdmTestHelper edmTestHelper;
 
     /**
-     * Will destroy and rebuild ES_INDEX
+     * Will destroy and rebuild ES_INDEX before each test
      */
     @Before
     public void setUp() throws Exception {
-        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-
-        String targetDirAbsolutePath = System.getProperty("user.dir") + (System.getProperty("user.dir").contains("edm-webapp") ? "" : "/edm-webapp") + "/target/test-classes/";
-
-        docBac = new EdmDocumentFile();
-        docBac.setName("Diplome du bac");
-        docBac.setNodePath("/documents/1");
-
-        docBrevet = new EdmDocumentFile();
-        docBrevet.setName("Brevet");
-        docBrevet.setNodePath("/documents/2");
-
-        docBacNotes = new EdmDocumentFile();
-        docBacNotes.setName("Notes du bac");
-        docBacNotes.setNodePath("/documents/3");
-
-        docBulletinSalaire = new EdmDocumentFile();
-        docBulletinSalaire.setName("Bulletin de paye");
-        docBulletinSalaire.setNodePath("/salaire/02.pdf");
-
-        docLatex = new EdmDocumentFile();
-        docLatex.setName("Un template de document");
-        // make a copy because moving test file is not acceptable (someone may come after and require this file) !
-        Files.copy(Paths.get(targetDirAbsolutePath + "demo_pdf.pdf"), Paths.get(targetDirAbsolutePath + "demo_pdf_tmp.pdf"));
-        docLatex.setFilename(targetDirAbsolutePath + "demo_pdf_tmp.pdf");
-        docLatex.setNodePath("/documents/4");
-
-        docBac = edmDocumentService.save(docBac);
-        docBrevet = edmDocumentService.save(docBrevet);
-        docBacNotes = edmDocumentService.save(docBacNotes);
-        docBulletinSalaire = edmDocumentService.save(docBulletinSalaire);
-        docLatex = edmDocumentService.save(docLatex);
-
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        edmTestHelper.destroyAndRebuildElasticContent();
     }
 
 
     private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
-        List<EdmDocumentFile> result = new ArrayList<>();
-        for (EdmDocumentSearchResult res : edmDocumentSearchResultWrapper.getSearchResults()) {
-            result.add(res.getEdmDocument());
-        }
-        return result;
-    }
-
-    
-    @Test
-    public void exclustionRegexShouldBeFilled() {
-        String exclusionRegexValue = (String) ReflectionTestUtils.getField(edmDocumentService, "edmTopTermsExlusionRegex");
-        assertThat(exclusionRegexValue).isEqualTo("[a-z]{1,2}|[dlmcs]es|data|docs|documents|edm|files|simple|page");
+        return edmDocumentSearchResultWrapper.getSearchResults().stream()
+                .map(EdmDocumentSearchResult::getEdmDocument)
+                .collect(Collectors.toList());
     }
     
     /**
@@ -118,7 +60,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("brevet"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBrevet
+                edmTestHelper.getDocBrevet()
         });
 
         assertThat(docs).isNotNull();
@@ -134,7 +76,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("brevets"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBrevet
+                edmTestHelper.getDocBrevet()
         });
 
         assertThat(docs).isNotNull();
@@ -151,7 +93,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplômes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac
+                edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -167,7 +109,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplomes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac
+                edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -183,7 +125,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplôme bac"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac
+                edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -199,7 +141,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplôme    bac"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac
+                edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -215,7 +157,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("latex"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docLatex
+                edmTestHelper.getDocLatex()
         });
 
         assertThat(docs).isNotNull();
@@ -231,7 +173,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("xavier"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docLatex
+                edmTestHelper.getDocLatex()
         });
 
         assertThat(docs).isNotNull();
@@ -241,14 +183,14 @@ public class EdmDocumentServiceTest {
 
 
     /**
-     * Search use synonymes (02 = février)
+     * Search use synonyms (02 = février)
      */
     @Test
     public void searchShouldUseSynonym() throws Exception {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("paye février"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBulletinSalaire
+                edmTestHelper.getDocBulletinSalaire()
         });
 
         assertThat(docs).isNotNull();
@@ -276,38 +218,4 @@ public class EdmDocumentServiceTest {
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
     }
-
-    @Test
-    public void autocompleteShouldSuggestOnDocumentName() throws Exception {
-        List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("dipl");
-
-        List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                docBac
-        });
-
-        assertThat(docs).isNotNull();
-        assertThat(docs.size()).isEqualTo(attemptedResult.size());
-        assertThat(docs).containsAll(attemptedResult);
-    }
-
-    @Test
-    public void autocompleteShouldSuggestOnDocumentPath() throws Exception {
-        EdmDocumentFile document = new EdmDocumentFile();
-        document.setName("document without name");
-        document.setNodePath("without/name/echeancier/document");
-        document = edmDocumentService.save(document);
-
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-
-        List<EdmDocumentFile> docs = edmDocumentService.getSuggestions("echea");
-
-        List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                document
-        });
-
-        assertThat(docs).isNotNull();
-        assertThat(docs.size()).isEqualTo(attemptedResult.size());
-        assertThat(docs).containsAll(attemptedResult);
-    }
-
 }

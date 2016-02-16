@@ -1,15 +1,15 @@
 package fr.simple.edm;
 
-import java.io.File;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
 @Slf4j
@@ -24,11 +24,8 @@ public class Application {
     @Value("${info.app.version:''}")
     private String applicationVersion;
     
-    @Value("${info.app.issue.url:''}")
+    @Value("${info.app.issues_url:''}")
     private String applicationIssueUrl;
-    
-    @Value("${edm.tmpdir}")
-    private String edmTmpsdir;
 
     @Value("${server.address:127.0.0.1}")
     private String serverAddress;
@@ -62,13 +59,12 @@ public class Application {
         log.info("os.version                 : " + System.getProperty("os.version"));
         log.info("==================================================================================");
 
-        elasticsearchConfig.updateMappingIfLocalNode();
-        
-        // create temporary directory
-        if (! new File(edmTmpsdir).mkdirs()) {
-            log.warn("Failed to create temporary directory ({}), may already exists ?", edmTmpsdir);
+        try {
+            elasticsearchConfig.updateMappingIfLocalNode();
+        } catch (IOException e) {
+            log.error("something failed while configuring elastic", e);
         }
         
-        log.info("Startup is finished ! Waiting for some user on {}:{}", serverAddress, serverPort);
+        log.info("server is starting and listening on {}:{}", serverAddress, serverPort);
     }
 }

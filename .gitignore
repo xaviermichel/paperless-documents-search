@@ -4,6 +4,7 @@
 *.jar
 *.war
 *.ear
+node
 node_modules
 build
 bower_inc

@@ -94,30 +94,40 @@ describe('DocumentSearchController', function() {
 
     it('should well format date filter', function() {
         $scope.searchedPattern = "search pattern must not be empty";
-        $scope.dateFilter = {
-            initialFrom: new Date(),
-            initialTo: new Date(),
-            from: new Date(2015, 7),
-            to: new Date(2015, 7)
-        };
+        $scope.dateAggregationFilter = "(date:[2015-08-01 TO 2015-08-31])";
         var filter = $scope._getQueryFilters();
         expect(filter).toBe(' AND (date:[2015-08-01 TO 2015-08-31])');
     });
 
-    it('should not include date filter on same dates', function() {
+    it('should not include date filter on empty date', function() {
         $scope.searchedPattern = "search pattern must not be empty";
-        $scope.dateFilter = {
-            initialFrom: new Date(2015, 7),
-            initialTo: new Date(2015, 7),
-            from: new Date(2015, 7),
-            to: new Date(2015, 7)
-        };
         var filter = $scope._getQueryFilters();
         expect(filter).toBe('');
     });
 
+    it('should well format category filter', function() {
+        $scope.searchedPattern = "search pattern must not be empty";
+        $scope.categories = [{
+            id: "c1",
+            key: "category 1",
+            isChecked: true
+        }, {
+            id: "c2",
+            key: "category 2",
+            isChecked: true
+        }, {
+            id: "c3",
+            key: "category 3",
+            isChecked: false
+        }];
+        var filter = $scope._getQueryFilters();
+        console.debug("Filter : " + filter);
+        expect(filter).toBe(' AND (categoryId:c1 OR categoryId:c2)');
+    });
+
     it('should combine filters', function() {
         $scope.searchedPattern = "search pattern must not be empty";
+
         $scope.aggregations.fileExtension = [{
             key: "pdf",
             isChecked: true
@@ -128,13 +138,24 @@ describe('DocumentSearchController', function() {
             key: "doc",
             isChecked: false
         }];
-        $scope.dateFilter = {
-            initialFrom: new Date(),
-            initialTo: new Date(),
-            from: new Date(2015, 7),
-            to: new Date(2015, 7)
-        };
+
+        $scope.dateAggregationFilter = "(date:[2015-08-01 TO 2015-08-31])";
+
+        $scope.categories = [{
+            id: "c1",
+            key: "category 1",
+            isChecked: true
+        }, {
+            id: "c2",
+            key: "category 2",
+            isChecked: true
+        }, {
+            id: "c3",
+            key: "category 3",
+            isChecked: false
+        }];
+
         var filter = $scope._getQueryFilters();
-        expect(filter).toBe(' AND (fileExtension:pdf OR fileExtension:png) AND (date:[2015-08-01 TO 2015-08-31])');
+        expect(filter).toBe(' AND (fileExtension:pdf OR fileExtension:png) AND (date:[2015-08-01 TO 2015-08-31]) AND (categoryId:c1 OR categoryId:c2)');
     });
 });

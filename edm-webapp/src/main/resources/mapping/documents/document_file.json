@@ -1,60 +1,64 @@
 {
-  "document_file":{
-    "properties":{
-      "parentId":{
-        "type":"string",
-        "index":"not_analyzed"
-      },
-      "name":{
-        "type":"string",
-        "analyzer":"edm_analyzer_french",
-        "fields":{
-          "name_autocomplete":{
-            "type":"string",
-            "analyzer":"edm_autocomplete"
-          }
+    "document_file": {
+        "properties": {
+            "sourceId": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "categoryId": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "name": {
+                "type": "string",
+                "analyzer": "edm_analyzer_french",
+                "fields": {
+                    "name_autocomplete": {
+                        "type": "string",
+                        "analyzer": "edm_autocomplete"
+                    }
+                }
+            },
+            "description": {
+                "type": "string",
+                "analyzer": "edm_analyzer_french"
+            },
+            "date": {
+                "type": "date",
+                "format": "dateOptionalTime"
+            },
+            "fileExtension": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "fileContentType": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "file": {
+                "type": "attachment",
+                "fields": {
+                    "file": {
+                        "type": "string",
+                        "term_vector": "with_positions_offsets",
+                        "store": true
+                    }
+                }
+            },
+            "nodePath": {
+                "type": "string",
+                "analyzer": "edm_analyzer_french",
+                "fields": {
+                    "nodePath_autocomplete": {
+                        "type": "string",
+                        "analyzer": "edm_autocomplete"
+                    },
+                    "nodePath_simple": {
+                        "type": "string",
+                        "analyzer": "simple"
+                    }
+                }
+            }
         }
-      },
-      "description":{
-        "type":"string",
-        "analyzer":"edm_analyzer_french"
-      },
-      "date":{
-        "type":"date",
-        "format":"dateOptionalTime"
-      },
-      "fileExtension":{
-        "type":"string",
-        "index":"not_analyzed"
-      },
-      "fileContentType":{
-        "type":"string",
-        "index":"not_analyzed"
-      },
-      "file":{
-        "type":"attachment",
-        "fields":{
-          "file":{
-            "type":"string",
-            "term_vector":"with_positions_offsets",
-            "store":true
-          }
-        }
-      },
-      "nodePath":{
-        "type":"string",
-        "analyzer":"edm_analyzer_french",
-        "fields":{
-          "nodePath_autocomplete":{
-            "type":"string",
-            "analyzer":"edm_autocomplete"
-          },
-          "nodePath_simple":{
-            "type":"string",
-            "analyzer":"simple"
-          }
-        }
-      }
     }
-  }
 }

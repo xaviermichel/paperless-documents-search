@@ -5,27 +5,26 @@ Simple Data Search
 ==================
 
 This program is an only entry point to search in your files.
-You launch it, index one (or more) directory on your filesystem and you can search in the indexeds files.
+You launch it, index one (or more) directory from your drive (or anywhere else), and then you can search in your files content !
 
 **Features**
 
 - easy to deploy (can be run with one jar)
 - easy to use (it's a web application)
 - powerful search engine
-- scalability
 - exposed REST api
-
+- OCR support : find text in your images !
 
 Quick start
 -----------
 
 **Software**
 
-You can find the [lastest release here](https://github.com/xaviermichel/simple-data-search/releases).
+You can find the [latest release here](https://github.com/xaviermichel/simple-data-search/releases).
 
 1. Download the zip, extract it and launch `simple-data-search.bat` to start application !
-2. Index your documents. The fastest way is to open you brower, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents`
-3. Open you brower on `http://127.0.0.1:8053`, you can now search in your documents !
+2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents`
+3. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
 
 Screenshot
@@ -79,7 +78,7 @@ Mapping migration
 ### On standalone application (local node, with downtime)
 1. delete `edm` directory
 2. restart the application
-3. reindex your documents !
+3. re-index your documents !
 
 ### On application connected with external elastic (without downtime)
 
@@ -96,21 +95,13 @@ curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/category" -d "@./document
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/source" -d "@./documents/source.json"
 curl -XPUT "http://127.0.0.1:9200/documents_2/_mapping/document_file" -d "@./documents/document_file.json"
 ```
-3. create main category
-```
-curl -XPOST 'http://127.0.0.1:9200/documents_2/category' -H "Content-Type: application/json" -d "{
-    \"name\" : \"Documents\",
-    \"description\": \"Espace contenant mes documents\",
-    \"edmNodeType\": \"CATEGORY\"
-}"
-```
-4. reindex your documents, with bash crawler :
+3. reindex your documents, with bash crawler :
 ```bash
 # launch the crawler...
 scripts/crawlers/local_files/local_file_crawler.sh
 # or use jenkins !
 ```
-5. switch alias !
+4. switch alias !
 ```bash
 curl -XPOST 'http://127.0.0.1:9200/_aliases' -d '
 {
@@ -177,8 +168,7 @@ Must be one of the following:
 * **feat**: A new feature
 * **fix**: A bug fix
 * **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
 * **test**: Adding missing tests

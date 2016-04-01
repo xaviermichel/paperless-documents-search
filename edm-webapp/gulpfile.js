@@ -5,18 +5,15 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     rename = require("gulp-rename"),
-    wait = require('gulp-wait'),
     minifyCss = require('gulp-minify-css'),
     karma = require('gulp-karma'),
     argv = require('yargs').argv,
     shell = require('gulp-shell'),
-    protractor = require('gulp-protractor').protractor;
-
+    casperJs = require('gulp-casperjs');
 
 var EDM_WEBAPP_DIR = 'src/main/resources/';
 var EDM_TEST_DIR = 'src/test/resources/';
-
-var serverPort = 9053;
+var EDM_BOWER_DIR = 'src/main/resources/static/bower_inc/';
 
 var paths = {
     scripts: [
@@ -38,19 +35,21 @@ var paths = {
         '!' + EDM_WEBAPP_DIR + 'static/bower_inc/**/*.html'
     ],
     unitTestFiles: [
-        'src/main/resources/static/bower_inc/jquery/jquery.min.js',
-        'src/main/resources/static/bower_inc/angular/angular.min.js',
-        'src/main/resources/static/bower_inc/angular-route/angular-route.min.js',
-        'src/main/resources/static/bower_inc/angular-resource/angular-resource.min.js',
-        'src/main/resources/static/bower_inc/angular-animate/angular-animate.min.js',
-        'src/main/resources/static/bower_inc/moment/min/moment.min.js',
-        'src/main/resources/static/bower_inc/angular-mocks/angular-mocks.js',
-        'src/main/resources/static/js/*.js',
-        'src/test/resources/static/js/unit/*.spec.js'
+        EDM_BOWER_DIR + 'jquery/jquery.min.js',
+        EDM_BOWER_DIR + 'angular/angular.min.js',
+        EDM_BOWER_DIR + 'angular-route/angular-route.min.js',
+        EDM_BOWER_DIR + 'angular-resource/angular-resource.min.js',
+        EDM_BOWER_DIR + 'angular-animate/angular-animate.min.js',
+        EDM_BOWER_DIR + 'moment/min/moment.min.js',
+        EDM_BOWER_DIR + 'angular-mocks/angular-mocks.js',
+        EDM_WEBAPP_DIR + '/static/js/*.js',
+        EDM_TEST_DIR + '/static/js/unit/*.spec.js'
     ],
     e2eTestFiles: [
-        'src/test/resources/static/js/e2e/*.js'
-    ]
+        EDM_TEST_DIR + 'static/js/e2e/*.js',
+        '!' + EDM_TEST_DIR + 'static/js/e2e/00-constants.js'
+    ],
+    e2eTestConstants: EDM_TEST_DIR + 'static/js/e2e/00-constants.js'
 };
 
 function skipTests(task) {
@@ -151,36 +150,34 @@ gulp.task('karma', skipTests(function() {
 }));
 
 // only on travis, for local development, you should start spring-boot server yourself !
-//     mvn spring-boot:run -D"run.arguments=--server.port=9053"
-gulp.task('backend-server', onlyOnTravis(function() {
-    shell.task([
-        'mvn spring-boot:run -D"run.arguments=--server.port=' + serverPort + '"'
-    ]);
-}));
+gulp.task('backend-server', shell.task([
+    'docker run --name edm-backend-server -p 8053:8053 -v $(pwd)/src/test/resources/documents:/host_mount_point -d simple-data-search-webapp'
+]));
+gulp.task('wait-backend-server', shell.task([
+    'LIMIT=60 ; counter=0 ; while [ $counter -lt $LIMIT -a -z "$(docker logs edm-backend-server | grep \'Started Application in\')" ]; do echo "[$counter] waiting for edm server..." && sleep 1 && counter=$((counter + 1)) ; done'
+]));
+gulp.task('stop-backend-server', shell.task([
+    'docker rm -f edm-backend-server'
+]));
 
-gulp.task('protractor', skipTests(function() {
-    gulp.start('backend-server');
-
-    return gulp.src(['src/test/resources/static/js/e2e/*.spec.js'])
-        .pipe(protractor({
-            configFile: 'protractor.conf.js',
-            args: ['--baseUrl', 'http://localhost:' + serverPort]
-        }))
-        .on('error', function(e) {
-            process.stdout.write('Protractors test has failed !\nIf you are using a local environment, have you launched webdriver and application ?\n');
-            throw e;
+gulp.task('test-casperjs', function() {
+    return gulp.src(paths.e2eTestFiles)
+        .pipe(casperJs({
+            command: 'test --includes=' + paths.e2eTestConstants
+        })) //run casperjs test
+        .on('error', function(err) {
+            // Make sure failed tests cause gulp to exit non-zero
+            throw err;
         });
-}));
+});
 
-gulp.task('protractor-only-on-travis', onlyOnTravis(function() {
-    runSequence(
-        ['protractor']
-    );
+gulp.task('e2e-tests-only-on-travis', onlyOnTravis(function() {
+    runSequence('backend-server', 'wait-backend-server', 'test-casperjs', 'stop-backend-server');
 }));
 
 // if you use a local env, you may want to coment protractor test because they are really slow !
 gulp.task('test', function() {
-    runSequence('karma' /*, 'protractor-only-on-travis'*/ );
+    runSequence('karma', 'e2e-tests-only-on-travis');
 });
 
 gulp.task('default', ['prettify-code']);

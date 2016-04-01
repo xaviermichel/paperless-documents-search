@@ -22,7 +22,7 @@ angular.module('edmApp')
 
             $scope.findCategoryById = function(categoryId) {
                 return $scope.categories.filter(function(category) {
-                    return category.id === categoryId
+                    return category.id === categoryId;
                 })[0];
             };
 
@@ -164,7 +164,7 @@ angular.module('edmApp')
                 }
                 console.debug("aggregateFileExtensionFilter = " + aggregateFileExtensionFilter);
 
-                // date 
+                // date
                 var aggregateDateFilter = "";
                 if ($scope.dateAggregationFilter) {
                     aggregateDateFilter = " AND " + $scope.dateAggregationFilter;

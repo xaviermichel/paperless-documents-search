@@ -30,7 +30,7 @@ public class ElasticsearchConfig {
     /**
      * Mapping files location
      */
-    private static final String MAPPING_DIR = "./mapping";
+    private static final String MAPPING_DIR = "./elastic_settings";
 
     @Inject
     private Client elasticsearchClient;

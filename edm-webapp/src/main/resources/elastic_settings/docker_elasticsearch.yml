@@ -1,0 +1,5 @@
+cluster.name: simple_data_search
+
+plugin.mandatory: mapper-attachments
+
+path.data: /edm_es_DATA

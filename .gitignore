@@ -20,17 +20,11 @@ bower_inc
 
 # maven
 target
+.factorypath
 
 # elastic search
 es
 */data
-
-
-# from simple ged
-*.profile
-*.sqlite
-*.sqlite-journal
-directory_icons
 
 # others
 *.swp
@@ -66,3 +60,7 @@ logback.xml
 *.appref-ms
 *.xlsx
 *.versionsBackup
+
+# debug tests
+casper-fail-*
+

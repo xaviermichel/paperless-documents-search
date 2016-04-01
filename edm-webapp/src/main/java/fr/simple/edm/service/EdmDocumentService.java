@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class EdmDocumentService {
-    
+
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
     private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
@@ -53,7 +53,7 @@ public class EdmDocumentService {
 
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
-    
+
     @Inject
     private ElasticsearchOperations elasticsearchTemplate;
 
@@ -67,8 +67,6 @@ public class EdmDocumentService {
         // unique identifier for updating
         String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getSourceId());
         edmDocument.setId(id);
-
-        edmDocument.setCategoryId(edmDocument.getCategoryId());
 
         try {
             // the document is build manually to
@@ -84,12 +82,12 @@ public class EdmDocumentService {
                 if (m.getName().startsWith("get")) {
                     Object oo = m.invoke(edmDocument);
                     String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
-                   
+
                     // ignore if transient
                     if (EdmDocumentFile.class.getDeclaredField(fieldName).isAnnotationPresent(Transient.class)) {
                         continue;
                     }
-                    
+
                     contentBuilder.field(fieldName, oo);
                 }
             }
@@ -118,7 +116,7 @@ public class EdmDocumentService {
 
     /**
      * When you search a document, this query is executed
-     * 
+     *
      * @param pattern
      *            The searched pattern
      * @return The adapted query

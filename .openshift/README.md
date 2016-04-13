@@ -23,14 +23,9 @@ Host simpledatasearch-xaviermichel.rhcloud.com
 ## Link your repository to simple-data-search !
 Clean old data : 
 ```bash
-cd simpledatasearch # openshift repo
-rm -fr * .openshift
-git commit -a -m "init: cleaning"
-```
-And update to simple-data-search :
-```bash
-git remote add upstream -m master https://github.com/xaviermichel/simple-data-search.git
-git pull -s recursive -X theirs upstream master
+git clone https://github.com/xaviermichel/simple-data-search.git
+git remote add openshift 
+git push -f openshift
 ```
 
 ## Fix build problem !

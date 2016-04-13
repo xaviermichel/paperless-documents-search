@@ -21,41 +21,12 @@ Host simpledatasearch-xaviermichel.rhcloud.com
 ```
 
 ## Link your repository to simple-data-search !
-Clean old data : 
+Clean old data :
 ```bash
 git clone https://github.com/xaviermichel/simple-data-search.git
-git remote add openshift 
+git remote add openshift ssh://some123hash@simpledatasearch-xaviermichel.rhcloud.com/~/git/simpledatasearch.git/
 git push -f openshift
 ```
 
-## Fix build problem !
-The version of node is very old and I had some problem for deploying app. 
-To fix it, I build locally js resources. You have to
-```bash
-cd edm-webapp
-npm install
-bower install
-gulp minify-code
-```
-... and force add to static ressources :
-```bash
-git add -f src/main/resources/static/bower_inc src/main/resources/static/build
-git commit -a -m "chore: add static resources"
-```
-You can now push your work !
-```bash
-git push
-```
-You can fix this, and submit pull request :)
-
 ## Custom your conf !
 Override configuration in `.openshift/application.properties`
-
-
-## stay up to date !
-```bash
-git fetch upstream
-git rebase upstream/develop
-cd edm-webapp
-gulp minify-code
-```

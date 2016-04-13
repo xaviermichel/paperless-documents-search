@@ -27,11 +27,6 @@ cd simpledatasearch # openshift repo
 rm -fr * .openshift
 git commit -a -m "init: cleaning"
 ```
-And update to simple-data-search :
-```bash
-git remote add upstream -m master https://github.com/xaviermichel/simple-data-search.git
-git pull -s recursive -X theirs upstream master
-```
 
 ## Fix build problem !
 The version of node is very old and I had some problem for deploying app. 
@@ -55,12 +50,3 @@ You can fix this, and submit pull request :)
 
 ## Custom your conf !
 Override configuration in `.openshift/application.properties`
-
-
-## stay up to date !
-```bash
-git fetch upstream
-git rebase upstream/develop
-cd edm-webapp
-gulp minify-code
-```

@@ -6,7 +6,7 @@ services:
     image: simple-data-search-webapp
     entrypoint: java -Dspring.profiles.active=local -jar /simple-data-search-webapp.jar
     ports:
-      - "8053:8053"
+      - 8053:8053
     depends_on:
       - simple_data_search_db
     volumes:

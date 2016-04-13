@@ -12,13 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.date.InternalDateRange;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -67,7 +65,7 @@ public class EdmAggregationsService {
 
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file.content").field("nodePath"));
         return qb;
     }
 
@@ -75,7 +73,9 @@ public class EdmAggregationsService {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
         log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
-        return Lists.newArrayList(edmDocumentRepository.search(qb));
+        List<EdmDocumentFile> target = new ArrayList<>();
+        edmDocumentRepository.search(qb).forEach(target::add);
+        return target;
     }
 
     private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
@@ -93,7 +93,7 @@ public class EdmAggregationsService {
             Terms terms = response.getAggregations().get("agg_fileExtension");
 
             for (Terms.Bucket bucket : terms.getBuckets()) {
-                extensions.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+                extensions.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
@@ -125,8 +125,8 @@ public class EdmAggregationsService {
 
             InternalDateRange buckets = response.getAggregations().get("agg_date");
             
-            for (DateRange.Bucket bucket : buckets.getBuckets()) {
-                dates.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+            for (InternalDateRange.Bucket bucket : buckets.getBuckets()) {
+                dates.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
@@ -160,7 +160,7 @@ public class EdmAggregationsService {
             Collection<Terms.Bucket> buckets = terms.getBuckets();
 
             for (Terms.Bucket bucket : buckets) {
-                mostCommonTerms.add(new EdmAggregationItem(bucket.getKey(), bucket.getDocCount()));
+                mostCommonTerms.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
             }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);

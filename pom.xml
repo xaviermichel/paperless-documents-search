@@ -1,201 +1,209 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.simple.edm</groupId>
-	<artifactId>simple-data-search</artifactId>
-	<version>3.1.0-SNAPSHOT</version>
-	<name>Simple edm</name>
-	<description>A simple data search</description>
-	<packaging>pom</packaging>
-
-
-	<developers>
-		<developer>
-			<id>xaviermichel</id>
-			<name>Xavier MICHEL</name>
-		</developer>
-	</developers>
+    <groupId>fr.simple.edm</groupId>
+    <artifactId>simple-data-search</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
+    <name>Simple edm</name>
+    <description>A simple data search</description>
+    <packaging>pom</packaging>
 
 
-	<licenses>
-		<license>
-			<name>zlib License</name>
-			<url>http://en.wikipedia.org/wiki/Zlib_License</url>
-		</license>
-	</licenses>
+    <developers>
+        <developer>
+            <id>xaviermichel</id>
+            <name>Xavier MICHEL</name>
+        </developer>
+    </developers>
 
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<org.springframework.springboot.version>1.3.2.RELEASE</org.springframework.springboot.version>
-
-		<org.elasticsearch.elasticsearch-mapper-attachments.version>2.5.0</org.elasticsearch.elasticsearch-mapper-attachments.version>
-
-		<javax.inject.version>1</javax.inject.version>
-		<javax.persistence.persistence-api.version>1.0.2</javax.persistence.persistence-api.version>
-		<javax.validation.validation-api.version>1.1.0.Final</javax.validation.validation-api.version>
-
-		<com.jayway.jsonpath.json-path-assert.version>1.1.0</com.jayway.jsonpath.json-path-assert.version>
-		<org.easytesting.version>2.0M10</org.easytesting.version>
-		<junit.junit.version>4.12</junit.junit.version>
-
-		<org.projectlombok.lombok.version>1.16.6</org.projectlombok.lombok.version>
-		<commons-io.version>2.4</commons-io.version>
-		<org.apache.commons.commons-lang3.version>3.4</org.apache.commons.commons-lang3.version>
-		<commons-fileupload.version>1.3.1</commons-fileupload.version>
-	</properties>
+    <licenses>
+        <license>
+            <name>zlib License</name>
+            <url>http://en.wikipedia.org/wiki/Zlib_License</url>
+        </license>
+    </licenses>
 
 
-	<dependencyManagement>
-		<dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-			<!-- jaxax -->
+        <org.springframework.springboot.version>1.4.0.M2</org.springframework.springboot.version>
+        <org.elastic.plugin.mapper-attachments.version>2.2.2</org.elastic.plugin.mapper-attachments.version>
 
-			<dependency>
-				<groupId>javax.inject</groupId>
-				<artifactId>javax.inject</artifactId>
-				<version>${javax.inject.version}</version>
-			</dependency>
+        <javax.inject.version>1</javax.inject.version>
+        <javax.persistence.persistence-api.version>1.0.2</javax.persistence.persistence-api.version>
+        <javax.validation.validation-api.version>1.1.0.Final</javax.validation.validation-api.version>
 
-			<dependency>
-				<groupId>javax.persistence</groupId>
-				<artifactId>persistence-api</artifactId>
-				<version>${javax.persistence.persistence-api.version}</version>
-			</dependency>
+        <com.jayway.jsonpath.json-path-assert.version>1.1.0</com.jayway.jsonpath.json-path-assert.version>
+        <org.easytesting.version>2.0M10</org.easytesting.version>
+        <junit.junit.version>4.12</junit.junit.version>
 
-			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>${javax.validation.validation-api.version}</version>
-			</dependency>
+        <org.projectlombok.lombok.version>1.16.6</org.projectlombok.lombok.version>
+        <commons-io.version>2.4</commons-io.version>
+        <org.apache.commons.commons-lang3.version>3.4</org.apache.commons.commons-lang3.version>
+        <commons-fileupload.version>1.3.1</commons-fileupload.version>
+    </properties>
 
 
-			<!-- elastic -->
+    <dependencyManagement>
+        <dependencies>
 
-			<dependency>
-				<groupId>org.elasticsearch</groupId>
-				<artifactId>elasticsearch-mapper-attachments</artifactId>
-				<version>${org.elasticsearch.elasticsearch-mapper-attachments.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>commons-logging</artifactId>
-						<groupId>commons-logging</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+            <!-- jaxax -->
 
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+            </dependency>
 
-			<!-- testing -->
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>persistence-api</artifactId>
+                <version>${javax.persistence.persistence-api.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<scope>test</scope>
-				<version>${junit.junit.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.easytesting</groupId>
-				<artifactId>fest-assert-core</artifactId>
-				<version>${org.easytesting.version}</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-			    <groupId>com.jayway.jsonpath</groupId>
-			    <artifactId>json-path-assert</artifactId>
-			    <version>${com.jayway.jsonpath.json-path-assert.version}</version>
-			    <scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.validation-api.version}</version>
+            </dependency>
 
 
-			<!-- tools -->
+            <!-- testing -->
 
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons-io.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>${junit.junit.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${org.apache.commons.commons-lang3.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.easytesting</groupId>
+                <artifactId>fest-assert-core</artifactId>
+                <version>${org.easytesting.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${org.projectlombok.lombok.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-
-			<!-- file upload -->
-
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commons-fileupload.version}</version>
-			</dependency>
-
-		</dependencies>
-	</dependencyManagement>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path-assert</artifactId>
+                <version>${com.jayway.jsonpath.json-path-assert.version}</version>
+                <scope>test</scope>
+            </dependency>
 
 
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>Maven Plugin Repository</name>
-			<url>http://repo1.maven.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</repository>
-	</repositories>
+            <!-- tools -->
 
-	<modules>
-		<module>edm-webapp</module>
-		<module>edm-contracts</module>
-		<module>edm-embedded-crawler</module>
-	</modules>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${org.apache.commons.commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${org.projectlombok.lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<docfilessubdirs>true</docfilessubdirs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
+            <!-- file upload -->
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Plugin Repository</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+
+        <repository>
+            <id>spring-libs-milestone</id>
+            <name>Spring Milestone Repository</name>
+            <url>http://repo.spring.io/libs-milestone</url>
+        </repository>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>http://repo.spring.io/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>http://repo.spring.io/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+
+    <modules>
+        <module>edm-webapp</module>
+        <module>edm-contracts</module>
+        <module>edm-embedded-crawler</module>
+    </modules>
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <docfilessubdirs>true</docfilessubdirs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jxr-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>

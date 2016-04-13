@@ -9,8 +9,8 @@ make build
 
 # see https://github.com/npm/npm/issues/3565
 unlink /vagrant/edm-webapp/node_modules
-mkdir /tmp/node_modules
-ln -sf /tmp/node_modules /vagrant/edm-webapp/node_modules
+mkdir /home/vagrant/node_modules
+ln -sf /home/vagrant/node_modules /vagrant/edm-webapp/node_modules
 # /
 
 cd /vagrant

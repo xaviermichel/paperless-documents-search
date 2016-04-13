@@ -49,7 +49,10 @@ var paths = {
         EDM_TEST_DIR + 'static/js/e2e/*.js',
         '!' + EDM_TEST_DIR + 'static/js/e2e/00-constants.js'
     ],
-    e2eTestConstants: EDM_TEST_DIR + 'static/js/e2e/00-constants.js'
+    e2eTestConstants: EDM_TEST_DIR + 'static/js/e2e/00-constants.js',
+    poms: [
+        '../**/pom.xml'
+    ]
 };
 
 function skipTests(task) {
@@ -120,9 +123,21 @@ gulp.task('prettify-html', function() {
         .pipe(gulp.dest(EDM_WEBAPP_DIR));
 });
 
+gulp.task('prettify-poms', function() {
+    return gulp.src(paths.poms)
+        .pipe(prettify({
+            braceStyle: "collapse",
+            indentChar: " ",
+            indentSize: 4
+        }))
+        .pipe(gulp.dest(function(file) {
+            return file.base;
+        }));
+});
+
 gulp.task('prettify-code', function() {
     runSequence(
-        ['prettify-js', 'prettify-html']
+        ['prettify-js', 'prettify-html', 'prettify-poms']
     );
 });
 

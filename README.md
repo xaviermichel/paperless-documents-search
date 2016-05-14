@@ -135,25 +135,12 @@ mvn spring-boot:run -Drun.profiles=local
 java -jar -Dspring.profiles.active=local target/simple-data-search-webapp*.jar
 ```
 
-**Front tests with protractor**
+**Front tests with casperjs**
 
-You need to start a webdriver locally :
+This tests are run on travis. If you wanna run them localy, you have to start the webapp (`mvn spring-boot:run`) and then run :
 ```code:bash
-cd edm-webapp
-./node_modules/protractor/bin/webdriver-manager update
-./node_modules/protractor/bin/webdriver-manager start
+gulp test-casperjs
 ```
-
-On another shell, start edm-webapp on port 9053 :
-```code:bash
-mvn spring-boot:run -D"run.arguments=--server.port=9053"
-```
-
-You can now run front e2e tests !
-```code:bash
-gulp protractor
-```
-
 
 Commit Message Format (inspired from angular format)
 ----------------------------------------------------

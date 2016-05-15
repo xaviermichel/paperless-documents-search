@@ -20,10 +20,10 @@ Host simpledatasearch-xaviermichel.rhcloud.com
     # ProxyCommand /usr/bin/corkscrew proxy.fr 3128 %h %p
 ```
 
-## Link your repository to simple-data-search !
+## Link your repository to paperless-documents-search !
 Clean old data :
 ```bash
-git clone https://github.com/xaviermichel/simple-data-search.git
+git clone https://github.com/xaviermichel/paperless-documents-search.git
 git remote add openshift ssh://some123hash@simpledatasearch-xaviermichel.rhcloud.com/~/git/simpledatasearch.git/
 git push -f openshift
 ```

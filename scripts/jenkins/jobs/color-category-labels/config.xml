@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>getIdForCategoryName() {
+curl -s &quot;${EDM_HOST}/category/name/$1&quot; | sed &apos;s/.*&quot;id&quot;:&quot;\(.*\)&quot;,&quot;name&quot;.*/\1/g&apos;
+}
+
+addColorOnCategory() {
+echo &quot;{\&quot;id\&quot;:\&quot;$1\&quot;,\&quot;name\&quot;:\&quot;$2\&quot;,\&quot;color\&quot;:\&quot;$3\&quot;,\&quot;backgroundColor\&quot;:\&quot;$4\&quot;}&quot;
+}
+
+postNewCategory() {
+curl -s -XPOST &quot;${EDM_HOST}/category&quot; --data &quot;$1&quot; -H &quot;Content-Type: application/json&quot;
+}
+
+#############
+
+categoryName=&quot;Factures&quot;
+categoryId=$(getIdForCategoryName &quot;${categoryName}&quot;)
+newCategory=$(addColorOnCategory &quot;${categoryId}&quot; &quot;${categoryName}&quot; &quot;#FFF&quot; &quot;#ff5722&quot;)
+postNewCategory &quot;${newCategory}&quot;
+
+categoryName=&quot;Administration&quot;
+categoryId=$(getIdForCategoryName &quot;${categoryName}&quot;)
+newCategory=$(addColorOnCategory &quot;${categoryId}&quot; &quot;${categoryName}&quot; &quot;#FFF&quot; &quot;#f44336&quot;)
+postNewCategory &quot;${newCategory}&quot;
+
+categoryName=&quot;Banque&quot;
+categoryId=$(getIdForCategoryName &quot;${categoryName}&quot;)
+newCategory=$(addColorOnCategory &quot;${categoryId}&quot; &quot;${categoryName}&quot; &quot;#FFF&quot; &quot;#03a9f4&quot;)
+postNewCategory &quot;${newCategory}&quot;
+
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

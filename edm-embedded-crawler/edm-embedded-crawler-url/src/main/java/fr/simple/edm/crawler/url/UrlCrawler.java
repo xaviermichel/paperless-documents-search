@@ -33,7 +33,7 @@ public class UrlCrawler {
     /**
      *
      * @param url             The path of the directory to crawl
-     *                             For example : https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/edm-webapp/src/test/resources/documents/demo_1/demo_pdf.pdf
+     *                             For example : https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/edm-webapp/src/test/resources/documents/demo_1/demo_pdf.pdf
      * @param edmServerHttpAddress The address of the EDM webapp HTTP address
      *                             For example : 127.0.0.1:8053
      * @param sourceName           A unique name for this source of documents

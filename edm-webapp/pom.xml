@@ -2,14 +2,14 @@
     <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <parent>
-            <artifactId>simple-data-search</artifactId>
+            <artifactId>paperless-documents-search</artifactId>
             <groupId>fr.simple.edm</groupId>
             <version>3.1.0-SNAPSHOT</version>
             <relativePath>..</relativePath>
         </parent>
 
-        <artifactId>simple-data-search-webapp</artifactId>
-        <name>simple data search webapp</name>
+        <artifactId>paperless-documents-search-webapp</artifactId>
+        <name>Paperless documents search webapp</name>
         <description>One entry point to search in your data !</description>
 
         <packaging>jar</packaging>
@@ -180,19 +180,19 @@
 
             <dependency>
                 <groupId>fr.simple.edm</groupId>
-                <artifactId>simple-data-search-contracts</artifactId>
+                <artifactId>paperless-documents-search-contracts</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>fr.simple.edm</groupId>
-                <artifactId>simple-data-search-embedded-crawler-filesystem</artifactId>
+                <artifactId>paperless-documents-search-embedded-crawler-filesystem</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>fr.simple.edm</groupId>
-                <artifactId>simple-data-search-embedded-crawler-url</artifactId>
+                <artifactId>paperless-documents-search-embedded-crawler-url</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -322,3 +322,4 @@
         </dependencies>
 
     </project>
+

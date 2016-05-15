@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# this crawler is sending all files in given alfresco site to simple-data-search
+# this crawler is sending all files in given alfresco site to paperless-documents-search
 #
 
 alfrescoUser=

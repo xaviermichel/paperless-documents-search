@@ -7,9 +7,9 @@
 		<encoder>
 			<pattern>${FILE_LOG_PATTERN}</pattern>
 		</encoder>
-		<file>simple_data_search.log</file>
+		<file>paperless_documents_search.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>simple_data_search.log.%i</fileNamePattern>
+			<fileNamePattern>paperless_documents_search.log.%i</fileNamePattern>
 			<MinIndex>1</MinIndex>
 			<MaxIndex>3</MaxIndex>
 		</rollingPolicy>

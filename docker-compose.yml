@@ -3,8 +3,8 @@ version: '2'
 services:
 
   simple_data_search_webapp:
-    image: simple-data-search-webapp
-    entrypoint: java -Dspring.profiles.active=local -jar /simple-data-search-webapp.jar
+    image: paperless-documents-search-webapp
+    entrypoint: java -Dspring.profiles.active=local -jar /paperless-documents-search-webapp.jar
     ports:
       - "8053:8053"
     depends_on:
@@ -14,7 +14,7 @@ services:
       - ./edm-webapp/src/main/docker/config:/config
 
   simple_data_search_db:
-    image: simple-data-search-db
+    image: paperless-documents-search-db
     ports:
       - 9200:9200
       - 9300:9300

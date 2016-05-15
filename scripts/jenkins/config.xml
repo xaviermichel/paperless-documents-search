@@ -145,13 +145,13 @@
           </default>
           <int>4</int>
           <string>EDM_CRAWLERS_BASE_DIR</string>
-          <string>/home/xavier/simple-data-search/simple-data-search-private-crawlers</string>
+          <string>/home/xavier/paperless-documents-search/paperless-documents-search-private-crawlers</string>
           <string>EDM_HOST</string>
           <string>http://127.0.0.1:8053</string>
           <string>EDM_PATH_EXTENSION</string>
           <string>/home/xavier/bin/phantomjs/phantomjs-linux-armv6l-master/phantomjs-1.9.0-linux-armv6l/bin</string>
           <string>EDM_PLUGINS_BASE_DIR</string>
-          <string>/home/xavier/simple-data-search/simple-data-search-private-plugins</string>
+          <string>/home/xavier/paperless-documents-search/paperless-documents-search-private-plugins</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>

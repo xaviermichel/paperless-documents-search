@@ -41,7 +41,7 @@ Ce champ peut être vide</description>
 
 
 # where mapping files are located 
-cd /home/xavier/work/simple-data-search/edm-webapp/src/main/resources/mapping
+cd /home/xavier/work/paperless-documents-search/edm-webapp/src/main/resources/mapping
 
 curl -XDELETE &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}&quot;
 

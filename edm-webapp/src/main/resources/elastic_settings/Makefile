@@ -1,6 +1,6 @@
 # Variables
 # Could be override from commandline
-IMAGE_NAME = simple-data-search-db
+IMAGE_NAME = paperless-documents-search-db
 
 .PHONY: all build clean help
 

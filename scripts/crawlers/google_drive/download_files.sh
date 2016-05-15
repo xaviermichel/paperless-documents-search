@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DRIVE_DIR=/home/xavier/simple-data-search/google_drive/work
-DRIVE_EDM_DIRECTORY=scan_to_simple-data-search
+DRIVE_DIR=/home/xavier/paperless-documents-search/google_drive/work
+DRIVE_EDM_DIRECTORY=scan_to_paperless-documents-search
 # the desination have to exists ! This script won't create it for you
 EDM_DESTINATION="/media/documents/00-a_trier"
 

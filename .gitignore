@@ -36,6 +36,7 @@ es
 # logs
 *.log
 *.log.zip
+edm-webapp/paperless_documents_search.log.*
 
 #vagrant
 .vagrant

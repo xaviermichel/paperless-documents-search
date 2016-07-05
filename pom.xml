@@ -28,7 +28,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <org.springframework.springboot.version>1.4.0.M3</org.springframework.springboot.version>
+        <org.springframework.springboot.version>1.4.0.RC1</org.springframework.springboot.version>
         <org.elastic.plugin.mapper-attachments.version>2.2.2</org.elastic.plugin.mapper-attachments.version>
 
         <javax.inject.version>1</javax.inject.version>

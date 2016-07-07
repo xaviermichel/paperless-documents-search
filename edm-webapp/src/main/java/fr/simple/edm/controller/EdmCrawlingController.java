@@ -25,24 +25,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EdmCrawlingController {
 
-    @Inject 
+    @Inject
     private EdmCrawlingService edmCrawlingService;
 
-    @RequestMapping(value = "/start", method = RequestMethod.GET, params = {"source"})
+    @RequestMapping(value = "/start", params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
         log.info("Begin crawling for source : {}", source);
         edmCrawlingService.snapshotCurrentDocumentsForSource(source);
     }
 
-    @RequestMapping(value = "/stop", method = RequestMethod.GET, params = {"source"})
+    @RequestMapping(value = "/stop", params = {"source"})
     @ResponseStatus(value=HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
         log.info("End of crawling for source : {}", source);
         edmCrawlingService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
     }
 
-    @RequestMapping(value = "/filesystem", method = RequestMethod.GET, params = {"path"})
+    @RequestMapping(value = "/filesystem", params = {"path"})
     @ResponseBody
     public String crawlFilesystem(
             @RequestParam(value = "path") String path,
@@ -61,7 +61,7 @@ public class EdmCrawlingController {
         return "OK";
     }
 
-    @RequestMapping(value = "/url", method = RequestMethod.GET, params = {"url"})
+    @RequestMapping(value = "/url", params = {"url"})
     @ResponseBody
     public String crawlUrl(
             @RequestParam(value = "url") String url,
@@ -79,8 +79,8 @@ public class EdmCrawlingController {
 
         return "OK";
     }
-    
-    @RequestMapping(method=RequestMethod.POST, value="/document", consumes = MediaType.APPLICATION_JSON_VALUE)
+
+    @RequestMapping(value="/document", method=RequestMethod.POST)
     @ResponseBody
     public EdmDocumentFile create(@RequestBody EdmDocumentFile edmDocument) {
         return edmCrawlingService.save(edmDocument);

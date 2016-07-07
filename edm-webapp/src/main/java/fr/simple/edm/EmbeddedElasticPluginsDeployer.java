@@ -57,7 +57,7 @@ public class EmbeddedElasticPluginsDeployer {
 
 	public EmbeddedElasticPluginsDeployer() {
 		EmbeddedElasticPlugins mapperAttachment = new EmbeddedElasticPlugins();
-		mapperAttachment.setZipName("mapper-attachments-2.2.2.zip");
+		mapperAttachment.setZipName("mapper-attachments-2.3.3.zip");
 		mapperAttachment.setDirTargetName("mapper-attachments");
 		mapperAttachment.setExcludedJars(Lists.newArrayList("commons-codec-1.10.jar", "commons-io-2.4.jar", "commons-logging-1.1.3.jar"));
 

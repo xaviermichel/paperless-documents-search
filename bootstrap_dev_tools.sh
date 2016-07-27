@@ -46,7 +46,7 @@ apt-get install -qq --yes oracle-java8-set-default
 cd /home/vagrant
 mkdir bin
 cd bin
-wget --quiet http://apache.websitebeheerjd.nl/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+wget --quiet ftp://mirrors.ircam.fr/pub/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 tar xvzf apache-maven-3.3.9-bin.tar.gz
 echo 'export PATH=${PATH}:/home/vagrant/bin/apache-maven-3.3.9/bin' >> /home/vagrant/.bashrc
 # proxy ?

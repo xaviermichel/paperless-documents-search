@@ -28,8 +28,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <org.springframework.springboot.version>1.4.0.RC1</org.springframework.springboot.version>
-        <org.elastic.plugin.mapper-attachments.version>2.3.3</org.elastic.plugin.mapper-attachments.version>
+        <org.springframework.springboot.version>1.4.0.RELEASE</org.springframework.springboot.version>
+        <org.elastic.plugin.mapper-attachments.version>2.3.4</org.elastic.plugin.mapper-attachments.version>
 
         <javax.inject.version>1</javax.inject.version>
         <javax.persistence.persistence-api.version>1.0.2</javax.persistence.persistence-api.version>
@@ -140,7 +140,6 @@
         </plugins>
     </build>
 
-
     <repositories>
         <repository>
             <id>central</id>
@@ -178,7 +177,6 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 
 
     <modules>

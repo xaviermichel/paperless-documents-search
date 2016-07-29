@@ -57,13 +57,13 @@ public class EmbeddedElasticPluginsDeployer {
 
 	public EmbeddedElasticPluginsDeployer() {
 		EmbeddedElasticPlugins mapperAttachment = new EmbeddedElasticPlugins();
-		mapperAttachment.setZipName("mapper-attachments-2.3.3.zip");
+		mapperAttachment.setZipName("mapper-attachments-2.3.4.zip");
 		mapperAttachment.setDirTargetName("mapper-attachments");
 		mapperAttachment.setExcludedJars(Lists.newArrayList("commons-codec-1.10.jar", "commons-io-2.4.jar", "commons-logging-1.1.3.jar"));
 
 		pluginsToDeploy.add(mapperAttachment);
 	}
-	
+
 	@PostConstruct
 	public void init() {
 		if (StringUtils.hasLength(clusterNodes)) {
@@ -79,12 +79,12 @@ public class EmbeddedElasticPluginsDeployer {
 		}
 
 		log.info("Deploying elastic plugins into {}", elasticHomeDirectory);
-		
+
 		if (! StringUtils.hasLength(elasticHomeDirectory)) {
 			log.error("elasticHomeDirectory is not defined, I don't known where I can deploy elastic plugins !");
 			return;
 		}
-		
+
 		try {
 			Files.createDirectories(pluginsDirectory);
 		} catch (IOException e) {

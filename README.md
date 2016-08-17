@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/xaviermichel/simple-data-search.png?branch=master)](https://travis-ci.org/xaviermichel/simple-data-search)
+[![Build Status](https://travis-ci.org/xaviermichel/paperless-documents-search.png?branch=master)](https://travis-ci.org/xaviermichel/paperless-documents-search)
 
 
 Simple Data Search

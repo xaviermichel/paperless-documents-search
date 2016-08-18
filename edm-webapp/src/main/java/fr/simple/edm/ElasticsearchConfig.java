@@ -12,10 +12,12 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsAction;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.indices.IndexAlreadyExistsException;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @EnableElasticsearchRepositories(basePackages = "fr.simple.edm.repository")
 @Component
 @Slf4j
+@DependsOn("embeddedElasticPluginsDeployer")
 public class ElasticsearchConfig {
 
     /**
      * Mapping files location
      */
-    private static final String MAPPING_DIR = "./mapping";
+    private static final String MAPPING_DIR = "./elastic_settings";
 
     @Inject
     private Client elasticsearchClient;
@@ -61,7 +64,7 @@ public class ElasticsearchConfig {
 
                 // may have to update settings
                 elasticsearchClient.admin().indices().close(new CloseIndexRequest(index)).actionGet();
-                UpdateSettingsRequestBuilder usrb = new UpdateSettingsRequestBuilder(elasticsearchClient.admin().indices(), index);
+                UpdateSettingsRequestBuilder usrb = new UpdateSettingsRequestBuilder(elasticsearchClient.admin().indices(), UpdateSettingsAction.INSTANCE, index);
                 elasticsearchClient.admin().indices().updateSettings(usrb.setSettings(indexSettings).request()).actionGet();
                 elasticsearchClient.admin().indices().open(new OpenIndexRequest(index)).actionGet();
 

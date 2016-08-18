@@ -16,16 +16,16 @@ public class EdmTestHelper {
 
     @Autowired
     private ElasticsearchTestingHelper elasticsearchTestingHelper;
-    
+
     @Autowired
     private EdmDocumentService edmDocumentService;
-    
+
     private EdmDocumentFile docBac;
     private EdmDocumentFile docBrevet;
     private EdmDocumentFile docBacNotes;
     private EdmDocumentFile docBulletinSalaire;
     private EdmDocumentFile docLatex;
-    
+
     public void destroyAndRebuildElasticContent() throws Exception {
         elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 
@@ -49,7 +49,7 @@ public class EdmTestHelper {
 
         docLatex = new EdmDocumentFile();
         docLatex.setName("Un template de document");
-        docLatex.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/demo_pdf.pdf").toURI())));
+        docLatex.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/demo_1/demo_pdf.pdf").toURI())));
         docLatex.setFileContentType("application/pdf");
         docLatex.setFileExtension("pdf");
         docLatex.setNodePath("/documents/4");
@@ -62,5 +62,5 @@ public class EdmTestHelper {
 
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
     }
-    
+
 }

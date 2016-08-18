@@ -38,7 +38,7 @@
             "file": {
                 "type": "attachment",
                 "fields": {
-                    "file": {
+                    "content": {
                         "type": "string",
                         "term_vector": "with_positions_offsets",
                         "store": true

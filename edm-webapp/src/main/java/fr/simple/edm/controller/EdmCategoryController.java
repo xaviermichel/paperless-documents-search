@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,19 +22,19 @@ public class EdmCategoryController {
     @Setter
     private EdmCategoryService edmCategoryService;
 
-    @RequestMapping(value = "/category", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/category")
     @ResponseBody
     public List<EdmCategory> list() {
         return edmCategoryService.findAll();
     }
 
-    @RequestMapping(method=RequestMethod.POST, value="/category", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/category", method = RequestMethod.POST)
     @ResponseBody
     public EdmCategory create(@RequestBody EdmCategory edmCategory) {
         return edmCategoryService.save(edmCategory);
     }
 
-    @RequestMapping(value = "/category/name/{categoryName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/category/name/{categoryName}")
     @ResponseBody
     public EdmCategory getOneByName(@PathVariable String categoryName) {
         return edmCategoryService.findOneByName(categoryName);

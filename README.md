@@ -1,18 +1,19 @@
 [![Build Status](https://travis-ci.org/xaviermichel/paperless-documents-search.png?branch=master)](https://travis-ci.org/xaviermichel/paperless-documents-search)
 
-
-Simple Data Search
+Paperless Documents Search
 ==================
 
-This program is an only entry point to search in your files.
-You launch it, index one (or more) directory from your drive (or anywhere else), and then you can search in your files content !
+> This program is an only entry point to search in your files. Just :
+> - start it ;
+> - index one (or more) directory from your local drive (or anywhere else) ;
+> - search in your files content !
 
 **Features**
 
-- easy to deploy (can be run with one jar)
-- easy to use (it's a web application)
-- powerful search engine
-- exposed REST api
+- Out of the box
+- Powerful search engine, easily customisable
+- Frontend with shortcuts to search in your documents
+- Exposed REST api
 - OCR support : find text in your images !
 
 Quick start
@@ -20,10 +21,10 @@ Quick start
 
 **Software**
 
-You can find the [latest release here](https://github.com/xaviermichel/simple-data-search/releases).
+You can find the [latest release here](https://github.com/xaviermichel/paperless-documents-search/releases).
 
-1. Download the zip, extract it and launch `simple-data-search.bat` to start application !
-2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents`
+1. Download the zip, extract it and launch `start.bat` to start application !
+2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
 3. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
 
@@ -32,11 +33,11 @@ Screenshot
 
 ### Frontend, search in your documents !
 
-![application web](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_webapp.png)
+![application web](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/screenshots/edm_webapp.png)
 
 ### Backend (optionnal), manage document indexation, automatic crawling, ...
 
-![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/simple-data-search/master/screenshots/edm_jenkins.png)
+![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/screenshots/edm_jenkins.png)
 
 
 Solution stack
@@ -50,8 +51,8 @@ Wanna compile and run it in two minutes ? You just need [maven](http://maven.apa
 
 First, clone the project
 ```bash
-git clone https://github.com/xaviermichel/simple-data-search.git
-cd simple-data-search
+git clone https://github.com/xaviermichel/paperless-documents-search.git
+cd paperless-documents-search
 ```
 
 Then, you can compile the project core and run it !
@@ -59,7 +60,7 @@ Then, you can compile the project core and run it !
 mvn clean install -DskipTests
 cd edm-webapp
 mvn package -DskipTests
-java -jar target/simple-data-search-webapp*.jar
+java -jar target/paperless-documents-search-webapp*.jar
 ```
 
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
@@ -70,7 +71,6 @@ http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Me
 // you can also exclude some pattern
 http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```
-
 
 Mapping migration
 -----------------
@@ -112,6 +112,12 @@ curl -XPOST 'http://127.0.0.1:9200/_aliases' -d '
 }'
 ```
 
+Similar Projects
+----------------
+
+You can also take a look at https://github.com/danielquinn/paperless
+
+
 Other
 -----
 
@@ -119,7 +125,7 @@ Other
 
 1. [Download sonar](http://www.sonarqube.org/downloads/)
 2. Extract the zip and launch the adapted bin (you should have access to http://127.0.0.1:9000/)
-3. In the "simple-data-search" directory, [launch sonar analysis](http://docs.codehaus.org/display/SONAR/Analyzing+with+Maven) :
+3. In the "paperless-documents-search" directory, [launch sonar analysis](http://docs.codehaus.org/display/SONAR/Analyzing+with+Maven) :
 
 ```code:bash
 mvn clean install
@@ -132,53 +138,14 @@ To work with un-merged resources, you can activate `local` profile :
 ```code:bash
 mvn spring-boot:run -Drun.profiles=local
 # or
-java -jar -Dspring.profiles.active=local target/simple-data-search-webapp*.jar
+java -jar -Dspring.profiles.active=local target/paperless-documents-search-webapp*.jar
 ```
 
-**Front tests with protractor**
+**Front tests with casperjs**
 
-You need to start a webdriver locally :
+This tests are run on travis. If you wanna run them localy, you have to start the webapp (`mvn spring-boot:run`) and then run :
 ```code:bash
-cd edm-webapp
-./node_modules/protractor/bin/webdriver-manager update
-./node_modules/protractor/bin/webdriver-manager start
+gulp test-casperjs
 ```
 
-On another shell, start edm-webapp on port 9053 :
-```code:bash
-mvn spring-boot:run -D"run.arguments=--server.port=9053"
-```
-
-You can now run front e2e tests !
-```code:bash
-gulp protractor
-```
-
-
-Commit Message Format (inspired from angular format)
-----------------------------------------------------
-
-Each message should respect this pattern :
-
-    <type>: <subject>
-
-### Type
-Must be one of the following:
-
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
-  generation
-
-### Subject
-
-The subject contains succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
+>>>>>>> feat-spring-boot-1.4

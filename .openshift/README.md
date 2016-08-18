@@ -20,33 +20,13 @@ Host simpledatasearch-xaviermichel.rhcloud.com
     # ProxyCommand /usr/bin/corkscrew proxy.fr 3128 %h %p
 ```
 
-## Link your repository to simple-data-search !
-Clean old data : 
+## Link your repository to paperless-documents-search !
+Clean old data :
 ```bash
-cd simpledatasearch # openshift repo
-rm -fr * .openshift
-git commit -a -m "init: cleaning"
+git clone https://github.com/xaviermichel/paperless-documents-search.git
+git remote add openshift ssh://some123hash@simpledatasearch-xaviermichel.rhcloud.com/~/git/simpledatasearch.git/
+git push -f openshift
 ```
-
-## Fix build problem !
-The version of node is very old and I had some problem for deploying app. 
-To fix it, I build locally js resources. You have to
-```bash
-cd edm-webapp
-npm install
-bower install
-gulp minify-code
-```
-... and force add to static ressources :
-```bash
-git add -f src/main/resources/static/bower_inc src/main/resources/static/build
-git commit -a -m "chore: add static resources"
-```
-You can now push your work !
-```bash
-git push
-```
-You can fix this, and submit pull request :)
 
 ## Custom your conf !
 Override configuration in `.openshift/application.properties`

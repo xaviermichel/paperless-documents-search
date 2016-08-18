@@ -25,10 +25,10 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.FacetedPage;
-import org.springframework.data.elasticsearch.core.FacetedPageImpl;
 import org.springframework.data.elasticsearch.core.SearchResultMapper;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class EdmDocumentService {
-    
+
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
     private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
@@ -53,7 +53,7 @@ public class EdmDocumentService {
 
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
-    
+
     @Inject
     private ElasticsearchOperations elasticsearchTemplate;
 
@@ -67,8 +67,6 @@ public class EdmDocumentService {
         // unique identifier for updating
         String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getSourceId());
         edmDocument.setId(id);
-
-        edmDocument.setCategoryId(edmDocument.getCategoryId());
 
         try {
             // the document is build manually to
@@ -84,12 +82,12 @@ public class EdmDocumentService {
                 if (m.getName().startsWith("get")) {
                     Object oo = m.invoke(edmDocument);
                     String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
-                   
+
                     // ignore if transient
                     if (EdmDocumentFile.class.getDeclaredField(fieldName).isAnnotationPresent(Transient.class)) {
                         continue;
                     }
-                    
+
                     contentBuilder.field(fieldName, oo);
                 }
             }
@@ -118,7 +116,7 @@ public class EdmDocumentService {
 
     /**
      * When you search a document, this query is executed
-     * 
+     *
      * @param pattern
      *            The searched pattern
      * @return The adapted query
@@ -131,36 +129,10 @@ public class EdmDocumentService {
 
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file").field("nodePath"));
+        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file.content").field("nodePath"));
         return qb;
     }
 
-    /*
-        curl -XPOST 'http://127.0.0.1:9253/documents/document/_search?pretty=true' -d '
-        {
-           "fields":[
-
-           ],
-           "query":{
-              "query_string":{
-                 "query":"trololo",
-                 "default_operator":"and"
-              }
-           },
-           "highlight":{
-              "fields":{
-                 "file":{
-                 },
-                 "name":{
-                 },
-                 "description":{
-                 },
-                 "nodePath":{
-                 }
-              }
-           }
-        }
-     */
     public EdmDocumentSearchResultWrapper search(String pattern) {
 
         // basic query
@@ -175,7 +147,7 @@ public class EdmDocumentService {
                 .withHighlightFields(
                         new Field("name").preTags(preTag).postTags(postTag),
                         new Field("description").preTags(preTag).postTags(postTag),
-                        new Field("file").preTags(preTag).postTags(postTag),
+                        new Field("file.content").preTags(preTag).postTags(postTag),
                         new Field("nodePath").preTags(preTag).postTags(postTag)
                 )
                 .withSort(new ScoreSortBuilder())
@@ -187,7 +159,7 @@ public class EdmDocumentService {
             // Highlight result
             elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
                 @Override
-                public <T> FacetedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
+                public <T> Page<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
                     List<EdmDocumentFile> chunk = new ArrayList<>();
 
                     searchResult.setTookTime(response.getTookInMillis());
@@ -195,7 +167,7 @@ public class EdmDocumentService {
 
                     for (SearchHit searchHit : response.getHits()) {
                         if (response.getHits().getHits().length <= 0) {
-                            return new FacetedPageImpl<T>((List<T>) chunk);
+                            return new PageImpl<T>((List<T>) chunk);
                         }
 
                         EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
@@ -212,8 +184,8 @@ public class EdmDocumentService {
                         if (searchHit.getHighlightFields().get("description") != null) {
                             edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
                         }
-                        if (searchHit.getHighlightFields().get("file") != null) {
-                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file").fragments()[0].toString());
+                        if (searchHit.getHighlightFields().get("file.content") != null) {
+                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file.content").fragments()[0].toString());
                         }
                         if (searchHit.getHighlightFields().get("nodePath") != null) {
                             edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
@@ -222,7 +194,7 @@ public class EdmDocumentService {
                         searchResult.add(edmDocumentSearchResult);
                         chunk.add(doc);
                     }
-                    return new FacetedPageImpl<T>((List<T>) chunk);
+                    return new PageImpl<T>((List<T>) chunk);
                 }
             });
 

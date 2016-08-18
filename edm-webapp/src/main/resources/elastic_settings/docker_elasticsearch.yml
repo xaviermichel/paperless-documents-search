@@ -1,0 +1,7 @@
+cluster.name: simple_data_search
+
+plugin.mandatory: mapper-attachments
+
+path.data: /edm_es_DATA
+
+network.host: 0.0.0.0

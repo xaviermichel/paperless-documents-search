@@ -4,10 +4,10 @@
 
 # path where are placed files before zipping them.
 # /!\ The name will be root in the final zip
-TMP_RELEASE_DIR=./simple-data-search
+TMP_RELEASE_DIR=./paperless-documents-search
 
 # the final zip file, which is to release
-RELEASE_FINAL_FILE=./simple-data-search-{{VERSION}}.zip
+RELEASE_FINAL_FILE=./paperless-documents-search-{{VERSION}}.zip
 
 # always skip tests
 MAVEN_TEST=-DskipTests
@@ -81,11 +81,11 @@ xlog INFO "Preparing release directory"
 mkdir -p ${TMP_RELEASE_DIR}
 
 # main jar
-cp ../edm-webapp/target/*.jar ${TMP_RELEASE_DIR}/simple-data-search.jar
+cp ../edm-webapp/target/*.jar ${TMP_RELEASE_DIR}/paperless-documents-search.jar
 
 # embedded scripts
-cp simple-data-search.bat ${TMP_RELEASE_DIR}
-cp simple-data-search.sh ${TMP_RELEASE_DIR}
+cp start.bat ${TMP_RELEASE_DIR}
+cp start.sh ${TMP_RELEASE_DIR}
 
 # create release file
 zip -r ${RELEASE_FINAL_FILE} ${TMP_RELEASE_DIR}

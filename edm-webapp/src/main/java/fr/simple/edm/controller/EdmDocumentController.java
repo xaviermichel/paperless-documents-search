@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,36 +34,36 @@ public class EdmDocumentController {
 
     @Inject
     private EdmAggregationsService edmAggregationsService;
-    
-    @RequestMapping(value = "/document", method = RequestMethod.GET, params = {"q"})
+
+    @RequestMapping(value = "/document", params = {"q"})
     @ResponseBody
     public EdmDocumentSearchResultWrapper search(@RequestParam(value = "q") String pattern) {
         log.debug("Searched pattern : '{}'", pattern);
         return edmDocumentService.search(pattern);
     }
 
-    @RequestMapping(value = "/document/suggest", method = RequestMethod.GET, params = {"q"})
+    @RequestMapping(value = "/document/suggest", params = {"q"})
     @ResponseBody
     public List<EdmDocumentFile> getSuggestions(@RequestParam(value = "q") String pattern) {
         log.debug("Suggestions pattern : '{}'", pattern);
         return edmAggregationsService.getSuggestions(pattern);
     }
 
-    @RequestMapping(value = "/document/top_terms", method = RequestMethod.GET)
+    @RequestMapping(value = "/document/top_terms")
     @ResponseBody
     public List<EdmAggregationItem> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationsService.getTopTerms(pattern);
     }
 
-    @RequestMapping(value = "/document/aggregations", method = RequestMethod.GET)
+    @RequestMapping(value = "/document/aggregations")
     @ResponseBody
     public Map<String, List<EdmAggregationItem>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationsService.getAggregations(pattern);
     }
 
-    @RequestMapping(value = "/files", method = RequestMethod.GET, params = {"docId"})
+    @RequestMapping(value = "/files", params = {"docId"})
     @ResponseBody
     public FileSystemResource getFile(@RequestParam(value = "docId") String docId, HttpServletResponse response) throws NotFoundException, IOException {
         log.debug("Downloading file : '{}'", docId);

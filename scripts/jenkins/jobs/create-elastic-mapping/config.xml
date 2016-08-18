@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>OLD_INDEX_NAME</name>
+          <description>Nom actuel de l&apos;index utilisé (sera utilisé pour faire dé-pointer l&apos;alias)
+Ce champ peut être vide</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>NEW_INDEX_NAME</name>
+          <description>Nom de l&apos;index qui sera créé avec le bon mapping</description>
+          <defaultValue>documents_1</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>ELASTIC_HOST=http://127.0.0.1:9200
+
+
+# where mapping files are located 
+cd /home/xavier/work/paperless-documents-search/edm-webapp/src/main/resources/mapping
+
+curl -XDELETE &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}&quot;
+
+curl -XPUT &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}&quot; -d &quot;@./documents.json&quot;
+curl -XPUT &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}/_mapping/category&quot; -d &quot;@./documents/category.json&quot;
+curl -XPUT &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}/_mapping/source&quot; -d &quot;@./documents/source.json&quot;
+curl -XPUT &quot;${ELASTIC_HOST}/${NEW_INDEX_NAME}/_mapping/document_file&quot; -d &quot;@./documents/document_file.json&quot;
+
+# here you shoumd re-index data before swithing index
+
+
+if [ -z &quot;${OLD_INDEX_NAME}&quot; ]; then
+curl -XPOST &quot;${ELASTIC_HOST}/_aliases&quot; -d &apos;
+{
+    &quot;actions&quot; : [
+        { &quot;add&quot; : { &quot;index&quot; : &quot;&apos;${NEW_INDEX_NAME}&apos;&quot;, &quot;alias&quot; : &quot;documents&quot; } }
+    ]
+}&apos;
+else
+curl -XPOST &quot;${ELASTIC_HOST}/_aliases&quot; -d &apos;
+{
+    &quot;actions&quot; : [
+        { &quot;remove&quot; : { &quot;index&quot; : &quot;&apos;${OLD_INDEX_NAME}&apos;&quot;, &quot;alias&quot; : &quot;documents&quot; } },
+        { &quot;add&quot; : { &quot;index&quot; : &quot;&apos;${NEW_INDEX_NAME}&apos;&quot;, &quot;alias&quot; : &quot;documents&quot; } }
+    ]
+}&apos;
+fi
+
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

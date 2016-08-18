@@ -1,10 +1,47 @@
 #!/bin/bash
 
-# override bin with mock
-export PATH=${OPENSHIFT_REPO_DIR}/.openshift/mock:${PATH}
+set -x
+
+if [ ! -d $OPENSHIFT_DATA_DIR/m2/repository ]
+then
+	cd $OPENSHIFT_DATA_DIR
+	mkdir m2/repository
+fi
+
+if [ ! -d $OPENSHIFT_DATA_DIR/logs ]
+then
+	cd $OPENSHIFT_DATA_DIR
+	mkdir logs
+fi
+
+if [ ! -d $OPENSHIFT_DATA_DIR/jdk1.8.0_20 ]
+then
+	cd $OPENSHIFT_DATA_DIR
+	wget http://www.java.net/download/jdk8u20/archive/b17/binaries/jdk-8u20-ea-bin-b17-linux-x64-04_jun_2014.tar.gz
+	tar xvf *.tar.gz
+	rm -f *.tar.gz
+fi
+
+if [ ! -d $OPENSHIFT_DATA_DIR/apache-maven-3.2.5 ]
+then
+	cd $OPENSHIFT_DATA_DIR
+	wget http://mirror.cc.columbia.edu/pub/software/apache/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz
+	tar xvf *.tar.gz
+	rm -f *.tar.gz
+fi
 
 cd $OPENSHIFT_REPO_DIR
-mvn clean install -s $OPENSHIFT_REPO_DIR/.openshift/settings.xml -DskipTests
-cd edm-webapp
-mvn package -s $OPENSHIFT_REPO_DIR/.openshift/settings.xml -DskipTests
+export M2=$OPENSHIFT_DATA_DIR/apache-maven-3.2.5/bin
+export MAVEN_OPTS="-Xms384m -Xmx412m"
+export JAVA_HOME=$OPENSHIFT_DATA_DIR/jdk1.8.0_20
+export PATH=$JAVA_HOME/bin:$M2:$PATH
+
+# moved because of npm cache
+SAVE_HOME=${HOME}
+export HOME=${HOME}/app-root/build-dependencies
+
+cd $OPENSHIFT_REPO_DIR
+mvn clean install package -s $OPENSHIFT_REPO_DIR/.openshift/settings.xml -DskipTests
+
+export HOME=${SAVE_HOME}
 

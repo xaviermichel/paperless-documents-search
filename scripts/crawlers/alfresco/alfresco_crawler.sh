@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# this crawler is sending all files in given alfresco site to simple-data-search
+# this crawler is sending all files in given alfresco site to paperless-documents-search
 #
 
 alfrescoUser=
@@ -12,15 +12,18 @@ alfrescoSite=
 exclusionPattern="*.bz2|*.tar.gz|*.tif|*.zip|*.7z|*.jpg|*.jpeg|*.png"
 
 edmsHost=http://127.0.0.1:8053
-## You have to create the source with curl calls, for example
-##     curl -XGET 'http://127.0.0.1:8053/category/name/Documents'
-##    {"id":"iBhZrF8JTq6FEJvagwsjfQ","edmNodeType":"CATEGORY","parentId":null,"name":"Documents","description":""}
-##     curl -XPOST 'http://127.0.0.1:8053/source' -H "Content-Type: application/json" -d '{"name" : "alfresco", "parentId" : "iBhZrF8JTq6FEJvagwsjfQ"}'
-##    {"id":"dTdWqfXORq2aXiyMPcsnHA","edmNodeType":"SOURCE","parentId":"iBhZrF8JTq6FEJvagwsjfQ","name":"alfresco","description":null}
-## So the parent is dTdWqfXORq2aXiyMPcsnHA
-edmsSourceId="AVLVjrO-d9sG1UWtLslM"
-edmsSourceName=alfresco
 
+edmsSourceName=meteo-v2-alfresco
+edmsSourceId=$(curl "${edmsHost}/source" | sed "s/.*{\"id\":\"\\(.*\\)\",\"name\":\"${edmsSourceName}\".*/\1/g")
+if [ "${#edmsSourceId}" -ne 20 ]; then
+	edmsSourceId=$(curl -XPOST "${edmsHost}/source" -H "Content-Type: application/json" -d "{\"name\" : \"${edmsSourceName}\"}" | sed 's/.*"id":"\(.*\)","name":.*/\1/g')
+fi
+
+edmsCategoryName="Meteo-France v2"
+edmsCategoryId=$(curl "${edmsHost}/category" | sed "s/.*{\"id\":\"\\(.*\\)\",\"name\":\"${edmsCategoryName}\".*/\1/g")
+if [ "${#edmsCategoryId}" -ne 20 ]; then
+	edmsCategoryId=$(curl -XPOST "${edmsHost}/category" -H "Content-Type: application/json" -d "{\"name\" : \"${edmsCategoryName}\"}" | sed 's/.*"id":"\(.*\)","name":.*/\1/g')
+fi
 
 function crawlDirectoryById() {
 
@@ -66,13 +69,13 @@ do
 	    fileExtension=$(echo "${dlFile}" | awk -F'[.]' '{print $NF}')
 
 		# send doc informations
-		curl -XPOST "${edmsHost}/document" -d "{
+		curl -XPOST "${edmsHost}/crawl/document" -d "{
 				\"fileContent\" : \"${fileContent}\",
 				\"date\" : \"${docDate}\",
 				\"nodePath\"	: \"${url}\",
-				\"edmNodeType\" : \"DOCUMENT\",
 				\"name\" : \"${dlFile}\",
-				\"parentId\" : \"${edmsSourceId}\",
+				\"sourceId\" : \"${edmsSourceId}\",
+				\"categoryId\" : \"${edmsCategoryId}\",
 				\"fileExtension\"   : \"${fileExtension}\",
 				\"fileContentType\" : \"${fileExtension}\"
 		}" -H "Content-Type: application/json"

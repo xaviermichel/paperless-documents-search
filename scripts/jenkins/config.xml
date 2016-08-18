@@ -1,16 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hudson>
   <disabledAdministrativeMonitors/>
-  <version>1.618</version>
+  <version>1.620</version>
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
-  <securityRealm class="hudson.security.SecurityRealm$None"/>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:xavier</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:xavier</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:xavier</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:xavier</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:xavier</permission>
+    <permission>hudson.model.Computer.Build:xavier</permission>
+    <permission>hudson.model.Computer.Configure:xavier</permission>
+    <permission>hudson.model.Computer.Connect:xavier</permission>
+    <permission>hudson.model.Computer.Create:xavier</permission>
+    <permission>hudson.model.Computer.Delete:xavier</permission>
+    <permission>hudson.model.Computer.Disconnect:xavier</permission>
+    <permission>hudson.model.Hudson.Administer:xavier</permission>
+    <permission>hudson.model.Hudson.ConfigureUpdateCenter:xavier</permission>
+    <permission>hudson.model.Hudson.Read:xavier</permission>
+    <permission>hudson.model.Hudson.RunScripts:xavier</permission>
+    <permission>hudson.model.Hudson.UploadPlugins:xavier</permission>
+    <permission>hudson.model.Item.Build:xavier</permission>
+    <permission>hudson.model.Item.Cancel:xavier</permission>
+    <permission>hudson.model.Item.Configure:xavier</permission>
+    <permission>hudson.model.Item.Create:xavier</permission>
+    <permission>hudson.model.Item.Delete:xavier</permission>
+    <permission>hudson.model.Item.Discover:xavier</permission>
+    <permission>hudson.model.Item.Read:xavier</permission>
+    <permission>hudson.model.Item.Workspace:xavier</permission>
+    <permission>hudson.model.Run.Delete:xavier</permission>
+    <permission>hudson.model.Run.Update:xavier</permission>
+    <permission>hudson.model.View.Configure:xavier</permission>
+    <permission>hudson.model.View.Create:xavier</permission>
+    <permission>hudson.model.View.Delete:xavier</permission>
+    <permission>hudson.model.View.Read:xavier</permission>
+    <permission>hudson.scm.SCM.Tag:xavier</permission>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>
   <disableRememberMe>false</disableRememberMe>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
   <jdks/>
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
@@ -46,6 +82,7 @@
       </columns>
       <includeRegex>run-.*-plugin</includeRegex>
       <recurse>false</recurse>
+      <statusFilter>true</statusFilter>
     </listView>
     <listView>
       <owner class="hudson" reference="../../.."/>
@@ -68,6 +105,30 @@
       </columns>
       <includeRegex>index-.*|run-.*-crawler</includeRegex>
       <recurse>false</recurse>
+      <statusFilter>true</statusFilter>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>utilitaires</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>color-category-labels</string>
+        <string>create-elastic-mapping</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <recurse>false</recurse>
     </listView>
   </views>
   <primaryView>Tous</primaryView>
@@ -84,13 +145,13 @@
           </default>
           <int>4</int>
           <string>EDM_CRAWLERS_BASE_DIR</string>
-          <string>D:\\data\\docs\\simple-data-search-private-crawlers</string>
+          <string>/home/xavier/paperless-documents-search/paperless-documents-search-private-crawlers</string>
           <string>EDM_HOST</string>
           <string>http://127.0.0.1:8053</string>
           <string>EDM_PATH_EXTENSION</string>
-          <string>/c/Users/xavier/AppData/Roaming/npm:/c/Python27</string>
+          <string>/home/xavier/bin/phantomjs/phantomjs-linux-armv6l-master/phantomjs-1.9.0-linux-armv6l/bin</string>
           <string>EDM_PLUGINS_BASE_DIR</string>
-          <string>D:\\data\\docs\\simple-data-search-private-plugins</string>
+          <string>/home/xavier/paperless-documents-search/paperless-documents-search-private-plugins</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>

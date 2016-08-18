@@ -147,5 +147,3 @@ This tests are run on travis. If you wanna run them localy, you have to start th
 ```code:bash
 gulp test-casperjs
 ```
-
->>>>>>> feat-spring-boot-1.4

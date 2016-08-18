@@ -4,14 +4,16 @@
 Paperless Documents Search
 ==================
 
-This program is an only entry point to search in your files.
-You launch it, index one (or more) directory from your drive (or anywhere else), and then you can search in your files content !
+> This program is an only entry point to search in your files. Just :
+> - start it ; 
+> - index one (or more) directory from your local drive (or anywhere else) ;
+> - search in your files content !
 
 **Features**
 
 - Out of the box
-- Easy to use (it's a web application)
-- Powerful search engine
+- Powerful search engine, easily customisable
+- Frontend with shortcuts to search in your documents
 - Exposed REST api
 - OCR support : find text in your images !
 
@@ -23,7 +25,7 @@ Quick start
 You can find the [latest release here](https://github.com/xaviermichel/paperless-documents-search/releases).
 
 1. Download the zip, extract it and launch `start.bat` to start application !
-2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents`
+2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
 3. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
 

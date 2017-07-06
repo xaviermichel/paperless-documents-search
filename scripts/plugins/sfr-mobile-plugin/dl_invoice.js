@@ -10,6 +10,23 @@ var lienFactureDetails = "";
 
 var SLEEP_TIME = 2000;
 
+// debug
+var debugNavigation = false;
+
+var fs = require('fs');
+var currentDebugIndex = 0;
+function dumpPage(casperObject) {
+	if (! debugNavigation) {
+		return;
+	}
+	casperObject.echo("Debugging point " + currentDebugIndex, 'INFO');
+	fs.write('debug/' + currentDebugIndex + '.html', casperObject.getPageContent());
+	casperObject.captureSelector('debug/' + currentDebugIndex + '.png', 'html');
+	currentDebugIndex++;
+}
+// end of debug
+
+
 function getLinks() {
     var links = document.querySelectorAll('.facture a');
     return Array.prototype.map.call(links, function(e) {
@@ -23,7 +40,9 @@ phantom.clearCookies();
 
 casper.thenOpen('https://www.sfr.fr/cas/login', function() {});
 
-casper.wait(SLEEP_TIME, function() {});
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 casper.then(function() {
     this.echo('Connection avec le numero ' + login);
@@ -33,13 +52,17 @@ casper.then(function() {
     }, true);
 });
 
-casper.wait(SLEEP_TIME, function() {});
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 casper.thenOpen('https://www.sfr.fr/mon-espace-client/?sfrintid=EC_head_ec', function() {
     this.echo('Consultation de l\'espace client');
 });
 
-casper.wait(SLEEP_TIME, function() {});
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 casper.thenOpen('https://espace-client.sfr.fr/paiement-facture/facture-mobile/consultation#sfrclicid=EC_home_mob-abo_consult-facture', function() {
     this.echo('Recuperation des liens');
@@ -50,7 +73,9 @@ casper.thenOpen('https://espace-client.sfr.fr/paiement-facture/facture-mobile/co
     this.echo('- Details : ' + lienFactureDetails);
 });
 
-casper.wait(SLEEP_TIME, function() {});
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 // téléchargement facture globale
 casper.then(function() {
@@ -58,7 +83,9 @@ casper.then(function() {
     this.download(lienFactureGlobale, targetFile);
 });
 
-casper.wait(SLEEP_TIME, function() {});
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 // téléchargement détails
 casper.then(function() {

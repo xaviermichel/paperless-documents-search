@@ -2,6 +2,8 @@ package fr.simple.edm.service;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,15 @@ public class EdmLibraryServiceTest {
         category.setName("My category");
         edmCategory = edmCategoryService.save(category);
         
+        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+    }
+    
+    /**
+     * Leave the database after test
+     */
+    @After
+    public void tearDown() throws Exception {
+        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
     }
     

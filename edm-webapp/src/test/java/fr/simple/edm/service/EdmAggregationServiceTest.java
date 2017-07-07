@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +49,15 @@ public class EdmAggregationServiceTest {
     @Before
     public void setUp() throws Exception {
         edmTestHelper.destroyAndRebuildElasticContent();
+    }
+    
+    /**
+     * Leave the database after test
+     */
+    @After
+    public void tearDown() throws Exception {
+        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
     }
 
     private List<String> extractAggregationValueFromAggregationWrapper(List<EdmAggregationItem> edmAggregationItems) {

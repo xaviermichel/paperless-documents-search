@@ -13,17 +13,18 @@ jdk:
 #    - master
 #
 
-# build testing database
-before_install:
+# build database and prepare for UI tests
+before_script:
   - "cd edm-webapp/src/main/resources/elastic_settings/"
   - "make build"
+  - "docker run --name paperless-documents-search-db-test -d -p 9200:9200 -p 9300:9300 paperless-documents-search-db"
   - "cd -"
-
-# for UI tests
-before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - "cd edm-webapp"
   - "mvn package docker:build -DskipTests"
   - "cd -"
+
+after_script:
+  - "docker rm -f paperless-documents-search-db-test"
 

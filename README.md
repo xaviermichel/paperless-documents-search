@@ -10,7 +10,6 @@ Paperless Documents Search
 
 **Features**
 
-- Out of the box
 - Powerful search engine, easily customisable
 - Frontend with shortcuts to search in your documents
 - Exposed REST api
@@ -24,8 +23,9 @@ Quick start
 You can find the [latest release here](https://github.com/xaviermichel/paperless-documents-search/releases).
 
 1. Download the zip, extract it and launch `start.bat` to start application !
-2. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
-3. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
+2. Start an elasticsearch node (cluster `simple_data_search`) with plugin `mapper-attachments`
+3. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
+4. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
 
 Screenshot
@@ -45,6 +45,7 @@ Solution stack
 
 ![Solution stack](https://docs.google.com/drawings/d/1TRDdSgP6r0zwp2dezgcPhncy-NdKfb9r6bKF52U0QUE/pub?w=939&amp;h=643)
 
+
 **Compilation**
 
 Wanna compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi).
@@ -59,8 +60,9 @@ Then, you can compile the project core and run it !
 ```bash
 mvn clean install -DskipTests
 cd edm-webapp
-mvn package -DskipTests
-java -jar target/paperless-documents-search-webapp*.jar
+mvn package docker:build -DskipTests
+cd -
+docker-compose up
 ```
 
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
@@ -74,11 +76,6 @@ http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\ale
 
 Mapping migration
 -----------------
-
-### On standalone application (local node, with downtime)
-1. delete `edm` directory
-2. restart the application
-3. re-index your documents !
 
 ### On application connected with external elastic (without downtime)
 

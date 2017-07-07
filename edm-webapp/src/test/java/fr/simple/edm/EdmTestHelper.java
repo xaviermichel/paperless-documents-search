@@ -27,7 +27,7 @@ public class EdmTestHelper {
     private EdmDocumentFile docLatex;
 
     public void destroyAndRebuildElasticContent() throws Exception {
-        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
 
         docBac = new EdmDocumentFile();
         docBac.setName("Diplome du bac");

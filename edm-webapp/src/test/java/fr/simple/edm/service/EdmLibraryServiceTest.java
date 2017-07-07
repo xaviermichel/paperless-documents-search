@@ -34,7 +34,7 @@ public class EdmLibraryServiceTest {
      */
     @Before
     public void setUp() throws Exception {
-        elasticsearchTestingHelper.destroyAndRebuildIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
         elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
         
         EdmCategory category = new EdmCategory();

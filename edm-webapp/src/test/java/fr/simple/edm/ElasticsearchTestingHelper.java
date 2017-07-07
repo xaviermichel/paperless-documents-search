@@ -1,50 +1,35 @@
 package fr.simple.edm;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import fr.simple.edm.repository.EdmDocumentRepository;
 
 
 @Component
 public class ElasticsearchTestingHelper {
 
-    
     public static final String ES_INDEX_DOCUMENTS = "documents";
     
+    @Autowired
+    private Client elasticsearchClient;
     
     @Autowired
-    public ElasticsearchConfig elasticsearchConfig;
-    
-    
-    private Method flushIndexMethod;
-    
+    private EdmDocumentRepository edmDocumentRepository;
     
     /**
      * Will destroy and rebuild ES_INDEX_DOCUMENTS
      */
-    public void destroyAndRebuildIndex(String index) throws Exception {
-        Field clientField = ElasticsearchConfig.class.getDeclaredField("elasticsearchClient");
-        clientField.setAccessible(true);
-
-        Client client = (Client) clientField.get(elasticsearchConfig);
-        
-        Method rebuildEsMappingMethod = ElasticsearchConfig.class.getDeclaredMethod("buildOrUpdateEsMapping");
-        rebuildEsMappingMethod.setAccessible(true);
-
-        flushIndexMethod = ElasticsearchConfig.class.getDeclaredMethod("flushIndex", String.class);
-        flushIndexMethod.setAccessible(true);
-        
-        client.admin().indices().delete(new DeleteIndexRequest(ES_INDEX_DOCUMENTS)).actionGet();
-        rebuildEsMappingMethod.invoke(elasticsearchConfig);
+    public void deleteAllDocumentsForIndex(String index) throws Exception {
+    	if (ES_INDEX_DOCUMENTS.equals(index)) {
+    		edmDocumentRepository.deleteAll();
+    	}
     }
     
     
     public void flushIndex(String index) throws Exception  {
-        flushIndexMethod.invoke(elasticsearchConfig, index);
+    	elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
     }
-    
 }

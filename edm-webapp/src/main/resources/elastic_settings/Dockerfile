@@ -18,11 +18,11 @@ RUN set -x && \
 
 RUN set -x && \
   /docker-entrypoint.sh elasticsearch -d -p /tmp/es.pid && \
-  sleep 36 && \
+  LIMIT=60 ; counter=0 ; while [ $counter -lt $LIMIT -a -z "$(curl ${ES_HOST}/_cluster/health\?pretty=true | grep green)" ]; do echo "[$counter] waiting for elastic status green..." && sleep 1 && counter=$((counter + 1)) ; done && \
   curl "${ES_HOST}" && \
   curl -XPUT "${ES_HOST}/documents" -d "@/tmp/elastic_settings/documents.json" && \
   curl -XPUT "${ES_HOST}/documents/_mapping/category" -d "@/tmp/elastic_settings/documents/category.json" && \
   curl -XPUT "${ES_HOST}/documents/_mapping/source" -d "@/tmp/elastic_settings/documents/source.json" && \
   curl -XPUT "${ES_HOST}/documents/_mapping/document_file" -d "@/tmp/elastic_settings/documents/document_file.json" && \
   kill $(cat /tmp/es.pid) && \
-  sleep 9
+  sleep 2

@@ -1,9 +1,6 @@
 package fr.simple.edm;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -15,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Application {
 
-    @Inject
-    private ElasticsearchConfig elasticsearchConfig;
 
     @Value("${info.app.name:''}")
     private String applicationName;
@@ -44,13 +39,6 @@ public class Application {
         log.info("Hi, this is {} version {}", applicationName, applicationVersion);
         log.info("You can report issues on {}", applicationIssueUrl);
         log.info("==========================================================================================");
-
-        try {
-            elasticsearchConfig.updateMappingIfLocalNode();
-        } catch (IOException e) {
-            log.error("something failed while configuring elastic", e);
-        }
-
         log.info("server is starting and listening on {}:{}", serverAddress, serverPort);
     }
 }

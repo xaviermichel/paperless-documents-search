@@ -1,11 +1,16 @@
-FROM elasticsearch:2.3
+FROM elasticsearch:2.0.2
 
 COPY ./ /tmp/elastic_settings
 
 ENV ES_HOST http://127.0.0.1:9200
 
+# for OCR
+RUN set -x && \
+   apt update && \
+   apt install -y tesseract-ocr tesseract-ocr-fra
+
 RUN set -x \
-  && plugin install -b mapper-attachments
+  && plugin install elasticsearch/elasticsearch-mapper-attachments/3.0.4
 
 RUN set -x && \
    mkdir /edm_es_DATA && \
@@ -26,3 +31,7 @@ RUN set -x && \
   curl -XPUT "${ES_HOST}/documents/_mapping/document_file" -d "@/tmp/elastic_settings/documents/document_file.json" && \
   kill $(cat /tmp/es.pid) && \
   sleep 2
+
+# disable security manager for OCR
+CMD ["-Dsecurity.manager.enabled=false"]
+

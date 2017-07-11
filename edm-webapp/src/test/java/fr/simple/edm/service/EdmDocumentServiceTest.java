@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -222,6 +221,22 @@ public class EdmDocumentServiceTest {
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
                 document
+        });
+
+        assertThat(docs).isNotNull();
+        assertThat(docs.size()).isEqualTo(attemptedResult.size());
+        assertThat(docs).containsAll(attemptedResult);
+    }
+    
+    /**
+     * Search on doc content, with OCR (text in image)
+     */
+    @Test
+    public void imagedDocumentWhichContainsWordShouldBeReturned() throws Exception {
+        List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("bonjour"));
+
+        List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
+                edmTestHelper.getDocForOcr()
         });
 
         assertThat(docs).isNotNull();

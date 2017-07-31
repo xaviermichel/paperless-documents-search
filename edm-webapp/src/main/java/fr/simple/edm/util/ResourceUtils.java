@@ -32,8 +32,8 @@ public class ResourceUtils {
             throw e;
         }
     }
-    
-    
+
+
     private static URL getResource(String resourceName) {
         ClassLoader loader = ObjectUtils.firstNonNull(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
         URL url = loader.getResource(resourceName);
@@ -42,27 +42,4 @@ public class ResourceUtils {
         }
         return url;
     }
-    
-	public static void extractZip(File inputFile, File outputDirectory) throws IOException {
-		ZipFile zipFile = new ZipFile(inputFile);
-		try {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				File entryDestination = new File(outputDirectory, entry.getName());
-				if (entry.isDirectory()) {
-					entryDestination.mkdirs();
-				} else {
-					entryDestination.getParentFile().mkdirs();
-					InputStream in = zipFile.getInputStream(entry);
-					OutputStream out = new FileOutputStream(entryDestination);
-					IOUtils.copy(in, out);
-					IOUtils.closeQuietly(in);
-					out.close();
-				}
-			}
-		} finally {
-			zipFile.close();
-		}
-	}
 }

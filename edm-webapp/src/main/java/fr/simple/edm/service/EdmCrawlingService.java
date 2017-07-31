@@ -16,6 +16,7 @@ import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmSource;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
@@ -26,18 +27,18 @@ public class EdmCrawlingService {
 
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
-    
+
     @Inject
     private EdmSourceService edmSourceService;
-    
-    
+
+
     // Map<source, List<documentId>>, is used to delete removed document at re-indexation
     private static Map<String, List<String>> sourceDocumentsIds;
 
     static {
         sourceDocumentsIds = new HashMap<>();
     }
-    
+
     public EdmDocumentFile save(EdmDocumentFile edmDocument) {
         edmDocument = edmDocumentService.save(edmDocument);
         if (sourceDocumentsIds.get(edmDocument.getSourceId()) != null) {
@@ -51,7 +52,7 @@ public class EdmCrawlingService {
     public void snapshotCurrentDocumentsForSource(String sourceName) {
 
         EdmSource source = edmSourceService.findOneByName(sourceName);
-        if (source == null) {
+        if (StringUtils.isEmpty(source.getId())) {
             return;
         }
         String sourceId = source.getId();

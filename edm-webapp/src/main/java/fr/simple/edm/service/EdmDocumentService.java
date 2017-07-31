@@ -46,7 +46,8 @@ public class EdmDocumentService {
 
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
-    private static final String SEARCH_MATCH_HIGHLIHT_HTML_TAG = "mark";
+    private static final String SEARCH_MATCH_HIGHLIGHT_HTML_TAG = "mark";
+    private static final String FILE_LANGUAGE_ANALYSER = "fr";
 
     @Inject
     private Client elasticsearchClient;
@@ -95,14 +96,15 @@ public class EdmDocumentService {
             if (edmDocument.getFileContent() != null && edmDocument.getFileContent().length > 0) {
                 contentBuilder.startObject("file");
                 contentBuilder.field("_content", Base64.encodeBytes(edmDocument.getFileContent()));
-                contentBuilder.field("_language", "fr");
+                contentBuilder.field("_language", FILE_LANGUAGE_ANALYSER);
                 contentBuilder.endObject();
             }
 
             // and that's all folks
             contentBuilder.endObject();
 
-            IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId()).setSource(contentBuilder).execute().actionGet();
+            IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId())
+                .setSource(contentBuilder).execute().actionGet();
 
             edmDocument.setId(ir.getId());
 
@@ -129,10 +131,16 @@ public class EdmDocumentService {
 
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file.content").field("nodePath"));
+        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND)
+            .field("name").field("description").field("file.content").field("nodePath")
+        );
         return qb;
     }
 
+    /**
+     * Search from web UI
+     * Will color results
+     */
     public EdmDocumentSearchResultWrapper search(String pattern) {
 
         // basic query
@@ -140,8 +148,8 @@ public class EdmDocumentService {
         log.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
         // custom query for highlight
-        String preTag = "<" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
-        String postTag = "</" + SEARCH_MATCH_HIGHLIHT_HTML_TAG + ">";
+        String preTag = "<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
+        String postTag = "</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(qb)
                 .withHighlightFields(

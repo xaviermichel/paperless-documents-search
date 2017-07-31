@@ -11,6 +11,9 @@ import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 import lombok.Setter;
 
+import static java.util.stream.Collectors.toList;
+import static org.springframework.data.util.StreamUtils.createStreamFromIterator;
+
 @Service
 public class EdmCategoryService {
 
@@ -23,9 +26,7 @@ public class EdmCategoryService {
     }
 
     public List<EdmCategory> findAll() {
-        List<EdmCategory> edmLibraries = new ArrayList<>();
-        edmCategoryRepository.findAll().forEach(edmLibraries::add);
-        return edmLibraries;
+        return createStreamFromIterator(edmCategoryRepository.findAll().iterator()).collect(toList());
     }
 
     public EdmCategory save(EdmCategory edmCategory) {

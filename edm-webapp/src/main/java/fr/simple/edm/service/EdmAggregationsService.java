@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -29,30 +30,39 @@ import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.collect;
+import static org.springframework.data.util.StreamUtils.createStreamFromIterator;
+
 @Service
 @Slf4j
 public class EdmAggregationsService {
-    
+
+    private static final int TOP_TERMS_MAX_COUNT = 10;
+    private static final int FILE_EXTENSIONS_MAX_COUNT = 20;
+
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
-    
+
     @Inject
     private Client elasticsearchClient;
 
     @Value("${edm.top_terms.exlusion_regex}")
     private String edmTopTermsExlusionRegex;
 
-    
+
     public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
         Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
         aggregations.put("fileExtension", getAggregationExtensions(pattern));
         aggregations.put("date", getAggregationDate(pattern));
         return aggregations;
     }
-    
+
     /**
      * When you search a document, this query is executed
-     * 
+     *
      * @param pattern
      *            The searched pattern
      * @return The adapted query
@@ -65,47 +75,50 @@ public class EdmAggregationsService {
 
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND).field("name").field("description").field("file.content").field("nodePath"));
+        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND)
+            .field("name").field("description").field("file.content").field("nodePath")
+        );
         return qb;
     }
 
     public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR).field("name.name_autocomplete").field("nodePath.nodePath_autocomplete"));
+        qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR)
+            .field("name.name_autocomplete").field("nodePath.nodePath_autocomplete")
+        );
         log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
-        List<EdmDocumentFile> target = new ArrayList<>();
-        edmDocumentRepository.search(qb).forEach(target::add);
-        return target;
+        return createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList());
     }
 
     private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(20);
+        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(FILE_EXTENSIONS_MAX_COUNT);
 
-        List<EdmAggregationItem> extensions = new ArrayList<>();
-        
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
-    
+
             Terms terms = response.getAggregations().get("agg_fileExtension");
 
-            for (Terms.Bucket bucket : terms.getBuckets()) {
-                extensions.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
-            }
+            return terms.getBuckets().stream()
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
+
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return extensions;
+        return new ArrayList<>();
     }
 
     private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
         DateRangeBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("date");
-        
+
         // last month
         aggregationBuilder.addUnboundedFrom("last_month", "now-1M/M");
         // last 2 months
@@ -114,9 +127,7 @@ public class EdmAggregationsService {
         aggregationBuilder.addUnboundedFrom("last_6_months", "now-6M/M");
         // last year
         aggregationBuilder.addUnboundedFrom("last_year", "now-12M/M");
-        
-        List<EdmAggregationItem> dates = new ArrayList<>();
-        
+
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                     .setQuery(query)
@@ -124,30 +135,29 @@ public class EdmAggregationsService {
                     .execute().actionGet();
 
             InternalDateRange buckets = response.getAggregations().get("agg_date");
-            
-            for (InternalDateRange.Bucket bucket : buckets.getBuckets()) {
-                dates.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
-            }
+
+            return buckets.getBuckets().stream()
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
+
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return dates;
+        return new ArrayList<>();
     }
 
     public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
         // the query
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
-        List<String> filesExtensions = new ArrayList<>();
-        for (EdmAggregationItem edmAggregationItem : getAggregationExtensions(null)) {
-            filesExtensions.add(edmAggregationItem.getKey());
-        }
-        String filesExtension = StringUtils.join(filesExtensions, "|");
+        String filesExtensions = getAggregationExtensions(null).stream()
+            .map(edmAggregationItem -> edmAggregationItem.getKey())
+            .collect(joining("|"));
 
-        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(edmTopTermsExlusionRegex + "|" + filesExtension).size(10);
-
-        List<EdmAggregationItem> mostCommonTerms = new ArrayList<>();
+        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(edmTopTermsExlusionRegex + "|" + filesExtensions).size(TOP_TERMS_MAX_COUNT);
 
         try {
             // execute
@@ -157,15 +167,17 @@ public class EdmAggregationsService {
                     .execute().actionGet();
 
             Terms terms = response.getAggregations().get("agg_nodePath");
-            Collection<Terms.Bucket> buckets = terms.getBuckets();
 
-            for (Terms.Bucket bucket : buckets) {
-                mostCommonTerms.add(new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount()));
-            }
+            return terms.getBuckets().stream()
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
+
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return mostCommonTerms;
+        return new ArrayList<>();
     }
 }

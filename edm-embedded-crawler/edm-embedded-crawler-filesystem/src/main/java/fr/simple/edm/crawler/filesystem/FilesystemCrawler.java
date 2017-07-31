@@ -18,7 +18,7 @@ public class FilesystemCrawler {
     private static final EdmConnector edmConnector = new EdmConnector();
 
     /**
-     * 
+     *
      * @param filePath
      *            The path of the directory to crawl For example :
      *            /media/raid/documents
@@ -29,7 +29,7 @@ public class FilesystemCrawler {
      *            A unique name for this source of documents For example :
      * @param exclusionRegex
      *            Documents names which match with this regex will be ignored
-     * 
+     *
      * @throws IOException
      */
     public static void importFilesInDir(String filePath,
@@ -57,7 +57,7 @@ public class FilesystemCrawler {
         return toExclude;
     }
 
-    private static void _importFilesInDir(String filePath, final String edmServerHttpAddress, 
+    private static void _importFilesInDir(String filePath, final String edmServerHttpAddress,
             final String sourceId, final String categoryId,  final String exclusionRegex) {
 
         log.info("Embedded crawler looks for : " + filePath);
@@ -100,7 +100,7 @@ public class FilesystemCrawler {
                 document.setCategoryId(categoryId);
                 document.setName(FilenameUtils.removeExtension(file.getName()));
                 document.setFileExtension(FilenameUtils.getExtension(filePath).toLowerCase());
-                
+
                 // save DTO
                 try {
                     document.setFileContentType(Files.probeContentType(file.toPath()));
@@ -118,9 +118,6 @@ public class FilesystemCrawler {
         // other type
         if (file != null) {
             log.debug("... is nothing !");
-
-            // release memory
-            file = null;
         }
     }
 }

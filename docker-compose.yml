@@ -4,14 +4,15 @@ services:
 
   paperless_documents_search_webapp:
     image: paperless-documents-search-webapp
-    entrypoint: java -Dspring.profiles.active=local -jar /paperless-documents-search-webapp.jar
+    entrypoint: java -Dspring.profiles.active=local -jar /webapp/paperless-documents-search-webapp.jar
     ports:
       - 8053:8053
     depends_on:
       - paperless_documents_search_db
     volumes:
       - .:/host_mount_point
-      - ./edm-webapp/src/main/docker/config:/config
+    environment:
+      - spring.data.elasticsearch.cluster-nodes=paperless_documents_search_db:9300
 
   paperless_documents_search_db:
     image: paperless-documents-search-db

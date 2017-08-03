@@ -1,17 +1,17 @@
 package fr.simple.edm;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "edm.web.resources")
 public class TemplateResourcesConfig {
 
     private boolean concated;
-    
+
     private boolean minified;
 
     public boolean isConcated() {

@@ -1,14 +1,13 @@
 package fr.simple.edm.controller;
 
-import javax.inject.Inject;
-
+import fr.simple.edm.TemplateResourcesConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import fr.simple.edm.TemplateResourcesConfig;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
 
 
 @Controller
@@ -20,7 +19,7 @@ public class IndexController {
 
     @Inject
     private TemplateResourcesConfig templateResourcesConfig;
-    
+
     @RequestMapping("/")
     public String home(Model model) {
 

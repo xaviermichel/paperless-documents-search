@@ -1,14 +1,10 @@
 package fr.simple.edm.service;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.persistence.Transient;
-
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmDocumentSearchResult;
+import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
+import fr.simple.edm.repository.EdmDocumentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,20 +21,22 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchResultMapper;
+import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
+import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmDocumentSearchResult;
-import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
-import fr.simple.edm.repository.EdmDocumentRepository;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
+import javax.persistence.Transient;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 @Service
 @Slf4j
@@ -164,10 +162,18 @@ public class EdmDocumentService {
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
         try {
+            elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
+
+                @Override
+                public <T> AggregatedPage<T> mapResults(SearchResponse searchResponse, Class<T> aClass, Pageable pageable) {
+                    return null;
+                }
+            });
+
             // Highlight result
             elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
                 @Override
-                public <T> Page<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
+                public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
                     List<EdmDocumentFile> chunk = new ArrayList<>();
 
                     searchResult.setTookTime(response.getTookInMillis());
@@ -175,7 +181,7 @@ public class EdmDocumentService {
 
                     for (SearchHit searchHit : response.getHits()) {
                         if (response.getHits().getHits().length <= 0) {
-                            return new PageImpl<T>((List<T>) chunk);
+                            return new AggregatedPageImpl<T>((List<T>) chunk);
                         }
 
                         EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
@@ -202,7 +208,7 @@ public class EdmDocumentService {
                         searchResult.add(edmDocumentSearchResult);
                         chunk.add(doc);
                     }
-                    return new PageImpl<T>((List<T>) chunk);
+                    return new AggregatedPageImpl<T>((List<T>) chunk);
                 }
             });
 

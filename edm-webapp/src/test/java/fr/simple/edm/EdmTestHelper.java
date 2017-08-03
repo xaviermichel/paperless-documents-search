@@ -1,14 +1,13 @@
 package fr.simple.edm;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.service.EdmDocumentService;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Component
 @Getter

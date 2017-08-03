@@ -1,23 +1,16 @@
 package fr.simple.edm.controller;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import fr.simple.edm.crawler.filesystem.FilesystemCrawler;
 import fr.simple.edm.crawler.url.UrlCrawler;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.service.EdmCrawlingService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/crawl")

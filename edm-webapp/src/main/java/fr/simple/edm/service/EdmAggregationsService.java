@@ -1,14 +1,9 @@
 package fr.simple.edm.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import fr.simple.edm.domain.EdmAggregationItem;
+import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.repository.EdmDocumentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
@@ -25,15 +20,14 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import fr.simple.edm.domain.EdmAggregationItem;
-import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.repository.EdmDocumentRepository;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.codehaus.groovy.runtime.DefaultGroovyMethods.collect;
 import static org.springframework.data.util.StreamUtils.createStreamFromIterator;
 
 @Service

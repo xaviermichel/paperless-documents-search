@@ -1,30 +1,29 @@
 package fr.simple.edm.service;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
 import fr.simple.edm.Application;
 import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class EdmDocumentServiceTest {
@@ -34,7 +33,7 @@ public class EdmDocumentServiceTest {
 
     @Autowired
     private EdmDocumentService edmDocumentService;
-    
+
     @Autowired
     private EdmTestHelper edmTestHelper;
 
@@ -45,7 +44,7 @@ public class EdmDocumentServiceTest {
     public void setUp() throws Exception {
         edmTestHelper.destroyAndRebuildElasticContent();
     }
-    
+
     /**
      * Leave the database after test
      */
@@ -60,7 +59,7 @@ public class EdmDocumentServiceTest {
                 .map(EdmDocumentSearchResult::getEdmDocument)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Search on doc name, very basic
      */
@@ -227,7 +226,7 @@ public class EdmDocumentServiceTest {
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
     }
-    
+
     /**
      * Search on doc content, with OCR (text in image)
      */

@@ -1,12 +1,11 @@
 package fr.simple.edm.utils;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import fr.simple.edm.util.ResourceUtils;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.junit.Test;
-
-import fr.simple.edm.util.ResourceUtils;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ResourceUtilsTest {
 
@@ -15,7 +14,7 @@ public class ResourceUtilsTest {
         String fileContent = ResourceUtils.getContent("resourceUtilsTest.txt");
         assertThat(fileContent).isEqualTo("This is a simple content for a test");
     }
-    
+
     @Test(expected=IOException.class)
     public void notExistingFileShouldThrowException() throws IOException {
         ResourceUtils.getContent("not_existing_file.txt");

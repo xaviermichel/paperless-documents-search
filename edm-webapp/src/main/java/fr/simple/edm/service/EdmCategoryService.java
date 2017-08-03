@@ -1,15 +1,12 @@
 package fr.simple.edm.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Service;
-
 import fr.simple.edm.domain.EdmCategory;
 import fr.simple.edm.repository.EdmCategoryRepository;
 import lombok.Setter;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.util.StreamUtils.createStreamFromIterator;

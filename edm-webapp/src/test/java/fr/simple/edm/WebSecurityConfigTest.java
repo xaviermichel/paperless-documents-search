@@ -1,17 +1,17 @@
 package fr.simple.edm;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ComponentScan(basePackages = { "fr.simple.edm" })
 public class WebSecurityConfigTest {
@@ -33,7 +33,7 @@ public class WebSecurityConfigTest {
     }
 
     @Test
-    public void authentificatonShouldBeDisabledByDefault() {
+    public void authentificationShouldBeDisabledByDefault() {
         Boolean isAuthConfigured = ReflectionTestUtils.invokeMethod(
                 webSecurityConfig, "isAuthConfigured");
         assertThat(isAuthConfigured).isFalse();

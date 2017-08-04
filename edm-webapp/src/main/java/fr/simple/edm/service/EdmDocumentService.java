@@ -162,14 +162,6 @@ public class EdmDocumentService {
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
         try {
-            elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
-
-                @Override
-                public <T> AggregatedPage<T> mapResults(SearchResponse searchResponse, Class<T> aClass, Pageable pageable) {
-                    return null;
-                }
-            });
-
             // Highlight result
             elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
                 @Override

@@ -166,7 +166,7 @@ gulp.task('karma', skipTests(function() {
 
 // only on travis, for local development, you should start spring-boot server yourself !
 gulp.task('backend-server', shell.task([
-    'docker run --name edm-backend-server-test --link paperless-documents-search-db-test -p 8053:8053 -v $(pwd)/src/test/resources/documents:/host_mount_point -d paperless-documents-search-webapp'
+    'docker run --name edm-backend-server-test --link paperless-documents-search-db-test -p 8053:8053 -e "spring.data.elasticsearch.cluster-nodes=paperless-documents-search-db-test:9300" -v $(pwd)/src/test/resources/documents:/host_mount_point -d paperless-documents-search-webapp'
 ]));
 gulp.task('wait-backend-server', shell.task([
     'LIMIT=60 ; counter=0 ; while [ $counter -lt $LIMIT -a -z "$(docker logs edm-backend-server-test | grep \'Started Application in\')" ]; do echo "[$counter] waiting for edm server..." && sleep 1 && counter=$((counter + 1)) ; done'

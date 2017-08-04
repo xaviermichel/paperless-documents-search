@@ -48,12 +48,19 @@ Solution stack
 
 **Compilation**
 
-Wanna compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi).
+Wanna compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi) and docker (if you don't want to install elasticsearch).
 
 First, clone the project
 ```bash
 git clone https://github.com/xaviermichel/paperless-documents-search.git
 cd paperless-documents-search
+```
+
+Prepare the elastic database :
+```bash
+cd docker_elastic_image
+make build
+cd -
 ```
 
 Then, you can compile the project core and run it !
@@ -62,6 +69,10 @@ mvn clean install -DskipTests
 cd edm-webapp
 mvn package docker:build -DskipTests
 cd -
+```
+
+Great ! Now you can launch everythings :
+```bash
 docker-compose up
 ```
 

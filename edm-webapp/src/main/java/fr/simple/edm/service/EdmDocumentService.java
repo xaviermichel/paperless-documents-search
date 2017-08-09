@@ -12,14 +12,13 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.highlight.HighlightBuilder.Field;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -29,6 +28,7 @@ import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPa
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
 import javax.inject.Inject;
 import javax.persistence.Transient;
@@ -45,7 +45,6 @@ public class EdmDocumentService {
     // html tag for highlighting matching result, for example :
     // "...this is a <mark>simple</mark> demo..."
     private static final String SEARCH_MATCH_HIGHLIGHT_HTML_TAG = "mark";
-    private static final String FILE_LANGUAGE_ANALYSER = "fr";
 
     @Inject
     private Client elasticsearchClient;
@@ -91,18 +90,13 @@ public class EdmDocumentService {
                 }
             }
 
-            if (edmDocument.getFileContent() != null && edmDocument.getFileContent().length > 0) {
-                contentBuilder.startObject("file");
-                contentBuilder.field("_content", Base64.encodeBytes(edmDocument.getFileContent()));
-                contentBuilder.field("_language", FILE_LANGUAGE_ANALYSER);
-                contentBuilder.endObject();
-            }
+            contentBuilder.field("fileContent", Base64Utils.encode(edmDocument.getFileContent()));
 
             // and that's all folks
             contentBuilder.endObject();
 
             IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId())
-                .setSource(contentBuilder).execute().actionGet();
+                .setSource(contentBuilder).setPipeline("attachment").execute().actionGet();
 
             edmDocument.setId(ir.getId());
 
@@ -151,10 +145,10 @@ public class EdmDocumentService {
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(qb)
                 .withHighlightFields(
-                        new Field("name").preTags(preTag).postTags(postTag),
-                        new Field("description").preTags(preTag).postTags(postTag),
-                        new Field("file.content").preTags(preTag).postTags(postTag),
-                        new Field("nodePath").preTags(preTag).postTags(postTag)
+                    new HighlightBuilder.Field("name").preTags(preTag).postTags(postTag),
+                    new HighlightBuilder.Field("description").preTags(preTag).postTags(postTag),
+                    new HighlightBuilder.Field("file.content").preTags(preTag).postTags(postTag),
+                    new HighlightBuilder.Field("nodePath").preTags(preTag).postTags(postTag)
                 )
                 .withSort(new ScoreSortBuilder())
                 .build();

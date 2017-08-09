@@ -11,12 +11,12 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.date.InternalDateRange;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +86,7 @@ public class EdmAggregationsService {
 
     private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(FILE_EXTENSIONS_MAX_COUNT);
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(FILE_EXTENSIONS_MAX_COUNT);
 
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
@@ -111,7 +111,7 @@ public class EdmAggregationsService {
 
     private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-        DateRangeBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("date");
+        DateRangeAggregationBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("date");
 
         // last month
         aggregationBuilder.addUnboundedFrom("last_month", "now-1M/M");
@@ -151,7 +151,7 @@ public class EdmAggregationsService {
             .map(edmAggregationItem -> edmAggregationItem.getKey())
             .collect(joining("|"));
 
-        TermsBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").exclude(edmTopTermsExlusionRegex + "|" + filesExtensions).size(TOP_TERMS_MAX_COUNT);
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").executionHint(edmTopTermsExlusionRegex + "|" + filesExtensions).size(TOP_TERMS_MAX_COUNT);
 
         try {
             // execute

@@ -21,8 +21,8 @@ var paths = {
         EDM_TEST_DIR + 'static/js/unit/*.js',
         EDM_TEST_DIR + 'static/js/e2e/*.js',
         '*.js',
-        EDM_WEBAPP_DIR + 'mapping/*.json',
-        EDM_WEBAPP_DIR + 'mapping/**/*.json'
+        '../docker_elastic_image/*.json',
+        '../docker_elastic_image/**/*.json'
     ],
     minify: [
         EDM_WEBAPP_DIR + 'static/js/*.js'

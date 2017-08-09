@@ -1,8 +1,8 @@
 cluster.name: simple_data_search
 
-plugin.mandatory: mapper-attachments
-
 path.data: /edm_es_DATA
 
-network.host: 0.0.0.0
+http.host: 0.0.0.0
+transport.host: 127.0.0.1
 
+xpack.security.enabled: false

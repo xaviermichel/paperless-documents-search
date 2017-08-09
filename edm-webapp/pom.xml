@@ -258,8 +258,26 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.data</groupId>
+                        <artifactId>spring-data-elasticsearch</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
+            <!-- WIP, to remove when spring-boot will be release with spring-data-es with es5 support (one day ?) -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-elasticsearch</artifactId>
+                <version>3.0.0.RC2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>5.5.0</version>
+            </dependency>
+            <!-- /WIP -->
 
             <!-- test -->
 

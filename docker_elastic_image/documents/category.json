@@ -2,20 +2,18 @@
     "category": {
         "properties": {
             "name": {
-                "type": "string",
+                "type": "text",
                 "analyzer": "edm_analyzer_french"
             },
             "description": {
-                "type": "string",
+                "type": "text",
                 "analyzer": "edm_analyzer_french"
             },
             "color": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
             },
             "backgroundColor": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
             }
         }
     }

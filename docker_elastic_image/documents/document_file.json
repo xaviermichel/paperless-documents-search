@@ -2,25 +2,23 @@
     "document_file": {
         "properties": {
             "sourceId": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
             },
             "categoryId": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
             },
             "name": {
-                "type": "string",
+                "type": "text",
                 "analyzer": "edm_analyzer_french",
                 "fields": {
                     "name_autocomplete": {
-                        "type": "string",
+                        "type": "text",
                         "analyzer": "edm_autocomplete"
                     }
                 }
             },
             "description": {
-                "type": "string",
+                "type": "text",
                 "analyzer": "edm_analyzer_french"
             },
             "date": {
@@ -28,33 +26,98 @@
                 "format": "dateOptionalTime"
             },
             "fileExtension": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
             },
             "fileContentType": {
-                "type": "string",
-                "index": "not_analyzed"
+                "type": "keyword"
+            },
+            "fileContent": {
+                "type": "binary"
             },
             "file": {
-                "type": "attachment",
-                "fields": {
+                "properties": {
+                    "content_length": {
+                        "type": "long"
+                    },
+                    "author": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "date": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "language": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "title": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "keywords": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "content_type": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
                     "content": {
-                        "type": "string",
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "analyzer": "french",
                         "term_vector": "with_positions_offsets",
                         "store": true
                     }
                 }
             },
             "nodePath": {
-                "type": "string",
+                "type": "text",
                 "analyzer": "edm_analyzer_french",
                 "fields": {
                     "nodePath_autocomplete": {
-                        "type": "string",
+                        "type": "text",
                         "analyzer": "edm_autocomplete"
                     },
                     "nodePath_simple": {
-                        "type": "string",
+                        "type": "text",
                         "analyzer": "simple"
                     }
                 }

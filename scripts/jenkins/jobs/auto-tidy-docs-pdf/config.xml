@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.12.2">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.1.9">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>As input, a directory with one or more pdf file.&#xd;
+This script will take each pdf, scan them for text and propose (according to user configuration) where the file sould be tidy.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>10</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.39">
+    <script>pipeline {
+    agent any
+
+    environment {
+		directory_to_scan = &apos;/home/xavier/documents/to_tidy/&apos;
+        scripts_directory = &quot;${env.EDM_CRAWLERS_BASE_DIR}/auto-tidy-docs-pdf&quot;
+    }
+
+    stages {
+        stage(&apos;Detect file&apos;) {
+            steps {
+                script {
+                    file_name = sh (returnStdout: true, script:&quot;cd ${env.directory_to_scan} &amp;&amp; find . -type f -iname &apos;*.pdf&apos; ! -iname &apos;*locked*&apos; | head -1&quot;).trim()
+                    echo &quot;file_name : ${file_name}&quot;
+
+                    if (file_name == &quot;&quot;) {
+                        currentBuild.result = &apos;ABORTED&apos;
+                        error(&quot;No file to sort found, won&apos;t continue&quot;)
+                    }
+                }
+            }
+        }
+        stage(&apos;Lock file&apos;){
+            steps {
+                echo &quot;Dealing with file : ${file_name}&quot;
+                script {
+                    locked_file_name = sh (returnStdout: true, script: &quot;echo ${file_name} | sed &apos;s/\\(.*\\)\\(.pdf\\)/\\1.locked\\2/g&apos;&quot;).trim()
+                    echo &quot;locking file (name=${locked_file_name})&quot;
+                    sh &quot;cd ${env.directory_to_scan} &amp;&amp; mv ${file_name} ${locked_file_name}&quot;
+                }
+            }
+        }
+        stage(&apos;Convert file to image&apos;){
+            steps {
+                script {
+                    tiff_file_name = &quot;${locked_file_name}.tiff&quot;
+                    echo &quot;tiff file (name=${tiff_file_name})&quot;
+                    sh &quot;cd ${env.directory_to_scan} &amp;&amp; convert -depth 8 -density 300 ${locked_file_name} ${tiff_file_name}&quot;
+                }
+            }
+        }
+        stage(&apos;Extract text from image&apos;) {
+            steps {
+                script {
+                    text_file_name = &quot;${locked_file_name}.txt&quot;
+                    echo &quot;text (name=${text_file_name})&quot;
+                    sh &quot;cd ${env.directory_to_scan} &amp;&amp; tesseract ${tiff_file_name} -l fra - | sed &apos;/^[[:space:]]*\$/d&apos; &gt; ${text_file_name}&quot;
+                }
+            }
+        }
+        stage(&apos;Decide where I should move the document&apos;) {
+            steps {
+                script {
+                    sh &quot;cd ${env.scripts_directory} &amp;&amp; ./magic_sorter.sh ${directory_to_scan}/${text_file_name}&quot;
+                    destination_file = sh (returnStdout: true, script:&quot;cd ${env.directory_to_scan} &amp;&amp; cat ${text_file_name}.dest&quot;).trim()
+                    echo &quot;destination_file (name=${destination_file})&quot;
+                }
+            }
+        }
+        stage(&apos;Remove working files&apos;) {
+            steps {
+                sh &quot;cd ${env.directory_to_scan} &amp;&amp; rm -v ${locked_file_name}.*&quot;
+            }
+        }
+        stage(&apos;Waiting for an human to confirm my choice&apos;) {
+            steps {
+                script {
+                    def userInput = input(
+                        id: &apos;inputConfirmMove&apos;,
+                        message: &quot;Move the file to ${destination_file} ?&quot;
+                    )
+                }
+            }
+        }
+        stage(&apos;Moving !&apos;) {
+            steps {
+                sh &quot;mkdir -p \$(dirname \&quot;${destination_file}\&quot;)&quot;
+                sh &quot;cd ${env.directory_to_scan} &amp;&amp; mv -v \&quot;${locked_file_name}\&quot; \&quot;${destination_file}\&quot;&quot;
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

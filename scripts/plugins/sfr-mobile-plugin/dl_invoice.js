@@ -1,4 +1,10 @@
-var casper = require("casper").create();
+var casper = require("casper").create({
+    viewportSize: {
+       width: 1920,
+       height: 1080
+	}
+});
+var x = require('casper').selectXPath;
 
 var login = new String(casper.cli.raw.get(0));
 var pass = new String(casper.cli.raw.get(1));
@@ -28,7 +34,7 @@ function dumpPage(casperObject) {
 
 
 function getLinks() {
-    var links = document.querySelectorAll('.facture a');
+    var links = document.querySelectorAll('.sr-container-box-M .sr-container-content a');
     return Array.prototype.map.call(links, function(e) {
         return e.getAttribute('href');
     });
@@ -38,7 +44,9 @@ casper.start();
 casper.clear();
 phantom.clearCookies();
 
-casper.thenOpen('https://www.sfr.fr/cas/login', function() {});
+casper.thenOpen('https://www.sfr.fr/bounce?target=https://www.sfr.fr/sfr-et-moi/bounce.html&casforcetheme=mire-sfr-et-moi&mire_layer', function() {
+	this.echo("Ouverture du portail de connextion SFR");
+});
 
 casper.wait(SLEEP_TIME, function() {
 	dumpPage(this);
@@ -56,15 +64,15 @@ casper.wait(SLEEP_TIME, function() {
 	dumpPage(this);
 });
 
-casper.thenOpen('https://www.sfr.fr/mon-espace-client/?sfrintid=EC_head_ec', function() {
-    this.echo('Consultation de l\'espace client');
+casper.thenOpen('http://espace-client-red.sfr.fr/facture-mobile/consultation#sfrintid=EC_telecom_mob-abo_mob-factpaiement', function() {
+	this.echo("Ouverture de la page espace client");
 });
 
 casper.wait(SLEEP_TIME, function() {
 	dumpPage(this);
 });
 
-casper.thenOpen('https://espace-client.sfr.fr/paiement-facture/facture-mobile/consultation#sfrclicid=EC_home_mob-abo_consult-facture', function() {
+casper.then(function() {
     this.echo('Recuperation des liens');
     links = this.evaluate(getLinks);
     lienFactureGlobale = links[0];

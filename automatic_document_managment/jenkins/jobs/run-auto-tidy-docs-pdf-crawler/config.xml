@@ -8,7 +8,9 @@
     </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
   </actions>
   <description>As input, a directory with one or more pdf file.&#xd;
-This script will take each pdf, scan them for text and propose (according to user configuration) where the file sould be tidy.</description>
+	  This script will take each pdf, scan them for text and propose (according to user configuration) where the file sould be tidy.
+  Require : ghostscript, imagemagick, and tesseract.
+  </description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -39,7 +41,7 @@ This script will take each pdf, scan them for text and propose (according to use
                     file_name = sh (returnStdout: true, script:&quot;cd ${env.directory_to_scan} &amp;&amp; find . -type f -iname &apos;*.pdf&apos; ! -iname &apos;*locked*&apos; | head -1&quot;).trim()
                     echo &quot;file_name : ${file_name}&quot;
 
-                    if (file_name == &quot;&quot;) {
+					if (&quot;${file_name}&quot; == &quot;&quot;) {
                         currentBuild.result = &apos;ABORTED&apos;
                         error(&quot;No file to sort found, won&apos;t continue&quot;)
                     }

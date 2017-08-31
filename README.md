@@ -76,11 +76,11 @@ docker-compose up
 
 It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
 ```
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents
+http://127.0.0.1:8080/crawl/filesystem?path=D:\data\docs\Documents
 // or with more informations (see EdmCrawlingController) :
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
+http://127.0.0.1:8080/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
 // you can also exclude some pattern
-http://127.0.0.1:8053/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
+http://127.0.0.1:8080/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```
 
 Mapping migration

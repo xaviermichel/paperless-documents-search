@@ -17,7 +17,7 @@ do
 	pattern=$(echo "$line" | awk -F'=' '{print $1}')
 	dest_path=$(echo "$line" | awk -F'=' '{print $2}')
 	echo -n "searching for '$pattern'... "
-	if grep -q "${pattern}" "${file_to_scan}"
+	if grep -E -i -q "${pattern}" "${file_to_scan}"
 	then
 		echo "FOUND !"
 
@@ -26,7 +26,7 @@ do
 		expended_dest_path=$(replace_var_in_var_last_month "${expended_dest_path}")
 
 		echo "Destination path : ${expended_dest_path}"
-		echo ${expended_dest_path} > ${file_to_scan}.dest
+		echo ${expended_dest_path} > "${file_to_scan}.dest"
 
 		# finish search
 		break

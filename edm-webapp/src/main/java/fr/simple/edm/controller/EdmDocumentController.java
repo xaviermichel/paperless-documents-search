@@ -1,6 +1,7 @@
 package fr.simple.edm.controller;
 
 import fr.simple.edm.domain.EdmAggregationItem;
+import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.service.EdmAggregationsService;
@@ -8,10 +9,8 @@ import fr.simple.edm.service.EdmDocumentService;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -78,6 +77,18 @@ public class EdmDocumentController {
         response.setContentType(Files.probeContentType(filePath));
         response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
         return new FileSystemResource(file);
+    }
+
+    /**
+     * @param file
+     *  A text file which contains document you want to tidy
+     * @return
+     */
+    @RequestMapping(value = "/document/suggestTidy", method = RequestMethod.POST)
+    @ResponseBody
+    public EdmAutoTidySuggestion suggestTidyForFile(@RequestPart("file") MultipartFile file) {
+        log.debug("Wanna get suggestion for file : {}", file.getOriginalFilename());
+        return edmDocumentService.getTidySuggestions(file);
     }
 
 }

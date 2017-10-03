@@ -3,6 +3,7 @@ package fr.simple.edm.service;
 import fr.simple.edm.Application;
 import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
+import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
@@ -13,9 +14,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -235,11 +239,22 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("bonjour"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocForOcr()
+                edmTestHelper.getDocForOcr(), edmTestHelper.getDocSomeBill()
         });
 
         assertThat(docs).isNotNull();
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
+    }
+
+    @Test
+    public void shouldReturnTheRightDocumentForATextFileToAutoTidy() throws Exception {
+        MockMultipartFile dummyFile = new MockMultipartFile("file", "filename.txt", "text/plain", Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill.pdf.txt").toURI())));
+
+        EdmAutoTidySuggestion edmAutoTidySuggestion = edmDocumentService.getTidySuggestions(dummyFile);
+
+        EdmAutoTidySuggestion expectedEdmAutoTidySuggestion = EdmAutoTidySuggestion.builder().suggestedExtension("pdf").suggestedFileLocation("/documents/").suggestedFileName("some_bill").originalNodePath("/documents/some_bill.pdf").build();
+        assertThat(edmAutoTidySuggestion).isNotNull();
+        assertThat(edmAutoTidySuggestion).isEqualTo(expectedEdmAutoTidySuggestion);
     }
 }

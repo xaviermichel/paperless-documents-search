@@ -1,11 +1,14 @@
 package fr.simple.edm.service;
 
+import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.repository.EdmDocumentRepository;
+import fr.simple.edm.util.AnonymizerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.index.IndexResponse;
@@ -15,6 +18,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Base64;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder.Operator;
@@ -29,12 +33,18 @@ import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPa
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.persistence.Transient;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -117,8 +127,7 @@ public class EdmDocumentService {
     /**
      * When you search a document, this query is executed
      *
-     * @param pattern
-     *            The searched pattern
+     * @param pattern The searched pattern
      * @return The adapted query
      */
     private QueryBuilder getEdmQueryForPattern(String pattern) {
@@ -149,15 +158,15 @@ public class EdmDocumentService {
         String preTag = "<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
         String postTag = "</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(qb)
-                .withHighlightFields(
-                        new Field("name").preTags(preTag).postTags(postTag),
-                        new Field("description").preTags(preTag).postTags(postTag),
-                        new Field("file.content").preTags(preTag).postTags(postTag),
-                        new Field("nodePath").preTags(preTag).postTags(postTag)
-                )
-                .withSort(new ScoreSortBuilder())
-                .build();
+            .withQuery(qb)
+            .withHighlightFields(
+                new Field("name").preTags(preTag).postTags(postTag),
+                new Field("description").preTags(preTag).postTags(postTag),
+                new Field("file.content").preTags(preTag).postTags(postTag),
+                new Field("nodePath").preTags(preTag).postTags(postTag)
+            )
+            .withSort(new ScoreSortBuilder())
+            .build();
 
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
@@ -211,4 +220,60 @@ public class EdmDocumentService {
         // return modified result with highlighting
         return searchResult;
     }
+
+    /**
+     * delegate the file decoding to elasticsearch
+     * @param file
+     * @return
+     */
+    private String getFileContentAsString(MultipartFile file) throws IOException {
+        // assume that we only have text file for the moment
+        return new String(file.getBytes());
+    }
+
+    public EdmAutoTidySuggestion getTidySuggestions(MultipartFile file) {
+        try {
+            String fileContentAsText = getFileContentAsString(file);
+
+            MoreLikeThisQueryBuilder qb = QueryBuilders.moreLikeThisQuery("file.content");
+            qb.minTermFreq(10).maxQueryTerms(25).like(fileContentAsText);
+
+            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
+                .setQuery(qb)
+                .execute().actionGet();
+
+            // Extract the best option of similar documents path
+            Optional<String> bestNodePathCandidate = Arrays.stream(response.getHits().getHits())
+                .map(hit -> hit.getId())
+                .map(id -> edmDocumentRepository.findOne(id))
+                .map(doc -> doc.getNodePath())
+                .findFirst();
+
+
+            if (! bestNodePathCandidate.isPresent()) {
+                log.warn("No suggestion for the given file ({})", file.getName());
+                return new EdmAutoTidySuggestion();
+            }
+
+            Optional<String> bestNodePath = Stream.of(bestNodePathCandidate.get())
+                .map(nodePath -> AnonymizerUtils.anonymizeYear(nodePath))
+                .map(nodePath -> AnonymizerUtils.anonymizeMonth(nodePath))
+                .map(nodePath -> AnonymizerUtils.unanonymizeMonth(nodePath))
+                .map(nodePath -> AnonymizerUtils.unanonymizeYear(nodePath))
+                .findFirst();
+
+            String fullCandidateNodePath = bestNodePath.get();
+            String candidateDestinationDir = "/" + FilenameUtils.getPath(fullCandidateNodePath);
+            String candidateDestinationFile = FilenameUtils.getBaseName(fullCandidateNodePath);
+            String candidateDestinationExtension = FilenameUtils.getExtension(fullCandidateNodePath);
+
+            return new EdmAutoTidySuggestion(candidateDestinationDir, candidateDestinationFile, candidateDestinationExtension, bestNodePathCandidate.get());
+
+        } catch (SearchPhaseExecutionException|IOException e) {
+            log.warn("Failed to submit getTidySuggestions, empty result ; may failed to parse file input ({}, more log to debug it !) : {}", e.getMessage(), file.getName());
+        }
+
+        return new EdmAutoTidySuggestion();
+    }
 }
+

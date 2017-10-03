@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.12.2">
   <actions>
-    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.1.9">
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.2.1">
       <jobProperties/>
       <triggers/>
       <parameters/>
@@ -20,13 +20,14 @@ This script will take each pdf, scan them for text and propose (according to use
       </strategy>
     </jenkins.model.BuildDiscarderProperty>
   </properties>
-  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.39">
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.41">
     <script>pipeline {
     agent any
 
     environment {
-		directory_to_scan = &apos;/home/xavier/documents/to_tidy/&apos;
+		directory_to_scan = &apos;/mnt/xavier/to_tidy/&apos;
         scripts_directory = &quot;${env.EDM_CRAWLERS_BASE_DIR}/auto-tidy-docs-pdf&quot;
+        auto_accept_edm_get_suggestion = &quot;true&quot;
     }
 
     stages {
@@ -58,7 +59,7 @@ This script will take each pdf, scan them for text and propose (according to use
                 script {
                     tiff_file_name = &quot;${locked_file_name}.tiff&quot;
                     echo &quot;tiff file (name=${tiff_file_name})&quot;
-                    sh &quot;cd \&quot;${env.directory_to_scan}\&quot; &amp;&amp; convert -depth 8 -density 300 \&quot;${locked_file_name}\&quot; \&quot;${tiff_file_name}\&quot;&quot;
+                    sh &quot;cd \&quot;${env.directory_to_scan}\&quot; &amp;&amp; convert -depth 8 -density 300 -alpha Off \&quot;${locked_file_name}\&quot; \&quot;${tiff_file_name}\&quot;&quot;
                 }
             }
         }
@@ -72,11 +73,27 @@ This script will take each pdf, scan them for text and propose (according to use
                 }
             }
         }
-        stage(&apos;Decide where I should move the document&apos;) {
+        stage(&apos;Getting forced by conf suggestion if exists&apos;) {
             steps {
                 script {
                     sh &quot;cd \&quot;${env.scripts_directory}\&quot; &amp;&amp; ./magic_sorter.sh \&quot;${directory_to_scan}/${text_file_name}\&quot;&quot;
-                    destination_file = sh (returnStdout: true, script:&quot;cd \&quot;${env.directory_to_scan}\&quot; &amp;&amp; cat \&quot;${text_file_name}.dest\&quot;&quot;).trim()
+                    destination_file = sh (returnStdout: true, script:&quot;cd \&quot;${env.directory_to_scan}\&quot; &amp;&amp; if [ -e \&quot;${text_file_name}.dest\&quot; ]; then cat \&quot;${text_file_name}.dest\&quot;; else echo \&quot;UNKNOWN\&quot;; fi&quot;).trim()
+                    echo &quot;destination_file (name=${destination_file})&quot;
+                }
+            }
+        }
+        stage(&apos;Getting server magic suggestion if necessary&apos;) {
+            steps {
+                script {
+                    if (&quot;${destination_file}&quot; == &quot;UNKNOWN&quot;) {
+                        if (&quot;${auto_accept_edm_get_suggestion}&quot; != &quot;true&quot;) {
+                            def userInput = input(
+                                id: &apos;inputEdmUp&apos;,
+                                message: &quot;Get suggestion from simple-data-search server ?&quot;
+                            )
+                        }
+                        destination_file=sh (returnStdout: true, script:&quot;cd \&quot;${env.directory_to_scan}\&quot; &amp;&amp; curl -s -XPOST \&quot;${env.EDM_HOST}/document/suggestTidy\&quot; -F file=@${text_file_name} | jq &apos;(.suggestedFileLocation + .suggestedFileName + \&quot;.pdf\&quot;)&apos;&quot;).trim()
+                    }
                     echo &quot;destination_file (name=${destination_file})&quot;
                 }
             }
@@ -89,17 +106,21 @@ This script will take each pdf, scan them for text and propose (according to use
         stage(&apos;Waiting for an human to confirm my choice&apos;) {
             steps {
                 script {
-                    def userInput = input(
+                    def inputConfirmMove = input(
                         id: &apos;inputConfirmMove&apos;,
-                        message: &quot;Move the file to ${destination_file} ?&quot;
+                        message: &quot;Move the file to ... ?&quot;,
+                        parameters: [
+                            [$class: &apos;TextParameterDefinition&apos;, defaultValue: &quot;${destination_file}&quot;, description: &apos;Destination&apos;, name: &apos;destination&apos;]
+                        ]
                     )
+                    final_destination_file = inputConfirmMove;
                 }
             }
         }
         stage(&apos;Moving !&apos;) {
             steps {
                 script {
-                    destinationFileNameEscaped=sh (returnStdout: true, script:&quot;echo \&quot;${destination_file}\&quot; | sed &apos;s/ /\\ /g&apos;&quot;).trim()
+                    destinationFileNameEscaped=sh (returnStdout: true, script:&quot;echo \&quot;${final_destination_file}\&quot; | sed &apos;s/ /\\ /g&apos;&quot;).trim()
                     destinationDir = sh (returnStdout: true, script:&quot;dirname \&quot;${destinationFileNameEscaped}\&quot;&quot;).trim()
                     destinationFileName = sh (returnStdout: true, script:&quot;basename \&quot;${destinationFileNameEscaped}\&quot;&quot;).trim()
                     echo &quot;destinationDir (dir=${destinationDir})&quot;

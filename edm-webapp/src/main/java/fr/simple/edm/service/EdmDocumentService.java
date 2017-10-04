@@ -13,10 +13,7 @@ import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
@@ -57,7 +54,7 @@ public class EdmDocumentService {
 
 
     public EdmDocumentFile findOne(String id) {
-        return edmDocumentRepository.findOne(id);
+        return edmDocumentRepository.findById(id).get();
     }
 
     public EdmDocumentFile save(EdmDocumentFile edmDocument) {
@@ -90,7 +87,9 @@ public class EdmDocumentService {
                 }
             }
 
-            contentBuilder.field("fileContent", Base64Utils.encode(edmDocument.getFileContent()));
+			if (edmDocument.getFileContent() != null) {
+				contentBuilder.field("fileContent", Base64Utils.encode(edmDocument.getFileContent()));
+			}
 
             // and that's all folks
             contentBuilder.endObject();
@@ -173,7 +172,7 @@ public class EdmDocumentService {
                         EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
 
                         // fill every fields
-                        EdmDocumentFile doc = edmDocumentRepository.findOne(searchHit.getId());
+                        EdmDocumentFile doc = edmDocumentRepository.findById(searchHit.getId()).get();
                         edmDocumentSearchResult.setEdmDocument(doc);
 
                         // override custom elements, see

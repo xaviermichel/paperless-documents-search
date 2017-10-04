@@ -17,7 +17,7 @@ public class EdmSourceService {
     private EdmSourceRepository edmSourceRepository;
 
     public EdmSource findOne(String id) {
-        return edmSourceRepository.findOne(id);
+        return edmSourceRepository.findById(id).get();
     }
 
     public EdmSource save(EdmSource edmSource) {

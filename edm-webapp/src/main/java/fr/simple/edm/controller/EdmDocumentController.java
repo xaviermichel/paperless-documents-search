@@ -5,13 +5,14 @@ import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.service.EdmAggregationsService;
 import fr.simple.edm.service.EdmDocumentService;
-import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -63,13 +64,13 @@ public class EdmDocumentController {
 
     @RequestMapping(value = "/files", params = {"docId"})
     @ResponseBody
-    public FileSystemResource getFile(@RequestParam(value = "docId") String docId, HttpServletResponse response) throws NotFoundException, IOException {
+    public FileSystemResource getFile(@RequestParam(value = "docId") String docId, HttpServletResponse response) throws HttpClientErrorException, IOException {
         log.debug("Downloading file : '{}'", docId);
 
         // document does not exists or access is not allowed
         EdmDocumentFile edmDocumentFile = edmDocumentService.findOne(docId);
         if (edmDocumentFile == null) {
-            throw new NotFoundException(docId);
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
         }
 
         Path filePath = Paths.get(edmDocumentFile.getNodePath());

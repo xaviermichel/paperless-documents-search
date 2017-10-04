@@ -19,7 +19,7 @@ public class EdmCategoryService {
     private EdmCategoryRepository edmCategoryRepository;
 
     public EdmCategory findOne(String id) {
-        return edmCategoryRepository.findOne(id);
+        return edmCategoryRepository.findById(id).get();
     }
 
     public List<EdmCategory> findAll() {

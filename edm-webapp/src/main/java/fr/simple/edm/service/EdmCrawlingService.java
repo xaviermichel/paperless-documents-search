@@ -94,7 +94,7 @@ public class EdmCrawlingService {
         log.info("Will delete {} unused document(s) for source '{}'", sourceDocumentsIds.get(sourceId).size(), sourceId);
         // loop on removed documents
         for (String documentId : sourceDocumentsIds.get(sourceId)) {
-            EdmDocumentFile edmDocumentFile = edmDocumentRepository.findOne(documentId);
+            EdmDocumentFile edmDocumentFile = edmDocumentRepository.findById(documentId).get();
             log.debug("Delete document : {} ({})", edmDocumentFile.getNodePath(), edmDocumentFile.getId());
             edmDocumentRepository.delete(edmDocumentFile);
         }

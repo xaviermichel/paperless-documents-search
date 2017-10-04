@@ -1,4 +1,4 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+FROM docker.elastic.co/elasticsearch/elasticsearch:5.5.2
 
 ENV ES_HOST http://127.0.0.1:9200
 
@@ -20,7 +20,7 @@ USER elasticsearch
 COPY ./ /tmp/elastic_settings
 
 RUN set -x && \
-   curl 'https://artifacts.elastic.co/downloads/elasticsearch-plugins/ingest-attachment/ingest-attachment-5.5.1.zip' -o /tmp/ingest-attachment.zip && \
+   curl 'https://artifacts.elastic.co/downloads/elasticsearch-plugins/ingest-attachment/ingest-attachment-5.5.2.zip' -o /tmp/ingest-attachment.zip && \
    bin/elasticsearch-plugin install --batch file:///tmp/ingest-attachment.zip
 
 RUN set -x && \

@@ -221,11 +221,6 @@ public class EdmDocumentService {
         return searchResult;
     }
 
-    /**
-     * delegate the file decoding to elasticsearch
-     * @param file
-     * @return
-     */
     private String getFileContentAsString(MultipartFile file) throws IOException {
         // assume that we only have text file for the moment
         return new String(file.getBytes());
@@ -236,7 +231,7 @@ public class EdmDocumentService {
             String fileContentAsText = getFileContentAsString(file);
 
             MoreLikeThisQueryBuilder qb = QueryBuilders.moreLikeThisQuery("file.content");
-            qb.minTermFreq(10).maxQueryTerms(25).like(fileContentAsText);
+            qb.like(fileContentAsText);
 
             SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
                 .setQuery(qb)

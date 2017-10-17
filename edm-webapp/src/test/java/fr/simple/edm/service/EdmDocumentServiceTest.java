@@ -9,6 +9,7 @@ import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -248,6 +249,7 @@ public class EdmDocumentServiceTest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnTheRightDocumentForATextFileToAutoTidy() throws Exception {
         MockMultipartFile dummyFile = new MockMultipartFile("file", "filename.txt", "text/plain", Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill.pdf.txt").toURI())));
 

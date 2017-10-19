@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.persistence.Transient;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -88,7 +89,7 @@ public class EdmDocumentService {
             }
 
 			if (edmDocument.getFileContent() != null) {
-				contentBuilder.field("fileContent", Base64Utils.encode(edmDocument.getFileContent()));
+				contentBuilder.field("fileContent", Base64.getEncoder().encodeToString(edmDocument.getFileContent()));
 			}
 
             // and that's all folks

@@ -19,13 +19,16 @@ all: build
 build:
 	docker build --rm -t $(IMAGE_NAME) .
 
-dstart:
+drun:
 	docker run --name paperless-documents-search-db-test -d -p 9200:9200 -p 9300:9300 paperless-documents-search-db
+
+dstart:
+	docker start paperless-documents-search-db-test
 
 dstop:
 	docker stop paperless-documents-search-db-test
 
-drm: stop
+drm: dstop
 	docker rm paperless-documents-search-db-test
 
 dlogs:

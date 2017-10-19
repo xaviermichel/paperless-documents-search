@@ -32,79 +32,38 @@
                 "type": "keyword"
             },
             "fileContent": {
-                "type": "binary"
+                "type": "binary",
+                "store": false
             },
             "file": {
                 "properties": {
-                    "content_length": {
-                        "type": "long"
-                    },
-                    "author": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "date": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "language": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "name": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "title": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "keywords": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
-                    "content_type": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        }
-                    },
                     "content": {
-                        "type": "text",
                         "fields": {
                             "keyword": {
                                 "type": "keyword"
                             }
                         },
-                        "analyzer": "french",
-                        "term_vector": "with_positions_offsets",
-                        "store": true
+                        "type": "text",
+                        "analyzer": "french"
+                    },
+                    "content_length": {
+                        "type": "long"
+                    },
+                    "content_type": {
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "text"
+                    },
+                    "language": {
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "text"
                     }
                 }
             },

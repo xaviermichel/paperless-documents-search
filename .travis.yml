@@ -13,6 +13,10 @@ jdk:
 #    - master
 #
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y tesseract-ocr
+
 # build database and prepare for UI tests
 before_script:
   - "cd docker_elastic_image/"

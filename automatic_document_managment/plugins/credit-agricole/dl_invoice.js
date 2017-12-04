@@ -1,4 +1,9 @@
-var casper = require("casper").create();
+var casper = require("casper").create({
+     viewportSize: {
+         width: 1920,
+         height: 1080
+     }
+});
 var x = require('casper').selectXPath;
 
 var login = new String(casper.cli.raw.get(0));
@@ -46,30 +51,30 @@ casper.start();
 casper.clear();
 phantom.clearCookies();
 
-// curl -XPOST 'https://www.franchecomte-g4-enligne.credit-agricole.fr/stb/entreeBam' --data "vitrine=O&largeur_ecran=1024&hauteur_ecran=768&origine=vitrine&situationTravail=BANCAIRE&canal=WEB&typeAuthentification=CLIC_ALLER&urlOrigine=http://www.ca-franchecomte.fr&matrice=true&CCPTE=NUMERO_DE_COMPTE&liberror=&tracking=0"
-casper.thenOpen('https://www.franchecomte-g4-enligne.credit-agricole.fr/stb/entreeBam', {
-		method: 'post',
-		data: {
-			'vitrine':'O',
-			'largeur_ecran':1024,
-			'hauteur_ecran':768,
-			'origine':'vitrine',
-			'situationTravail':'BANCAIRE',
-			'canal':'WEB',
-			'typeAuthentification':'CLIC_ALLER',
-			'urlOrigine':'http://www.ca-franchecomte.fr',
-			'matrice':true,
-			'CCPTE': login.toString(),
-			'liberror':'',
-			'tracking':'O',
-		}
-		}
-		, function() {});
+casper.thenOpen('https://www.ca-franchecomte.fr/', function() {
+	this.echo("Ouverture du site du CA");
+});
 
 casper.wait(SLEEP_TIME, function() {
 	dumpPage(this);
 });
 
+casper.thenClick(x('//span[contains(text(),"Accéder à mes comptes")]'), function() {
+    this.echo('Ouverture page de connexion');
+});
+
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
+
+casper.then(function() {
+	this.echo("Remplissage du numéro de compte");
+	this.sendKeys('input[name=CCPTE]', login.toString());
+});
+
+casper.wait(SLEEP_TIME, function() {
+	dumpPage(this);
+});
 
 casper.eachThen(passArray, function(numberToClick) {
 	//this.echo('Clicking on ' + numberToClick.data);
@@ -82,7 +87,7 @@ casper.wait(SLEEP_TIME, function() {
 });
 
 casper.then(function() {
-	this.echo('Validation du formulaire de connection');
+	this.echo('Validation du formulaire de connexion');
 	this.clickLabel('Confirmer');
 });
 
@@ -91,8 +96,8 @@ casper.wait(SLEEP_TIME, function() {
 });
 
 casper.then(function() {
-	this.echo('Going to Consultation page');
-	this.clickLabel('Consultation');
+	this.echo('Navigation vers la page e-documents');
+	this.clickLabel('E-Documents', 'a');
 });
 
 casper.wait(SLEEP_TIME, function() {
@@ -104,7 +109,8 @@ casper.then(function() {
 	links = this.evaluate(getLinks);
 	lienFactureGlobale = links[0];
 	lienFactureGlobale2 = links[1];
-	this.echo('- Globale : ' + lienFactureGlobale);
+	this.echo('- Compte 1 : ' + lienFactureGlobale);
+	this.echo('- Compte 2 : ' + lienFactureGlobale);
 });
 
 casper.wait(SLEEP_TIME, function() {
@@ -127,6 +133,7 @@ casper.then(function() {
 		this.echo('Telechargement facture globale 2 dans ' + targetFile2);
 		this.download(lienFactureGlobale2, targetFile2);
 	}
+	this.echo('Va attendre 60 secondes avant de continuer...');
 });
 
 casper.run();

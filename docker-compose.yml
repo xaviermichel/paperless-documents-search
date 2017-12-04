@@ -1,21 +1,43 @@
-version: '2'
+version: '3'
 
 services:
 
-  paperless_documents_search_webapp:
+  loadbalancer:
+    image: 'dockercloud/haproxy:latest'
+    links:
+      - webapp
+    ports:
+      - 8080:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+
+  webapp:
     image: paperless-documents-search-webapp
     entrypoint: java -Dspring.profiles.active=local -jar /webapp/paperless-documents-search-webapp.jar
-    ports:
-      - 8053:8053
     depends_on:
-      - paperless_documents_search_db
+      - elastic
     volumes:
       - .:/host_mount_point
     environment:
-      - spring.data.elasticsearch.cluster-nodes=paperless_documents_search_db:9300
+      - spring.data.elasticsearch.cluster-nodes=elastic:9300
+    networks:
+      - web
+      - back
 
-  paperless_documents_search_db:
+  elastic:
     image: paperless-documents-search-db
+    command: -Dsecurity.manager.enabled=false -Ddiscovery.zen.ping.unicast.hosts=elastic
     ports:
-      - 9200:9200
-      - 9300:9300
+      - 9200
+      - 9300
+    networks:
+      - back
+
+networks:
+  web:
+    driver: bridge
+  back:
+    driver: bridge
+

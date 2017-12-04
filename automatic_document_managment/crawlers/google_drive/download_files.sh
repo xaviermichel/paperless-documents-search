@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DRIVE_DIR=/home/xavier/paperless-documents-search/google_drive/work
-DRIVE_EDM_DIRECTORY=scan_to_paperless-documents-search
+DRIVE_EDM_DIRECTORY=scan_to_document_library
 # the desination have to exists ! This script won't create it for you
 EDM_DESTINATION="/media/documents/00-a_trier"
 
@@ -9,7 +9,7 @@ function box(){
         t="$1xxxx";c=${2:-=}; echo ${t//?/$c}; echo "$c $1 $c"; echo ${t//?/$c};
 }
 
-export GOPATH=$HOME/gopath
+export GOPATH=$HOME/.gopath
 export PATH=$GOPATH:$GOPATH/bin:$PATH
 
 mkdir -p "${DRIVE_DIR}"
@@ -18,7 +18,7 @@ cd "${DRIVE_DIR}"
 if [ ! -d ".gd" ] ; then
         echo "You have to init drive repo, to do that :"
         echo "$ cd ${DRIVE_DIR}"
-        echo '$ export GOPATH=$HOME/gopath && export PATH=$GOPATH:$GOPATH/bin:$PATH && drive init'
+        echo '$ export GOPATH=$HOME/.gopath && export PATH=$GOPATH:$GOPATH/bin:$PATH && drive init'
         echo "To do that, you have to install drive (https://github.com/odeke-em/drive)"
         exit 1
 fi

@@ -4,7 +4,7 @@
   "devDependencies": {
     "bower": "~1.4.1",
     "casperjs": "~1.1.3",
-    "gulp": "~3.8.11",
+    "gulp": "~3.9.1",
     "gulp-casperjs": "~0.0.6",
     "gulp-concat": "~2.5.2",
     "gulp-jsbeautifier": "0.0.4",

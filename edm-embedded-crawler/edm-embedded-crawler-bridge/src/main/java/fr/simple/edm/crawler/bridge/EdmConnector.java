@@ -19,7 +19,7 @@ import fr.simple.edm.domain.EdmSource;
 public class EdmConnector {
 
     public void saveEdmDocument(String server, EdmDocumentFile doc, File file) throws IOException {
-        doc.setFileContent(Files.readAllBytes(file.toPath()));
+        doc.setBinaryFileContent(Files.readAllBytes(file.toPath()));
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForEntity(server + "/crawl/document", doc, EdmDocumentFile.class);

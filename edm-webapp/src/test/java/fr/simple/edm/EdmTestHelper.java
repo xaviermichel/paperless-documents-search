@@ -49,13 +49,13 @@ public class EdmTestHelper {
 
         docLatex = new EdmDocumentFile();
         docLatex.setName("Un template de document");
-        docLatex.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/demo_1/demo_pdf.pdf").toURI())));
+        docLatex.setBinaryFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/demo_1/demo_pdf.pdf").toURI())));
         docLatex.setFileContentType("application/pdf");
         docLatex.setFileExtension("pdf");
         docLatex.setNodePath("/documents/4");
 
         docForOcr = new EdmDocumentFile();
-        docForOcr.setFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/hola.png").toURI())));
+        docForOcr.setBinaryFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/hola.png").toURI())));
         docLatex.setFileContentType("application/png");
         docLatex.setFileExtension("png");
         docForOcr.setNodePath("/documents/hola.png");

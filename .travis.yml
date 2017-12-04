@@ -17,7 +17,7 @@ jdk:
 before_script:
   - "cd docker_elastic_image/"
   - "make build"
-  - "docker run --name paperless-documents-search-db-test -d -p 9200:9200 -p 9300:9300 paperless-documents-search-db"
+  - "make drun"
   - "cd -"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -26,5 +26,7 @@ before_script:
   - "cd -"
 
 after_script:
-  - "docker rm -f paperless-documents-search-db-test"
+  - "cd docker_elastic_image/"
+  - "make drm"
+  - "cd -"
 

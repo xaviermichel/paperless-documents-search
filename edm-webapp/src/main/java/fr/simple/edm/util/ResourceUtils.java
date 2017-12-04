@@ -18,8 +18,7 @@ public class ResourceUtils {
                 throw new IOException("file was not found in classloader path");
             }
             return IOUtils.toString(url, StandardCharsets.UTF_8);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.warn("Failed to get content of file " + path, e);
             throw e;
         }

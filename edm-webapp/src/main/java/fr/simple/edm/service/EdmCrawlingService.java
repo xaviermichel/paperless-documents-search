@@ -20,22 +20,19 @@ import java.util.Map;
 @Slf4j
 public class EdmCrawlingService {
 
-    @Inject
-    private EdmDocumentService edmDocumentService;
-
-    @Inject
-    private EdmDocumentRepository edmDocumentRepository;
-
-    @Inject
-    private EdmSourceService edmSourceService;
-
-
     // Map<source, List<documentId>>, is used to delete removed document at re-indexation
     private static Map<String, List<String>> sourceDocumentsIds;
 
     static {
         sourceDocumentsIds = new HashMap<>();
     }
+
+    @Inject
+    private EdmDocumentService edmDocumentService;
+    @Inject
+    private EdmDocumentRepository edmDocumentRepository;
+    @Inject
+    private EdmSourceService edmSourceService;
 
     public EdmDocumentFile save(EdmDocumentFile edmDocument) {
         edmDocument = edmDocumentService.save(edmDocument);

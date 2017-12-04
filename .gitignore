@@ -65,3 +65,6 @@ logback.xml
 # debug tests
 casper-fail-*
 
+# docker
+docker_elastic_image/Dockerfile_*
+

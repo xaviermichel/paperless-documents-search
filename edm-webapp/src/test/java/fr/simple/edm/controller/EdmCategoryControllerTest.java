@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,11 +34,22 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@ActiveProfiles("test")
 public class EdmCategoryControllerTest {
 
     private MockMvc mockMvc;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    @Autowired
+    private EdmCategoryController edmCategoryController;
+    private EdmCategoryService edmCategoryService;
+    private EdmCategory category1;
+    private EdmCategory category2;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -45,23 +57,6 @@ public class EdmCategoryControllerTest {
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
         Assert.assertNotNull("the JSON message converter must not be null", this.mappingJackson2HttpMessageConverter);
     }
-
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
-
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private EdmCategoryController edmCategoryController;
-
-    private EdmCategoryService edmCategoryService;
-
-    private EdmCategory category1;
-
-    private EdmCategory category2;
 
     @Before
     public void setup() {
@@ -102,10 +97,10 @@ public class EdmCategoryControllerTest {
 
     @Test
     public void postCategoryShouldCallCategoryService() throws Exception {
-         String categoryJson = json(category1);
+        String categoryJson = json(category1);
 
         mockMvc.perform(post("/category").contentType(contentType).content(categoryJson))
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         verify(edmCategoryService, times(1)).save(category1);
         verifyNoMoreInteractions(edmCategoryService);
@@ -114,11 +109,11 @@ public class EdmCategoryControllerTest {
     @Test
     public void getCategoryByNameShouldCallCategoryService() throws Exception {
         mockMvc.perform(get("/category/name/" + category2.getName()).accept(contentType))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.id", is(category2.getId())))
-            .andExpect(jsonPath("$.name", is(category2.getName())))
-            .andExpect(jsonPath("$.description", is(category2.getDescription())));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.id", is(category2.getId())))
+                .andExpect(jsonPath("$.name", is(category2.getName())))
+                .andExpect(jsonPath("$.description", is(category2.getDescription())));
 
         verify(edmCategoryService, times(1)).findOneByName(category2.getName());
         verifyNoMoreInteractions(edmCategoryService);

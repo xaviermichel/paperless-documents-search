@@ -21,7 +21,7 @@ public class EdmCategoryController {
         return edmCategoryService.findAll();
     }
 
-    @RequestMapping(value="/category", method = RequestMethod.POST)
+    @RequestMapping(value = "/category", method = RequestMethod.POST)
     @ResponseBody
     public EdmCategory create(@RequestBody EdmCategory edmCategory) {
         return edmCategoryService.save(edmCategory);

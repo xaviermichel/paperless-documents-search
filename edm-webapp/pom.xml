@@ -18,6 +18,7 @@
             <start-class>fr.simple.edm.Application</start-class>
         </properties>
 
+
         <dependencyManagement>
             <dependencies>
                 <dependency>
@@ -74,6 +75,15 @@
                             <goals>
                                 <goal>bower</goal>
                             </goals>
+                        </execution>
+                        <execution>
+                            <id>gulp prettify-code</id>
+                            <goals>
+                                <goal>gulp</goal>
+                            </goals>
+                            <configuration>
+                                <arguments>prettify-code</arguments>
+                            </configuration>
                         </execution>
                         <execution>
                             <id>gulp minify-code</id>
@@ -260,6 +270,24 @@
                 <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-debug-all</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-rt-rs-client</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
             <!-- test -->
 

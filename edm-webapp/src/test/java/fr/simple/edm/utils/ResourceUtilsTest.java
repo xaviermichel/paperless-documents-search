@@ -15,7 +15,7 @@ public class ResourceUtilsTest {
         assertThat(fileContent).isEqualTo("This is a simple content for a test");
     }
 
-    @Test(expected=IOException.class)
+    @Test(expected = IOException.class)
     public void notExistingFileShouldThrowException() throws IOException {
         ResourceUtils.getContent("not_existing_file.txt");
     }

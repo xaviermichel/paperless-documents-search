@@ -1,5 +1,6 @@
 package fr.simple.edm;
 
+import fr.simple.edm.repository.EdmCategoryRepository;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
@@ -18,17 +19,21 @@ public class ElasticsearchTestingHelper {
     @Autowired
     private EdmDocumentRepository edmDocumentRepository;
 
+    @Autowired
+    private EdmCategoryRepository edmCategoryRepository;
+
     /**
      * Will destroy and rebuild ES_INDEX_DOCUMENTS
      */
     public void deleteAllDocumentsForIndex(String index) throws Exception {
-    	if (ES_INDEX_DOCUMENTS.equals(index)) {
-    		edmDocumentRepository.deleteAll();
-    	}
+        if (ES_INDEX_DOCUMENTS.equals(index)) {
+            edmDocumentRepository.deleteAll();
+            edmCategoryRepository.deleteAll();
+        }
     }
 
 
-    public void flushIndex(String index) throws Exception  {
-    	elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
+    public void flushIndex(String index) throws Exception {
+        elasticsearchClient.admin().indices().refresh(new RefreshRequest(index)).actionGet();
     }
 }

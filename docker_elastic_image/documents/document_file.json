@@ -32,40 +32,19 @@
                 "type": "keyword"
             },
             "fileContent": {
-                "type": "binary",
-                "store": false
+                "type": "text",
+                "analyzer": "edm_analyzer_french"
             },
-            "file": {
-                "properties": {
-                    "content": {
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        },
-                        "type": "text",
-                        "analyzer": "french"
-                    },
-                    "content_length": {
-                        "type": "long"
-                    },
-                    "content_type": {
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        },
-                        "type": "text"
-                    },
-                    "language": {
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword"
-                            }
-                        },
-                        "type": "text"
-                    }
-                }
+            "fileTitle": {
+                "type": "text",
+                "analyzer": "edm_analyzer_french"
+            },
+            "fileAuthor": {
+                "type": "text",
+                "analyzer": "simple"
+            },
+            "fileKeywords": {
+                "type": "keyword"
             },
             "nodePath": {
                 "type": "text",

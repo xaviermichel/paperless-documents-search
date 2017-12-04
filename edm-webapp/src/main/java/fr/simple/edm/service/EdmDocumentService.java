@@ -1,18 +1,16 @@
 package fr.simple.edm.service;
 
+import fr.simple.edm.annotation.EdmSearchable;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import fr.simple.edm.repository.EdmDocumentRepository;
+import fr.simple.edm.tika.EdmOcrDocExtractor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -25,16 +23,13 @@ import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPa
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import javax.inject.Inject;
-import javax.persistence.Transient;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -45,7 +40,7 @@ public class EdmDocumentService {
     private static final String SEARCH_MATCH_HIGHLIGHT_HTML_TAG = "mark";
 
     @Inject
-    private Client elasticsearchClient;
+    private EdmOcrDocExtractor edmOcrDocExtractor;
 
     @Inject
     private EdmDocumentRepository edmDocumentRepository;
@@ -64,69 +59,40 @@ public class EdmDocumentService {
         String id = DigestUtils.md5Hex(edmDocument.getNodePath() + "@" + edmDocument.getSourceId());
         edmDocument.setId(id);
 
-        try {
-            // the document is build manually to
-            // have the possibility to add the binary file
-            // content
+        // read the file content
+        edmOcrDocExtractor.extractFileContent(edmDocument);
 
-            XContentBuilder contentBuilder = jsonBuilder();
-
-            // add document attributes
-            contentBuilder.startObject();
-
-            for (Method m : EdmDocumentFile.class.getDeclaredMethods()) {
-                if (m.getName().startsWith("get")) {
-                    Object oo = m.invoke(edmDocument);
-                    String fieldName = WordUtils.uncapitalize(m.getName().substring(3));
-
-                    // ignore if transient
-                    if (EdmDocumentFile.class.getDeclaredField(fieldName).isAnnotationPresent(Transient.class)) {
-                        continue;
-                    }
-
-                    contentBuilder.field(fieldName, oo);
-                }
-            }
-
-			if (edmDocument.getFileContent() != null) {
-				contentBuilder.field("fileContent", Base64.getEncoder().encodeToString(edmDocument.getFileContent()));
-			}
-
-            // and that's all folks
-            contentBuilder.endObject();
-
-            IndexResponse ir = elasticsearchClient.prepareIndex("documents", "document_file", edmDocument.getId())
-                .setSource(contentBuilder).setPipeline("attachment").execute().actionGet();
-
-            edmDocument.setId(ir.getId());
-
-            log.debug("Indexed edm document '{}' with id '{}'", edmDocument.getName(), edmDocument.getId());
-        } catch (Exception e) {
-            log.error("Failed to index document", e);
-        }
-
+        edmDocument = edmDocumentRepository.save(edmDocument);
         return edmDocument;
     }
 
     /**
      * When you search a document, this query is executed
      *
-     * @param pattern
-     *            The searched pattern
+     * @param pattern The searched pattern
      * @return The adapted query
      */
-    private QueryBuilder getEdmQueryForPattern(String pattern) {
+    QueryBuilder getEdmQueryForPattern(String pattern) {
         // in case of invalid query
         if (StringUtils.isBlank(pattern)) {
             return QueryBuilders.matchAllQuery();
         }
 
+        QueryStringQueryBuilder queryBuilder = QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND);
+
+        List<String> searchableFieldsNames = Stream
+                .of(EdmDocumentFile.class.getDeclaredFields())
+                .filter(f -> f.isAnnotationPresent(EdmSearchable.class))
+                .map(f -> f.getName())
+                .collect(toList());
+
+        for (String fieldName : searchableFieldsNames) {
+            queryBuilder = queryBuilder.field(fieldName);
+        }
+
         // the real query
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
-        qb.must(QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND)
-            .field("name").field("description").field("file.content").field("nodePath")
-        );
-        return qb;
+        return qb.must(queryBuilder);
     }
 
     /**
@@ -145,10 +111,9 @@ public class EdmDocumentService {
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(qb)
                 .withHighlightFields(
-                    new HighlightBuilder.Field("name").preTags(preTag).postTags(postTag),
-                    new HighlightBuilder.Field("description").preTags(preTag).postTags(postTag),
-                    new HighlightBuilder.Field("file.content").preTags(preTag).postTags(postTag),
-                    new HighlightBuilder.Field("nodePath").preTags(preTag).postTags(postTag)
+                        new HighlightBuilder.Field("name").preTags(preTag).postTags(postTag),
+                        new HighlightBuilder.Field("fileContent").preTags(preTag).postTags(postTag),
+                        new HighlightBuilder.Field("nodePath").preTags(preTag).postTags(postTag)
                 )
                 .withSort(new ScoreSortBuilder())
                 .build();
@@ -181,11 +146,8 @@ public class EdmDocumentService {
                         if (searchHit.getHighlightFields().get("name") != null) {
                             edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
                         }
-                        if (searchHit.getHighlightFields().get("description") != null) {
-                            edmDocumentSearchResult.setHighlightedDescription(searchHit.getHighlightFields().get("description").fragments()[0].toString());
-                        }
-                        if (searchHit.getHighlightFields().get("file.content") != null) {
-                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("file.content").fragments()[0].toString());
+                        if (searchHit.getHighlightFields().get("fileContent") != null) {
+                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("fileContent").fragments()[0].toString());
                         }
                         if (searchHit.getHighlightFields().get("nodePath") != null) {
                             edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());

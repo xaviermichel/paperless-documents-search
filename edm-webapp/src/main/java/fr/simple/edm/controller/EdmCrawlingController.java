@@ -21,14 +21,14 @@ public class EdmCrawlingController {
     private EdmCrawlingService edmCrawlingService;
 
     @RequestMapping(value = "/start", params = {"source"})
-    @ResponseStatus(value=HttpStatus.OK)
+    @ResponseStatus(value = HttpStatus.OK)
     public void startCrawling(@RequestParam(value = "source") String source) {
         log.info("Begin crawling for source : {}", source);
         edmCrawlingService.snapshotCurrentDocumentsForSource(source);
     }
 
     @RequestMapping(value = "/stop", params = {"source"})
-    @ResponseStatus(value=HttpStatus.OK)
+    @ResponseStatus(value = HttpStatus.OK)
     public void stopCrawling(@RequestParam(value = "source") String source) {
         log.info("End of crawling for source : {}", source);
         edmCrawlingService.deleteUnusedDocumentsBeforeSnapshotForSource(source);
@@ -42,7 +42,7 @@ public class EdmCrawlingController {
             @RequestParam(value = "sourceName", defaultValue = "unmanned source") String sourceName,
             @RequestParam(value = "categoryName", defaultValue = "unmanned category") String categoryName,
             @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
-       ) {
+    ) {
         log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
@@ -61,7 +61,7 @@ public class EdmCrawlingController {
             @RequestParam(value = "sourceName", defaultValue = "unmanned source") String sourceName,
             @RequestParam(value = "categoryName", defaultValue = "unmanned category") String categoryName,
             @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
-       ) {
+    ) {
         log.info("[crawlUrl] Starting crawling on path : '{}'  (exclusion = '{}')", url, exclusionRegex);
         try {
             UrlCrawler.importFilesAtUrl(url, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
@@ -72,7 +72,7 @@ public class EdmCrawlingController {
         return "OK";
     }
 
-    @RequestMapping(value="/document", method=RequestMethod.POST)
+    @RequestMapping(value = "/document", method = RequestMethod.POST)
     @ResponseBody
     public EdmDocumentFile create(@RequestBody EdmDocumentFile edmDocument) {
         return edmCrawlingService.save(edmDocument);

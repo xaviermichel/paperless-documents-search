@@ -19,7 +19,7 @@ public class EdmSourceController {
         return edmSourceService.findAll();
     }
 
-    @RequestMapping(value="/source", method=RequestMethod.POST)
+    @RequestMapping(value = "/source", method = RequestMethod.POST)
     @ResponseBody
     public EdmSource create(@RequestBody EdmSource edmDirectory) {
         return edmSourceService.save(edmDirectory);

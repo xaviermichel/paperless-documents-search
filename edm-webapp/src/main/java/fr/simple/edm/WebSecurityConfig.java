@@ -22,37 +22,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private String edmCrawlerPassword;
 
     private boolean isAuthConfigured() {
-        return ! StringUtils.isEmpty(edmCrawlerLogin);
+        return !StringUtils.isEmpty(edmCrawlerLogin);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        if (! isAuthConfigured()) {
+        if (!isAuthConfigured()) {
             log.warn("No 'edm.crawler.login' defined, will not filter /crawl url !");
             return;
         }
         log.info("configuring http -> '/crawl/**' have to be 'CRAWLER'");
         http
-            .authorizeRequests()
-              .antMatchers("/crawl/**")
-                  .hasAnyRole("CRAWLER")
-              .anyRequest()
-                  .permitAll()
-                  .and() // very important for curl !
-                  .httpBasic()
+                .authorizeRequests()
+                .antMatchers("/crawl/**")
+                .hasAnyRole("CRAWLER")
+                .anyRequest()
+                .permitAll()
+                .and() // very important for curl !
+                .httpBasic()
         ;
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        if (! isAuthConfigured()) {
+        if (!isAuthConfigured()) {
             log.warn("No 'edm.crawler.login' defined, will not configure global auth !");
             return;
         }
         log.info("configuring auth : adding user {}", edmCrawlerLogin);
         auth
-            .inMemoryAuthentication()
+                .inMemoryAuthentication()
                 .withUser(edmCrawlerLogin).password(edmCrawlerPassword).roles("CRAWLER")
         ;
     }

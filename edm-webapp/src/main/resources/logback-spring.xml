@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<include resource="org/springframework/boot/logging/logback/base.xml" />
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<encoder>
-			<pattern>${FILE_LOG_PATTERN}</pattern>
-		</encoder>
-		<file>paperless_documents_search.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>paperless_documents_search.log.%i</fileNamePattern>
-			<MinIndex>1</MinIndex>
-			<MaxIndex>3</MaxIndex>
-		</rollingPolicy>
-		<triggeringPolicy
-			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<MaxFileSize>10MB</MaxFileSize>
-		</triggeringPolicy>
-	</appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <file>paperless_documents_search.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>paperless_documents_search.log.%i</fileNamePattern>
+            <MinIndex>1</MinIndex>
+            <MaxIndex>3</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
 
-	<!-- hibernate -->
-	<logger name="org.hibernate.type" level="WARN" />
-	<logger name="org.hibernate" level="WARN" />
+    <!-- hibernate -->
+    <logger name="org.hibernate.type" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
 
-	<!-- bean utils -->
-	<logger name="org.apache" level="WARN" />
+    <!-- bean utils -->
+    <logger name="org.apache" level="WARN"/>
 
-	<!-- elastic search -->
-	<logger name="org.elasticsearch" level="WARN" />
+    <!-- elastic search -->
+    <logger name="org.elasticsearch" level="WARN"/>
 
-	<!-- spring -->
-	<logger name="org.springframework" level="WARN" />
+    <!-- spring -->
+    <logger name="org.springframework" level="WARN"/>
 
-	<!-- jetty -->
-	<logger name="org.eclipse.jetty" level="WARN" />
+    <!-- jetty -->
+    <logger name="org.eclipse.jetty" level="WARN"/>
 
-	<!-- thymeleaf -->
-	<logger name="org.thymeleaf" level="WARN" />
+    <!-- thymeleaf -->
+    <logger name="org.thymeleaf" level="WARN"/>
 
     <!-- jndi -->
-    <logger name="jndi" level="WARN" />
+    <logger name="jndi" level="WARN"/>
 
-	<!-- others -->
-	<root level="INFO">
-		<appender-ref ref="FILE" />
-	</root>
+    <!-- others -->
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+    </root>
 
 </configuration>

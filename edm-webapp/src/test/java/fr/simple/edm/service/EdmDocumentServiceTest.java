@@ -52,8 +52,8 @@ public class EdmDocumentServiceTest {
      */
     @After
     public void tearDown() throws Exception {
-        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocuments();
+        elasticsearchTestingHelper.flushIndexes();
     }
 
     private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
@@ -216,7 +216,7 @@ public class EdmDocumentServiceTest {
         document.setNodePath("trololo/2014/echeancier 2014");
         document = edmDocumentService.save(document);
 
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndexes();
 
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("echeancier trololo 2014"));
 

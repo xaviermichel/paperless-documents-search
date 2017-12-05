@@ -24,7 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Document(indexName = "documents", type = "document_file")
+@Document(indexName = "document_file", type = "document_file")
 public class EdmDocumentFile implements Serializable {
 
     private String id;

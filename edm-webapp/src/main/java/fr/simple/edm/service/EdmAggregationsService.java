@@ -80,7 +80,7 @@ public class EdmAggregationsService {
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(FILE_EXTENSIONS_MAX_COUNT);
 
         try {
-            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
@@ -114,7 +114,7 @@ public class EdmAggregationsService {
         aggregationBuilder.addUnboundedFrom("last_year", "now-12M/M");
 
         try {
-            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();
@@ -146,7 +146,7 @@ public class EdmAggregationsService {
 
         try {
             // execute
-            SearchResponse response = elasticsearchClient.prepareSearch("documents").setTypes("document_file")
+            SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
                     .setQuery(query)
                     .addAggregation(aggregationBuilder)
                     .execute().actionGet();

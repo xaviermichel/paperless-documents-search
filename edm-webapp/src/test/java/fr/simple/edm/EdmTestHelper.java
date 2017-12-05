@@ -27,7 +27,7 @@ public class EdmTestHelper {
     private EdmDocumentFile docForOcr;
 
     public void destroyAndRebuildElasticContent() throws Exception {
-        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocuments();
 
         docBac = new EdmDocumentFile();
         docBac.setName("Diplome du bac");
@@ -67,7 +67,7 @@ public class EdmTestHelper {
         docLatex = edmDocumentService.save(docLatex);
         docForOcr = edmDocumentService.save(docForOcr);
 
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndexes();
     }
 
 }

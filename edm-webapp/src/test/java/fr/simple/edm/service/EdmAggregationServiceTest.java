@@ -56,8 +56,8 @@ public class EdmAggregationServiceTest {
      */
     @After
     public void tearDown() throws Exception {
-        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocuments();
+        elasticsearchTestingHelper.flushIndexes();
     }
 
     private List<String> extractAggregationValueFromAggregationWrapper(List<EdmAggregationItem> edmAggregationItems) {
@@ -92,7 +92,7 @@ public class EdmAggregationServiceTest {
         document.setNodePath("without/name/echeancier/document");
         document = edmDocumentService.save(document);
 
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndexes();
 
         List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("echea");
 

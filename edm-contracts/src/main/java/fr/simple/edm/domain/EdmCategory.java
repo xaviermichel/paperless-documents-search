@@ -19,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Document(indexName = "documents", type = "category")
+@Document(indexName = "category", type = "category")
 public class EdmCategory implements Serializable {
 
     private String id;

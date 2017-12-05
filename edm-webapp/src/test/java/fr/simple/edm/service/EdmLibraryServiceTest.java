@@ -36,14 +36,14 @@ public class EdmLibraryServiceTest {
      */
     @Before
     public void setUp() throws Exception {
-        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocuments();
+        elasticsearchTestingHelper.flushIndexes();
 
         EdmCategory category = new EdmCategory();
         category.setName("My category");
         edmCategory = edmCategoryService.save(category);
 
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.flushIndexes();
     }
 
     /**
@@ -51,8 +51,8 @@ public class EdmLibraryServiceTest {
      */
     @After
     public void tearDown() throws Exception {
-        elasticsearchTestingHelper.deleteAllDocumentsForIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
-        elasticsearchTestingHelper.flushIndex(ElasticsearchTestingHelper.ES_INDEX_DOCUMENTS);
+        elasticsearchTestingHelper.deleteAllDocuments();
+        elasticsearchTestingHelper.flushIndexes();
     }
 
     @Test

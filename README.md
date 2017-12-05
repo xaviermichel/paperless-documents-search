@@ -33,7 +33,7 @@ Quick start
 You can find the [latest release here](https://github.com/xaviermichel/paperless-documents-search/releases).
 
 1. Download the zip, extract it and launch `start.bat` to start application !
-2. Start an elasticsearch (version 2.0.2) node (cluster `simple_data_search`) with plugin [`mapper-attachments`](https://github.com/elastic/elasticsearch-mapper-attachments) (version 3.0.4).
+2. Start an elasticsearch (version 5) node (cluster `simple_data_search`).
 3. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
 4. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
@@ -93,8 +93,9 @@ If you can't just take a look to the configuration (`automatic_document_managmen
 Similar Projects
 ----------------
 
-You can also take a look at https://github.com/danielquinn/paperless
-
+You can also take a look at :
+- https://github.com/danielquinn/paperless
+- https://github.com/dadoonet/fscrawler
 
 Other
 -----

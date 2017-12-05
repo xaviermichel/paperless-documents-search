@@ -2,6 +2,9 @@ package fr.simple.edm;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +13,15 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "edm.web.resources")
 public class TemplateResourcesConfig {
 
-    private boolean concated;
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean concated;
 
-    private boolean minified;
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean minified;
 
     public boolean isConcated() {
         return concated;

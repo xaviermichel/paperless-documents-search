@@ -1,4 +1,4 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:5.5.2
+FROM docker.elastic.co/elasticsearch/elasticsearch:5.6.4
 
 ENV ES_HOST http://127.0.0.1:9200
 

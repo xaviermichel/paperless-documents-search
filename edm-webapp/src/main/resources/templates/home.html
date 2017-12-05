@@ -1,40 +1,40 @@
 <html ng-app="edmApp">
 
-<head th:with="dotMin=(${minified} ? '.min' : '') , min=(${minified} ? 'min' : '')">
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title th:text="${app_name}">Simple EDM</title>
 
     <!-- Scripts -->
-    <script th:src="@{'/resources/bower_inc/jquery/dist/jquery' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/angular/angular' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/angular-route/angular-route' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/angular-resource/angular-resource' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/angular-animate/angular-animate' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/bootstrap/dist/js/bootstrap' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/moment/' + ${min} + '/moment' + ${dotMin} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/jquery/dist/jquery' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular/angular' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-route/angular-route' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-resource/angular-resource' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/angular-animate/angular-animate' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap/dist/js/bootstrap' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/moment/' + (${minified} ? 'min' : '') + '/moment' + (${minified} ? '.min' : '') + '.js'}"></script>
     <script th:src="@{'/resources/bower_inc/moment/locale/fr.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/ripples' + ${dotMin} + '.js'}"></script>
-    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/material' + ${dotMin} + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/ripples' + (${minified} ? '.min' : '') + '.js'}"></script>
+    <script th:src="@{'/resources/bower_inc/bootstrap-material-design/dist/js/material' + (${minified} ? '.min' : '')+ '.js'}"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap/dist/css/bootstrap' + ${dotMin} + '.css'}" />
-    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/roboto' + ${dotMin} + '.css'}" />
-    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/material' + ${dotMin} + '.css'}" />
-    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/ripples' + ${dotMin} + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap/dist/css/bootstrap' + (${minified} ? '.min' : '') + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/roboto' + (${minified} ? '.min' : '')+ '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/material' + (${minified} ? '.min' : '') + '.css'}" />
+    <link rel="stylesheet" th:href="@{'/resources/bower_inc/bootstrap-material-design/dist/css/ripples' + (${minified} ? '.min' : '') + '.css'}" />
 
     <!-- Production resources -->
     <span th:if="${concated}" th:remove="tag">
-		<link rel="stylesheet" th:href="@{'/resources/build/css/production' + ${dotMin} + '.css'}"/>
-		<script th:src="@{'/resources/build/js/production' + ${dotMin} + '.js'}"></script>
+		<link rel="stylesheet" th:href="@{'/resources/build/css/production' + (${minified} ? '.min' : '') + '.css'}"/>
+		<script th:src="@{'/resources/build/js/production' + (${minified} ? '.min' : '') + '.js'}"></script>
     </span>
 
     <!-- Development resources -->
     <span th:unless="${concated}" th:remove="tag">
 		<link rel="stylesheet" href="/resources/css/style.css"/>
 		<link rel="stylesheet" href="/resources/css/icons-sprite.css"/>
-	
+
 		<script src="/resources/js/application.js"></script>
 		<script src="/resources/js/controllers.document.js"></script>
 		<script src="/resources/js/services.js"></script>

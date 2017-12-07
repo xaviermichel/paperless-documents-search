@@ -8,7 +8,7 @@ angular.module('edmApp')
             $scope.autocompleteDocumentList = [];
             $scope.topTerms = [];
             $scope.aggregations = {
-                date: [],
+                fileDate: [],
                 fileExtension: []
             };
 

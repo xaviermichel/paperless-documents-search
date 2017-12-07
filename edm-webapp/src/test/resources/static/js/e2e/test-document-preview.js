@@ -8,7 +8,7 @@ casper.test.begin('Search - document preview should contains all needed informat
         });
     });
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 1, 'There is one result in page');
         this.test.assertExists(".spec-search-result .spec-search-icon.icone-sprite.word");
         this.test.assertSelectorHasText('.spec-search-result .spec-search-title', 'demo_doc');

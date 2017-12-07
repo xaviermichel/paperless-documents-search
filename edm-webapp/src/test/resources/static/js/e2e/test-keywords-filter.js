@@ -8,13 +8,13 @@ casper.test.begin('Search - relative keywords makes filtering', 2, function suit
         });
     });
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 3);
     });
 
     casper.thenClick(x('//a[contains(text(),"' + 'doc' + '")]'), function() {});
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 1);
     });
 

@@ -31,11 +31,9 @@ public class ElasticsearchTestingHelper {
     private void deleteAllDocumentsForIndex(String index) throws Exception {
         if (ES_INDEX_DOCUMENT_FILE.equals(index)) {
             edmDocumentRepository.deleteAll();
-        }
-        else if (ES_INDEX_SOURCE.equals(index)) {
+        } else if (ES_INDEX_SOURCE.equals(index)) {
             edmSourceRepository.deleteAll();
-        }
-        else if (ES_INDEX_CATEGORY.equals(index)) {
+        } else if (ES_INDEX_CATEGORY.equals(index)) {
             edmCategoryRepository.deleteAll();
         }
     }

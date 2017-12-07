@@ -11,7 +11,7 @@
                 "type": "text",
                 "analyzer": "edm_analyzer_french",
                 "fields": {
-                    "name_autocomplete": {
+                    "name": {
                         "type": "text",
                         "analyzer": "edm_autocomplete"
                     }
@@ -21,9 +21,9 @@
                 "type": "text",
                 "analyzer": "edm_analyzer_french"
             },
-            "date": {
+            "fileDate": {
                 "type": "date",
-                "format": "dateOptionalTime"
+                "format": "year_month_day"
             },
             "fileExtension": {
                 "type": "keyword"
@@ -34,6 +34,9 @@
             "fileContent": {
                 "type": "text",
                 "analyzer": "edm_analyzer_french"
+            },
+            "binaryFileContent": {
+                "type": "binary"
             },
             "fileTitle": {
                 "type": "text",
@@ -50,13 +53,14 @@
                 "type": "text",
                 "analyzer": "edm_analyzer_french",
                 "fields": {
-                    "nodePath_autocomplete": {
+                    "autocomplete": {
                         "type": "text",
                         "analyzer": "edm_autocomplete"
                     },
-                    "nodePath_simple": {
+                    "simple": {
                         "type": "text",
-                        "analyzer": "simple"
+                        "analyzer": "simple",
+                        "fielddata": true
                     }
                 }
             }

@@ -94,7 +94,7 @@ public class FilesystemCrawler {
             } else {
                 // construct DTO
                 EdmDocumentFile document = new EdmDocumentFile();
-                document.setDate(new Date(file.lastModified()));
+                document.setFileDate(new Date(file.lastModified()));
                 document.setNodePath(filePath.replaceAll("\\\\", "/"));
                 document.setSourceId(sourceId);
                 document.setCategoryId(categoryId);

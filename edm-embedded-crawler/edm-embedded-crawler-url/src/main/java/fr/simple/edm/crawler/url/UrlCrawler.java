@@ -87,7 +87,7 @@ public class UrlCrawler {
 
         // construct DTO
         EdmDocumentFile document = new EdmDocumentFile();
-        document.setDate(new Date(file.lastModified()));
+        document.setFileDate(new Date(file.lastModified()));
         document.setNodePath(url);
         document.setName(url.replaceFirst("[.][^.]+$", ""));
         document.setSourceId(sourceId);

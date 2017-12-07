@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/host_mount_point
     environment:
-      - spring.data.elasticsearch.cluster-nodes=elastic:9300
+      - SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes": "elastic:9300" }
     networks:
       - web
       - back

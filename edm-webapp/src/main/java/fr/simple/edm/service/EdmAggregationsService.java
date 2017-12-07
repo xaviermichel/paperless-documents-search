@@ -18,6 +18,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class EdmAggregationsService {
     public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
         Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
         aggregations.put("fileExtension", getAggregationExtensions(pattern));
-        aggregations.put("date", getAggregationDate(pattern));
+        aggregations.put("fileDate", getAggregationDate(pattern));
         return aggregations;
     }
 
@@ -69,7 +70,7 @@ public class EdmAggregationsService {
     public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR)
-                .field("name.name_autocomplete").field("nodePath.nodePath_autocomplete")
+                .field("name.name").field("nodePath.autocomplete")
         );
         log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
         return createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList());
@@ -102,7 +103,7 @@ public class EdmAggregationsService {
 
     private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
-        DateRangeAggregationBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("date");
+        DateRangeAggregationBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("fileDate");
 
         // last month
         aggregationBuilder.addUnboundedFrom("last_month", "now-1M/M");
@@ -134,6 +135,7 @@ public class EdmAggregationsService {
         return new ArrayList<>();
     }
 
+
     public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
         // the query
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
@@ -141,9 +143,13 @@ public class EdmAggregationsService {
         String filesExtensions = getAggregationExtensions(null).stream()
                 .map(edmAggregationItem -> edmAggregationItem.getKey())
                 .collect(joining("|"));
+        String[] excludedValues = (edmTopTermsExlusionRegex + "|" + filesExtensions).split("|");
+        log.warn("exclude = {}", edmTopTermsExlusionRegex + "|" + filesExtensions);
 
-        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath").field("nodePath.nodePath_simple").executionHint(edmTopTermsExlusionRegex + "|" + filesExtensions).size(TOP_TERMS_MAX_COUNT);
-
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath")
+                                                            .field("nodePath.simple")
+                                                            .includeExclude(new IncludeExclude(null, excludedValues))
+                                                            .size(TOP_TERMS_MAX_COUNT);
         try {
             // execute
             SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")

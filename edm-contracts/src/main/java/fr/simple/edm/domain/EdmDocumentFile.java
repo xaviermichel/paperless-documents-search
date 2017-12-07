@@ -5,6 +5,9 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.simple.edm.annotation.EdmSearchable;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -55,7 +58,8 @@ public class EdmDocumentFile implements Serializable {
     @EdmSearchable
     private String fileKeywords;
 
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date fileDate;
 
     @NotNull
     @EdmSearchable

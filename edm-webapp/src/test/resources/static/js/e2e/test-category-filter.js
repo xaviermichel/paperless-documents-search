@@ -8,13 +8,13 @@ casper.test.begin('Search - category filter should works', 2, function suite(tes
         });
     });
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 3);
     });
 
     casper.thenClick('form[name=input_category] input[name=demo_category_2]', function() {});
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 2);
     });
 

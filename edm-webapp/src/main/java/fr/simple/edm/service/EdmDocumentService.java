@@ -11,22 +11,19 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchResultMapper;
-import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
-import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -46,8 +43,7 @@ public class EdmDocumentService {
     private EdmDocumentRepository edmDocumentRepository;
 
     @Inject
-    private ElasticsearchOperations elasticsearchTemplate;
-
+    private Client elasticsearchClient;
 
     public EdmDocumentFile findOne(String id) {
         return edmDocumentRepository.findById(id).get();
@@ -61,6 +57,9 @@ public class EdmDocumentService {
 
         // read the file content
         edmOcrDocExtractor.extractFileContent(edmDocument);
+
+        // force not index of binary content
+        edmDocument.setBinaryFileContent(null);
 
         edmDocument = edmDocumentRepository.save(edmDocument);
         return edmDocument;
@@ -105,61 +104,59 @@ public class EdmDocumentService {
         QueryBuilder qb = getEdmQueryForPattern(pattern);
         log.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
-        // custom query for highlight
-        String preTag = "<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
-        String postTag = "</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">";
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(qb)
-                .withHighlightFields(
-                        new HighlightBuilder.Field("name").preTags(preTag).postTags(postTag),
-                        new HighlightBuilder.Field("fileContent").preTags(preTag).postTags(postTag),
-                        new HighlightBuilder.Field("nodePath").preTags(preTag).postTags(postTag)
-                )
-                .withSort(new ScoreSortBuilder())
-                .build();
+        HighlightBuilder highlightBuilder = new HighlightBuilder()
+                .preTags("<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
+                .postTags("</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
+                .field("name").field("fileContent").field("nodePath");
 
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
         try {
-            // Highlight result
-            elasticsearchTemplate.queryForPage(searchQuery, EdmDocumentFile.class, new SearchResultMapper() {
-                @Override
-                public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
-                    List<EdmDocumentFile> chunk = new ArrayList<>();
+            SearchResponse searchResponse = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
+                    .setQuery(qb)
+                    .highlighter(highlightBuilder)
+                    .execute().actionGet();
 
-                    searchResult.setTookTime(response.getTookInMillis());
-                    searchResult.setTotalHitsCount(response.getHits().getTotalHits());
+            searchResult.setTookTime(searchResponse.getTookInMillis());
+            searchResult.setTotalHitsCount(searchResponse.getHits().getTotalHits());
 
-                    for (SearchHit searchHit : response.getHits()) {
-                        if (response.getHits().getHits().length <= 0) {
-                            return new AggregatedPageImpl<T>((List<T>) chunk);
-                        }
+            SearchHits hits = searchResponse.getHits();
+            for (SearchHit searchHit : hits.getHits()) {
+                EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
 
-                        EdmDocumentSearchResult edmDocumentSearchResult = new EdmDocumentSearchResult();
+                // fill every fields
+                EdmDocumentFile doc = edmDocumentRepository.findById(searchHit.getId()).get();
+                edmDocumentSearchResult.setEdmDocument(doc);
 
-                        // fill every fields
-                        EdmDocumentFile doc = edmDocumentRepository.findById(searchHit.getId()).get();
-                        edmDocumentSearchResult.setEdmDocument(doc);
+                // add custom highlighted fields
+                Map<String, HighlightField> highlightFields = searchHit.getHighlightFields();
 
-                        // override custom elements, see
-                        // https://groups.google.com/forum/#!topic/spring-data-elasticsearch-devs/se3yCfVnRiE
-                        if (searchHit.getHighlightFields().get("name") != null) {
-                            edmDocumentSearchResult.setHighlightedName(searchHit.getHighlightFields().get("name").fragments()[0].toString());
-                        }
-                        if (searchHit.getHighlightFields().get("fileContent") != null) {
-                            edmDocumentSearchResult.setHighlightedFileContentMatching(searchHit.getHighlightFields().get("fileContent").fragments()[0].toString());
-                        }
-                        if (searchHit.getHighlightFields().get("nodePath") != null) {
-                            edmDocumentSearchResult.setHighlightedNodePath(searchHit.getHighlightFields().get("nodePath").fragments()[0].toString());
-                        }
-
-                        searchResult.add(edmDocumentSearchResult);
-                        chunk.add(doc);
-                    }
-                    return new AggregatedPageImpl<T>((List<T>) chunk);
+                if (highlightFields.get("name") != null) {
+                    edmDocumentSearchResult.setHighlightedName(
+                            Arrays.stream(highlightFields.get("name").fragments())
+                                    .map(t -> t.string())
+                                    .collect(Collectors.joining("\n\n"))
+                    );
                 }
-            });
 
+                if (highlightFields.get("fileContent") != null) {
+                    edmDocumentSearchResult.setHighlightedFileContentMatching(
+                            Arrays.stream(highlightFields.get("fileContent").fragments())
+                                    .map(t -> t.string())
+                                    .collect(Collectors.joining("\n\n"))
+                    );
+                }
+
+                if (highlightFields.get("nodePath") != null) {
+                    edmDocumentSearchResult.setHighlightedNodePath(
+                            Arrays.stream(highlightFields.get("nodePath").fragments())
+                                    .map(t -> t.string())
+                                    .collect(Collectors.joining("\n\n"))
+                    );
+                }
+
+                searchResult.add(edmDocumentSearchResult);
+            }
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit query, empty result ; may failed to parse query ({}, more log to debug it !) : {}", e.getMessage(), pattern);
         }

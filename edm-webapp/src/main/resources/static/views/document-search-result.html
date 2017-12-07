@@ -39,7 +39,7 @@
 	        <small>
 	        	&mdash;
                 <span class="spec-search-date">
-		          {{searchResult.edmDocument.date | date : 'dd/MM/yyyy'}}
+		          {{searchResult.edmDocument.fileDate | date : 'dd/MM/yyyy'}}
                 </span> &mdash;
         <span class="spec-search-label label" ng-style="{
 		        	'color': findCategoryById(searchResult.edmDocument.categoryId).color || '#FFF',

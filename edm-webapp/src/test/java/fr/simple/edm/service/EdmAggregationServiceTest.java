@@ -90,8 +90,9 @@ public class EdmAggregationServiceTest {
         EdmDocumentFile document = new EdmDocumentFile();
         document.setName("document without name");
         document.setNodePath("without/name/echeancier/document");
-        document = edmDocumentService.save(document);
 
+        elasticsearchTestingHelper.deleteAllDocuments();
+        document = edmDocumentService.save(document);
         elasticsearchTestingHelper.flushIndexes();
 
         List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("echea");
@@ -103,6 +104,24 @@ public class EdmAggregationServiceTest {
         assertThat(docs).isNotNull();
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
+    }
+
+    @Test
+    public void suggestionShouldSuggestSomething() throws Exception {
+        EdmDocumentFile document = new EdmDocumentFile();
+        document.setName("some data interessant");
+        document.setNodePath("without/name/echeancier/docs/a_doc.pdf");
+        document.setFileExtension("pdf");
+
+        elasticsearchTestingHelper.deleteAllDocuments();
+        document = edmDocumentService.save(document);
+        elasticsearchTestingHelper.flushIndexes();
+
+        List<String> topTerms = extractAggregationValueFromAggregationWrapper(edmAggregationsService.getTopTerms(null));
+
+        assertThat(topTerms).isNotNull();
+        assertThat(topTerms).contains("echeancier");
+        assertThat(topTerms).doesNotContain("interessant", "data");
     }
 
     @Test

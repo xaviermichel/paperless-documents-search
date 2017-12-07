@@ -8,13 +8,13 @@ casper.test.begin('Search - file type filter should works', 2, function suite(te
         });
     });
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 3);
     });
 
     casper.thenClick('form[name=input_fileExtension] input[name=pdf]', function() {});
 
-    casper.wait(1000, function() {
+    casper.wait(3000, function() {
         this.test.assertElementCount('a.lead', 2);
     });
 

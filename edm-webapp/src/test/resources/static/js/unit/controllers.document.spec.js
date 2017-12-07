@@ -6,7 +6,7 @@ var localEdmDocument = {
     fileExtension: "pdf",
     fileContentType: "application/pdf",
     temporaryFileToken: null,
-    date: 1431006862000,
+    fileDate: 1431006862000,
     nodePath: "/tmp/impots_accuseReception.pdf"
 };
 
@@ -18,7 +18,7 @@ var remoteEdmDocument = {
     fileExtension: "pdf",
     fileContentType: "application/pdf",
     temporaryFileToken: null,
-    date: 1431006862000,
+    fileDate: 1431006862000,
     nodePath: "http://mydocs.lol/tmp/impots_accuseReception.pdf"
 };
 

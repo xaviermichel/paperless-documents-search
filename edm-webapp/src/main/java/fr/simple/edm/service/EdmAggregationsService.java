@@ -144,7 +144,6 @@ public class EdmAggregationsService {
                 .map(edmAggregationItem -> edmAggregationItem.getKey())
                 .collect(joining("|"));
         String[] excludedValues = (edmTopTermsExlusionRegex + "|" + filesExtensions).split("|");
-        log.warn("exclude = {}", edmTopTermsExlusionRegex + "|" + filesExtensions);
 
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath")
                                                             .field("nodePath.simple")

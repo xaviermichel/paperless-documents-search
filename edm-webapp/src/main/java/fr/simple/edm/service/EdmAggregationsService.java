@@ -4,6 +4,7 @@ import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.automaton.RegExp;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -143,11 +144,10 @@ public class EdmAggregationsService {
         String filesExtensions = getAggregationExtensions(null).stream()
                 .map(edmAggregationItem -> edmAggregationItem.getKey())
                 .collect(joining("|"));
-        String[] excludedValues = (edmTopTermsExlusionRegex + "|" + filesExtensions).split("|");
 
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath")
                                                             .field("nodePath.simple")
-                                                            .includeExclude(new IncludeExclude(null, excludedValues))
+                                                            .includeExclude(new IncludeExclude(null, new RegExp(edmTopTermsExlusionRegex + "|" + filesExtensions)))
                                                             .size(TOP_TERMS_MAX_COUNT);
         try {
             // execute

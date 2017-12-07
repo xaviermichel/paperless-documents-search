@@ -270,6 +270,8 @@
                 <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
             </dependency>
 
+            <!-- OCR -->
+
             <dependency>
                 <groupId>org.apache.tika</groupId>
                 <artifactId>tika-parsers</artifactId>
@@ -287,6 +289,21 @@
                         <artifactId>cxf-rt-rs-client</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.levigo.jbig2</groupId>
+                <artifactId>levigo-jbig2-imageio</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.jai-imageio</groupId>
+                <artifactId>jai-imageio-core</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.jai-imageio</groupId>
+                <artifactId>jai-imageio-jpeg2000</artifactId>
             </dependency>
 
             <!-- test -->

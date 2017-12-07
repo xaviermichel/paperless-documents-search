@@ -109,7 +109,7 @@ public class EdmAggregationServiceTest {
     @Test
     public void suggestionShouldSuggestSomething() throws Exception {
         EdmDocumentFile document = new EdmDocumentFile();
-        document.setName("some data interessant");
+        document.setName("la data interessant");
         document.setNodePath("without/name/echeancier/docs/a_doc.pdf");
         document.setFileExtension("pdf");
 
@@ -121,7 +121,7 @@ public class EdmAggregationServiceTest {
 
         assertThat(topTerms).isNotNull();
         assertThat(topTerms).contains("echeancier");
-        assertThat(topTerms).doesNotContain("interessant", "data");
+        assertThat(topTerms).doesNotContain("interessant", "data", "la", "pdf");
     }
 
     @Test

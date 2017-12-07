@@ -21,14 +21,13 @@ services:
     volumes:
       - .:/host_mount_point
     environment:
-      - SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes": "elastic:9300" }
+      - SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes":"elastic:9300"}
     networks:
       - web
       - back
 
   elastic:
     image: paperless-documents-search-db
-    command: -Dsecurity.manager.enabled=false -Ddiscovery.zen.ping.unicast.hosts=elastic
     ports:
       - 9200
       - 9300

@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/xaviermichel/paperless-documents-search.png?branch=master)](https://travis-ci.org/xaviermichel/paperless-documents-search)
+[![Build Status](https://travis-ci.org/xaviermichel/paperless-documents-search.png?branch=develop)](https://travis-ci.org/xaviermichel/paperless-documents-search)
 
 Paperless Documents Search
 ==========================

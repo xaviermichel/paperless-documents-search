@@ -204,7 +204,7 @@ public class EdmDocumentService {
             Optional<EdmDocumentFile> bestEdmDocumentFileCandidate = Arrays.stream(response.getHits().getHits())
                 .map(hit -> hit.getId())
                 .map(id -> edmDocumentRepository.findById(id))
-                .findFirst().get();
+                .findFirst().orElse(Optional.empty());
 
             if (!bestEdmDocumentFileCandidate.isPresent()) {
                 log.warn("No suggestion for the given file ({})", file.getName());

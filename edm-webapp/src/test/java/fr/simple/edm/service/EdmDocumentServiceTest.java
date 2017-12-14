@@ -252,8 +252,8 @@ public class EdmDocumentServiceTest {
 
     @Test
     @Ignore
-    public void shouldReturnTheRightDocumentForATextFileToAutoTidy() throws Exception {
-        MockMultipartFile dummyFile = new MockMultipartFile("file", "filename.txt", "text/plain", Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill.pdf.txt").toURI())));
+    public void shouldReturnTheRightDocumentForAFileToAutoTidy() throws Exception {
+        MockMultipartFile dummyFile = new MockMultipartFile("file", "some_bill_2.pdf", "application/pdf", Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill_2.pdf").toURI())));
 
         EdmAutoTidySuggestion edmAutoTidySuggestion = edmDocumentService.getTidySuggestions(dummyFile);
 

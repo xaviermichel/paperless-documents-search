@@ -7,7 +7,7 @@ services:
     links:
       - webapp
     ports:
-      - 8080:80
+      - 8054:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -15,18 +15,18 @@ services:
 
   webapp:
     image: paperless-documents-search-webapp
-    entrypoint: java -Dspring.profiles.active=local -jar /webapp/paperless-documents-search-webapp.jar
+    entrypoint: java -Dspring.profiles.active=prod -jar /webapp/paperless-documents-search-webapp.jar
     depends_on:
-      - elastic
+      - elasticsearch
     volumes:
-      - .:/host_mount_point
+      - /media/documents/Documents/:/media/documents:ro
     environment:
-      - SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes":"elastic:9300"}
+      - SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes":"elasticsearch:9300"}
     networks:
       - web
       - back
 
-  elastic:
+  elasticsearch:
     image: paperless-documents-search-db
     ports:
       - 9200

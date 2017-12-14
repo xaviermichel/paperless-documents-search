@@ -34,8 +34,8 @@ public class EdmSourceService {
 
     public EdmSource findOneByName(String sourceName) {
         return edmSourceRepository.findByName(sourceName).stream()
-                .findFirst()
-                .orElse(new EdmSource());
+            .findFirst()
+            .orElse(new EdmSource());
     }
 
     public List<EdmSource> findAll() {

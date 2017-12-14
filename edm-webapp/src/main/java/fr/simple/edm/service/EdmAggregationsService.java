@@ -71,7 +71,7 @@ public class EdmAggregationsService {
     public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR)
-                .field("name.name").field("nodePath.autocomplete")
+            .field("name.name").field("nodePath.autocomplete")
         );
         log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
         return createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList());
@@ -83,17 +83,17 @@ public class EdmAggregationsService {
 
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
-                    .setQuery(query)
-                    .addAggregation(aggregationBuilder)
-                    .execute().actionGet();
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
 
             Terms terms = response.getAggregations().get("agg_fileExtension");
 
             return terms.getBuckets().stream()
-                    .map(
-                            bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
-                    )
-                    .collect(toList());
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
@@ -117,17 +117,17 @@ public class EdmAggregationsService {
 
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
-                    .setQuery(query)
-                    .addAggregation(aggregationBuilder)
-                    .execute().actionGet();
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
 
             InternalDateRange buckets = response.getAggregations().get("agg_date");
 
             return buckets.getBuckets().stream()
-                    .map(
-                            bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
-                    )
-                    .collect(toList());
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
@@ -142,27 +142,27 @@ public class EdmAggregationsService {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
         String filesExtensions = getAggregationExtensions(null).stream()
-                .map(edmAggregationItem -> edmAggregationItem.getKey())
-                .collect(joining("|"));
+            .map(edmAggregationItem -> edmAggregationItem.getKey())
+            .collect(joining("|"));
 
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_nodePath")
-                                                            .field("nodePath.simple")
-                                                            .includeExclude(new IncludeExclude(null, new RegExp(edmTopTermsExlusionRegex + "|" + filesExtensions)))
-                                                            .size(TOP_TERMS_MAX_COUNT);
+            .field("nodePath.simple")
+            .includeExclude(new IncludeExclude(null, new RegExp(edmTopTermsExlusionRegex + "|" + filesExtensions)))
+            .size(TOP_TERMS_MAX_COUNT);
         try {
             // execute
             SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
-                    .setQuery(query)
-                    .addAggregation(aggregationBuilder)
-                    .execute().actionGet();
+                .setQuery(query)
+                .addAggregation(aggregationBuilder)
+                .execute().actionGet();
 
             Terms terms = response.getAggregations().get("agg_nodePath");
 
             return terms.getBuckets().stream()
-                    .map(
-                            bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
-                    )
-                    .collect(toList());
+                .map(
+                    bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
+                )
+                .collect(toList());
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);

@@ -40,7 +40,7 @@ public class EdmCategoryService {
 
     public EdmCategory findOneByName(String sourceName) {
         return edmCategoryRepository.findByName(sourceName).stream()
-                .findFirst()
-                .orElse(new EdmCategory());
+            .findFirst()
+            .orElse(new EdmCategory());
     }
 }

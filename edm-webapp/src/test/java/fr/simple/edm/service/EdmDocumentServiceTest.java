@@ -3,20 +3,25 @@ package fr.simple.edm.service;
 import fr.simple.edm.Application;
 import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
+import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,8 +63,8 @@ public class EdmDocumentServiceTest {
 
     private List<EdmDocumentFile> extractDocumentListFromSearchWrapper(EdmDocumentSearchResultWrapper edmDocumentSearchResultWrapper) {
         return edmDocumentSearchResultWrapper.getSearchResults().stream()
-                .map(EdmDocumentSearchResult::getEdmDocument)
-                .collect(Collectors.toList());
+            .map(EdmDocumentSearchResult::getEdmDocument)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -70,7 +75,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("brevet"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBrevet()
+            edmTestHelper.getDocBrevet()
         });
 
         assertThat(docs).isNotNull();
@@ -86,7 +91,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("brevets"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBrevet()
+            edmTestHelper.getDocBrevet()
         });
 
         assertThat(docs).isNotNull();
@@ -103,7 +108,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplômes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBac()
+            edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -119,7 +124,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplomes"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBac()
+            edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -135,7 +140,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplôme bac"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBac()
+            edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -151,7 +156,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("diplôme    bac"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBac()
+            edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -167,7 +172,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("latex"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocLatex()
+            edmTestHelper.getDocLatex()
         });
 
         assertThat(docs).isNotNull();
@@ -183,7 +188,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("titouan"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocLatex()
+            edmTestHelper.getDocLatex()
         });
 
         assertThat(docs).isNotNull();
@@ -200,7 +205,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("paye février"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBulletinSalaire()
+            edmTestHelper.getDocBulletinSalaire()
         });
 
         assertThat(docs).isNotNull();
@@ -221,7 +226,7 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("echeancier trololo 2014"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                document
+            document
         });
 
         assertThat(docs).isNotNull();
@@ -237,11 +242,23 @@ public class EdmDocumentServiceTest {
         List<EdmDocumentFile> docs = extractDocumentListFromSearchWrapper(edmDocumentService.search("bonjour"));
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocForOcr()
+            edmTestHelper.getDocForOcr(), edmTestHelper.getDocSomeBill()
         });
 
         assertThat(docs).isNotNull();
         assertThat(docs.size()).isEqualTo(attemptedResult.size());
         assertThat(docs).containsAll(attemptedResult);
+    }
+
+    @Test
+    @Ignore
+    public void shouldReturnTheRightDocumentForATextFileToAutoTidy() throws Exception {
+        MockMultipartFile dummyFile = new MockMultipartFile("file", "filename.txt", "text/plain", Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill.pdf.txt").toURI())));
+
+        EdmAutoTidySuggestion edmAutoTidySuggestion = edmDocumentService.getTidySuggestions(dummyFile);
+
+        EdmAutoTidySuggestion expectedEdmAutoTidySuggestion = EdmAutoTidySuggestion.builder().suggestedExtension("pdf").suggestedFileLocation("/documents/").suggestedFileName("some_bill").originalNodePath("/documents/some_bill.pdf").build();
+        assertThat(edmAutoTidySuggestion).isNotNull();
+        assertThat(edmAutoTidySuggestion).isEqualTo(expectedEdmAutoTidySuggestion);
     }
 }

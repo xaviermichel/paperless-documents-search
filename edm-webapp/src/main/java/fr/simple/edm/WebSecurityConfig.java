@@ -34,13 +34,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
         log.info("configuring http -> '/crawl/**' have to be 'CRAWLER'");
         http
-                .authorizeRequests()
-                .antMatchers("/crawl/**")
-                .hasAnyRole("CRAWLER")
-                .anyRequest()
-                .permitAll()
-                .and() // very important for curl !
-                .httpBasic()
+            .authorizeRequests()
+            .antMatchers("/crawl/**")
+            .hasAnyRole("CRAWLER")
+            .anyRequest()
+            .permitAll()
+            .and() // very important for curl !
+            .httpBasic()
         ;
     }
 
@@ -52,8 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
         log.info("configuring auth : adding user {}", edmCrawlerLogin);
         auth
-                .inMemoryAuthentication()
-                .withUser(edmCrawlerLogin).password(edmCrawlerPassword).roles("CRAWLER")
+            .inMemoryAuthentication()
+            .withUser(edmCrawlerLogin).password(edmCrawlerPassword).roles("CRAWLER")
         ;
     }
 }

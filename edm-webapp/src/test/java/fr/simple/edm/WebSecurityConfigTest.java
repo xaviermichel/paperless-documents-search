@@ -21,21 +21,21 @@ public class WebSecurityConfigTest {
     @Test
     public void crawlerLoginShouldBeNullByDefault() {
         Object defaultLogin = ReflectionTestUtils.getField(webSecurityConfig,
-                "edmCrawlerLogin");
+            "edmCrawlerLogin");
         assertThat(defaultLogin).isNull();
     }
 
     @Test
     public void crawlerPasswordShouldBeNullByDefault() {
         Object defaultPassword = ReflectionTestUtils.getField(
-                webSecurityConfig, "edmCrawlerPassword");
+            webSecurityConfig, "edmCrawlerPassword");
         assertThat(defaultPassword).isNull();
     }
 
     @Test
     public void authentificationShouldBeDisabledByDefault() {
         Boolean isAuthConfigured = ReflectionTestUtils.invokeMethod(
-                webSecurityConfig, "isAuthConfigured");
+            webSecurityConfig, "isAuthConfigured");
         assertThat(isAuthConfigured).isFalse();
     }
 

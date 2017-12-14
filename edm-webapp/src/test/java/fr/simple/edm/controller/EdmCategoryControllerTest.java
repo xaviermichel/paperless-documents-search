@@ -41,8 +41,8 @@ public class EdmCategoryControllerTest {
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+        MediaType.APPLICATION_JSON.getSubtype(),
+        Charset.forName("utf8"));
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
@@ -54,7 +54,7 @@ public class EdmCategoryControllerTest {
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
-                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
+            hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
         Assert.assertNotNull("the JSON message converter must not be null", this.mappingJackson2HttpMessageConverter);
     }
 
@@ -84,11 +84,11 @@ public class EdmCategoryControllerTest {
     @Test
     public void findAllShouldReturnsAllCategories() throws Exception {
         mockMvc.perform(get("/category").accept(contentType))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(category1.getId())))
-                .andExpect(jsonPath("$[1].id", is(category2.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id", is(category1.getId())))
+            .andExpect(jsonPath("$[1].id", is(category2.getId())));
 
         verify(edmCategoryService, times(1)).findAll();
         verifyNoMoreInteractions(edmCategoryService);
@@ -100,7 +100,7 @@ public class EdmCategoryControllerTest {
         String categoryJson = json(category1);
 
         mockMvc.perform(post("/category").contentType(contentType).content(categoryJson))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(edmCategoryService, times(1)).save(category1);
         verifyNoMoreInteractions(edmCategoryService);
@@ -109,11 +109,11 @@ public class EdmCategoryControllerTest {
     @Test
     public void getCategoryByNameShouldCallCategoryService() throws Exception {
         mockMvc.perform(get("/category/name/" + category2.getName()).accept(contentType))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.id", is(category2.getId())))
-                .andExpect(jsonPath("$.name", is(category2.getName())))
-                .andExpect(jsonPath("$.description", is(category2.getDescription())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.id", is(category2.getId())))
+            .andExpect(jsonPath("$.name", is(category2.getName())))
+            .andExpect(jsonPath("$.description", is(category2.getDescription())));
 
         verify(edmCategoryService, times(1)).findOneByName(category2.getName());
         verifyNoMoreInteractions(edmCategoryService);

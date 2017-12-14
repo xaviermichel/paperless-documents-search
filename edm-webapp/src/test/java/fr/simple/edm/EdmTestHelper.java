@@ -25,6 +25,7 @@ public class EdmTestHelper {
     private EdmDocumentFile docBulletinSalaire;
     private EdmDocumentFile docLatex;
     private EdmDocumentFile docForOcr;
+    private EdmDocumentFile docSomeBill;
 
     public void destroyAndRebuildElasticContent() throws Exception {
         elasticsearchTestingHelper.deleteAllDocuments();
@@ -60,12 +61,19 @@ public class EdmTestHelper {
         docLatex.setFileExtension("png");
         docForOcr.setNodePath("/documents/hola.png");
 
+        docSomeBill = new EdmDocumentFile();
+        docSomeBill.setBinaryFileContent(Files.readAllBytes(Paths.get(this.getClass().getResource("/documents/some_bill.pdf").toURI())));
+        docSomeBill.setFileContentType("application/pdf");
+        docSomeBill.setFileExtension("pdf");
+        docSomeBill.setNodePath("/documents/some_bill.pdf");
+
         docBac = edmDocumentService.save(docBac);
         docBrevet = edmDocumentService.save(docBrevet);
         docBacNotes = edmDocumentService.save(docBacNotes);
         docBulletinSalaire = edmDocumentService.save(docBulletinSalaire);
         docLatex = edmDocumentService.save(docLatex);
         docForOcr = edmDocumentService.save(docForOcr);
+        docSomeBill = edmDocumentService.save(docSomeBill);
 
         elasticsearchTestingHelper.flushIndexes();
     }

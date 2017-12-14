@@ -1,6 +1,7 @@
 package fr.simple.edm.service;
 
 import fr.simple.edm.annotation.EdmSearchable;
+import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResult;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
@@ -8,22 +9,31 @@ import fr.simple.edm.repository.EdmDocumentRepository;
 import fr.simple.edm.tika.EdmOcrDocExtractor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import fr.simple.edm.util.AnonymizerUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchPhaseExecutionException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -80,10 +90,10 @@ public class EdmDocumentService {
         QueryStringQueryBuilder queryBuilder = QueryBuilders.queryStringQuery(pattern).defaultOperator(Operator.AND);
 
         List<String> searchableFieldsNames = Stream
-                .of(EdmDocumentFile.class.getDeclaredFields())
-                .filter(f -> f.isAnnotationPresent(EdmSearchable.class))
-                .map(f -> f.getName())
-                .collect(toList());
+            .of(EdmDocumentFile.class.getDeclaredFields())
+            .filter(f -> f.isAnnotationPresent(EdmSearchable.class))
+            .map(f -> f.getName())
+            .collect(toList());
 
         for (String fieldName : searchableFieldsNames) {
             queryBuilder = queryBuilder.field(fieldName);
@@ -105,17 +115,18 @@ public class EdmDocumentService {
         log.debug("The search query for pattern '{}' is : {}", pattern, qb);
 
         HighlightBuilder highlightBuilder = new HighlightBuilder()
-                .preTags("<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
-                .postTags("</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
-                .field("name").field("fileContent").field("nodePath");
+            .preTags("<" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
+            .postTags("</" + SEARCH_MATCH_HIGHLIGHT_HTML_TAG + ">")
+            .field("name").field("fileContent").field("nodePath");
+
 
         final EdmDocumentSearchResultWrapper searchResult = new EdmDocumentSearchResultWrapper();
 
         try {
             SearchResponse searchResponse = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
-                    .setQuery(qb)
-                    .highlighter(highlightBuilder)
-                    .execute().actionGet();
+                .setQuery(qb)
+                .highlighter(highlightBuilder)
+                .execute().actionGet();
 
             searchResult.setTookTime(searchResponse.getTookInMillis());
             searchResult.setTotalHitsCount(searchResponse.getHits().getTotalHits());
@@ -133,25 +144,25 @@ public class EdmDocumentService {
 
                 if (highlightFields.get("name") != null) {
                     edmDocumentSearchResult.setHighlightedName(
-                            Arrays.stream(highlightFields.get("name").fragments())
-                                    .map(t -> t.string())
-                                    .collect(Collectors.joining("\n\n"))
+                        Arrays.stream(highlightFields.get("name").fragments())
+                            .map(t -> t.string())
+                            .collect(Collectors.joining("\n\n"))
                     );
                 }
 
                 if (highlightFields.get("fileContent") != null) {
                     edmDocumentSearchResult.setHighlightedFileContentMatching(
-                            Arrays.stream(highlightFields.get("fileContent").fragments())
-                                    .map(t -> t.string())
-                                    .collect(Collectors.joining("\n\n"))
+                        Arrays.stream(highlightFields.get("fileContent").fragments())
+                            .map(t -> t.string())
+                            .collect(Collectors.joining("\n\n"))
                     );
                 }
 
                 if (highlightFields.get("nodePath") != null) {
                     edmDocumentSearchResult.setHighlightedNodePath(
-                            Arrays.stream(highlightFields.get("nodePath").fragments())
-                                    .map(t -> t.string())
-                                    .collect(Collectors.joining("\n\n"))
+                        Arrays.stream(highlightFields.get("nodePath").fragments())
+                            .map(t -> t.string())
+                            .collect(Collectors.joining("\n\n"))
                     );
                 }
 
@@ -164,4 +175,62 @@ public class EdmDocumentService {
         // return modified result with highlighting
         return searchResult;
     }
+
+    /*
+     * Call tika to decode binary content
+     */
+    private String getFileContentAsString(MultipartFile file) throws IOException {
+        EdmDocumentFile edmDocumentFile = new EdmDocumentFile();
+        edmDocumentFile.setBinaryFileContent(file.getBytes());
+        edmOcrDocExtractor.extractFileContent(edmDocumentFile);
+        return edmDocumentFile.getFileContent();
+    }
+
+    public EdmAutoTidySuggestion getTidySuggestions(MultipartFile file) {
+        try {
+            String fileContentAsText = getFileContentAsString(file);
+
+            MoreLikeThisQueryBuilder qb = QueryBuilders.moreLikeThisQuery(
+                new String[]{"fileContent"},
+                new String[]{fileContentAsText},
+                null
+            );
+
+            SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")
+                .setQuery(qb)
+                .execute().actionGet();
+
+            // Extract the best option of similar documents path
+            Optional<EdmDocumentFile> bestEdmDocumentFileCandidate = Arrays.stream(response.getHits().getHits())
+                .map(hit -> hit.getId())
+                .map(id -> edmDocumentRepository.findById(id))
+                .findFirst().get();
+
+            if (!bestEdmDocumentFileCandidate.isPresent()) {
+                log.warn("No suggestion for the given file ({})", file.getName());
+                return new EdmAutoTidySuggestion();
+            }
+
+            Optional<String> bestNodePath = Stream.of(bestEdmDocumentFileCandidate.get())
+                .map(doc -> doc.getNodePath())
+                .map(nodePath -> AnonymizerUtils.anonymizeYear(nodePath))
+                .map(nodePath -> AnonymizerUtils.anonymizeMonth(nodePath))
+                .map(nodePath -> AnonymizerUtils.unanonymizeMonth(nodePath))
+                .map(nodePath -> AnonymizerUtils.unanonymizeYear(nodePath))
+                .findFirst();
+
+            String fullCandidateNodePath = bestNodePath.get();
+            String candidateDestinationDir = "/" + FilenameUtils.getPath(fullCandidateNodePath);
+            String candidateDestinationFile = FilenameUtils.getBaseName(fullCandidateNodePath);
+            String candidateDestinationExtension = FilenameUtils.getExtension(fullCandidateNodePath);
+
+            return new EdmAutoTidySuggestion(candidateDestinationDir, candidateDestinationFile, candidateDestinationExtension, bestEdmDocumentFileCandidate.get().getNodePath());
+
+        } catch (SearchPhaseExecutionException | IOException e) {
+            log.warn("Failed to submit getTidySuggestions, empty result ; may failed to parse file input ({}, more log to debug it !) : {}", e.getMessage(), file.getName());
+        }
+
+        return new EdmAutoTidySuggestion();
+    }
 }
+

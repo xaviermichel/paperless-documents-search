@@ -62,8 +62,8 @@ public class EdmAggregationServiceTest {
 
     private List<String> extractAggregationValueFromAggregationWrapper(List<EdmAggregationItem> edmAggregationItems) {
         return edmAggregationItems.stream()
-                .map(EdmAggregationItem::getKey)
-                .collect(Collectors.toList());
+            .map(EdmAggregationItem::getKey)
+            .collect(Collectors.toList());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class EdmAggregationServiceTest {
         List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("dipl");
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                edmTestHelper.getDocBac()
+            edmTestHelper.getDocBac()
         });
 
         assertThat(docs).isNotNull();
@@ -98,7 +98,7 @@ public class EdmAggregationServiceTest {
         List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("echea");
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
-                document
+            document
         });
 
         assertThat(docs).isNotNull();
@@ -130,7 +130,7 @@ public class EdmAggregationServiceTest {
         List<String> extensions = extractAggregationValueFromAggregationWrapper(aggregations.get("fileExtension"));
 
         List<String> attemptedResult = Arrays.asList(new String[]{
-                "pdf"
+            "pdf"
         });
 
         assertThat(extensions.size()).isEqualTo(attemptedResult.size());

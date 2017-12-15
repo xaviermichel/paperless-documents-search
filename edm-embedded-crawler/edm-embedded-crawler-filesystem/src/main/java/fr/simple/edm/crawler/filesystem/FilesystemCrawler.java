@@ -18,47 +18,50 @@ public class FilesystemCrawler {
     private static final EdmConnector edmConnector = new EdmConnector();
 
     /**
-     *
-     * @param filePath
-     *            The path of the directory to crawl For example :
-     *            /media/raid/documents
-     * @param edmServerHttpAddress
-     *            The address of the EDM webapp HTTP address For example :
-     *            127.0.0.1:8053
-     * @param sourceName
-     *            A unique name for this source of documents For example :
-     * @param exclusionRegex
-     *            Documents names which match with this regex will be ignored
-     *
+     * @param filePath              The path of the directory to crawl For example :
+     *                              /media/raid/documents
+     * @param edmServerHttpAddress  The address of the EDM webapp HTTP address For example :
+     *                              127.0.0.1:8053
+     * @param sourceName            A unique name for this source of documents For example :
+     * @param exclusionRegex        Documents names which match with this regex will be ignored
+     * @param exploreSubdirectories Means the crawler should explore directories recursively
      * @throws IOException
      */
     public static void importFilesInDir(String filePath,
-            final String edmServerHttpAddress, final String sourceName,
-            final String categoryName, final String exclusionRegex)
-            throws IOException {
+                                        final String edmServerHttpAddress, final String sourceName,
+                                        final String categoryName, final String exclusionRegex, final boolean exploreSubdirectories)
+        throws IOException {
         // create parents
         String categoryId = edmConnector.getIdFromCategoryByCategoryName(
-                edmServerHttpAddress, categoryName);
+            edmServerHttpAddress, categoryName);
         String sourceId = edmConnector.getIdFromSourceBySourceName(
-                edmServerHttpAddress, sourceName, categoryId);
+            edmServerHttpAddress, sourceName, categoryId);
 
         // index
         log.debug("The source ID is {}", sourceId);
         edmConnector.notifyStartCrawling(edmServerHttpAddress, sourceName);
-        _importFilesInDir(filePath, edmServerHttpAddress, sourceId, categoryId, exclusionRegex);
+        _importFilesInDir(filePath, edmServerHttpAddress, sourceId, categoryId, exclusionRegex, exploreSubdirectories, true);
         edmConnector.notifyEndOfCrawling(edmServerHttpAddress, sourceName);
+    }
+
+    public static void importFilesInDir(String filePath,
+                                        final String edmServerHttpAddress, final String sourceName,
+                                        final String categoryName, final String exclusionRegex)
+        throws IOException {
+        importFilesInDir(filePath, edmServerHttpAddress, sourceName, categoryName, exclusionRegex, true);
     }
 
     public static boolean isExcluded(String filePath, String exclusionPattern) {
         boolean toExclude = !exclusionPattern.isEmpty()
-                && Pattern.compile(exclusionPattern).matcher(filePath).find();
+            && Pattern.compile(exclusionPattern).matcher(filePath).find();
         log.debug("Check if '{}' match with '{}' : {}", filePath,
-                exclusionPattern, toExclude);
+            exclusionPattern, toExclude);
         return toExclude;
     }
 
     private static void _importFilesInDir(String filePath, final String edmServerHttpAddress,
-            final String sourceId, final String categoryId,  final String exclusionRegex) {
+                                          final String sourceId, final String categoryId, final String exclusionRegex,
+                                          final boolean exploreSubdirectories, final boolean isRoot) {
 
         log.info("Embedded crawler looks for : " + filePath);
 
@@ -73,8 +76,12 @@ public class FilesystemCrawler {
         // recursive crawling
         if (file != null && file.isDirectory()) {
             log.debug("... is a directory !");
-            for (File subFile : file.listFiles()) {
-                _importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId, categoryId, exclusionRegex);
+            if (isRoot || exploreSubdirectories) {
+                for (File subFile : file.listFiles()) {
+                    _importFilesInDir(filePath + "/" + subFile.getName(), edmServerHttpAddress, sourceId, categoryId, exclusionRegex, exploreSubdirectories, false);
+                }
+            } else {
+                log.debug("I won't explore this directory");
             }
 
             // release memory
@@ -105,9 +112,8 @@ public class FilesystemCrawler {
                 try {
                     document.setFileContentType(Files.probeContentType(file.toPath()));
                     edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
-                }
-                catch (IOException e) {
-                    log.error("failed to save edm docuement '{}'", filePath, e);
+                } catch (IOException e) {
+                    log.error("failed to save edm document '{}'", filePath, e);
                 }
             }
 

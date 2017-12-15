@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 public class EdmDocumentSearchResult {
 
     private EdmDocumentFile edmDocument;
-    
+
     private String highlightedName;
-    
+
     private String highlightedDescription;
-    
+
     private String highlightedFileContentMatching;
-    
+
     private String highlightedNodePath;
-    
+
 }

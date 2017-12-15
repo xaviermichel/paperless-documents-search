@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +22,33 @@ import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmSource;
 
 public class EdmConnector {
+
+    @Data
+    @AllArgsConstructor
+    public static class EdmCategoryColor {
+        private String color;
+        private String BackgroundColor;
+    }
+
+    private static List<EdmCategoryColor> edmCategoryColor;
+
+    private static int currentEdmCategoryColorIndex = -1;
+
+    // https://material.io/guidelines/style/color.html#color-color-palette
+    static {
+        edmCategoryColor = new ArrayList<>();
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#9E9E9E")); // Gray
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#3F51B5")); // Indigo
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#ff5722")); // Orange
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#4CAF50")); // Green
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#CDDC39")); // Lime
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#FFEB3B")); // Yellow
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#03a9f4")); // Light Blue
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#673AB7")); // Deep Purple
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#f44336")); // Red
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#2196F3")); // Blue
+        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#795548")); // Brown
+    }
 
     public void saveEdmDocument(String server, EdmDocumentFile doc, File file) throws IOException {
         doc.setBinaryFileContent(Files.readAllBytes(file.toPath()));
@@ -43,7 +75,7 @@ public class EdmConnector {
         EdmSource result = restTemplate.getForObject(server + "/source/name/{sourceName}", EdmSource.class, sourceName);
 
         // if exits, nothing to do !
-        if (result.getId() != null && ! result.getId().isEmpty()) {
+        if (result.getId() != null && !result.getId().isEmpty()) {
             return result.getId();
         }
 
@@ -61,14 +93,17 @@ public class EdmConnector {
         EdmCategory result = restTemplate.getForObject(server + "/category/name/{categoryName}", EdmCategory.class, categoryName);
 
         // if exits, nothing to do !
-        if (result.getId() != null && ! result.getId().isEmpty()) {
+        if (result.getId() != null && !result.getId().isEmpty()) {
             return result.getId();
         }
 
         // else, we have to create it
+        currentEdmCategoryColorIndex++;
         EdmCategory category = new EdmCategory();
         category.setDescription("");
         category.setName(categoryName);
+        category.setColor(edmCategoryColor.get(currentEdmCategoryColorIndex % edmCategoryColor.size()).getColor());
+        category.setBackgroundColor(edmCategoryColor.get(currentEdmCategoryColorIndex % edmCategoryColor.size()).getBackgroundColor());
         ResponseEntity<EdmCategory> createdSource = restTemplate.postForEntity(server + "/category", category, EdmCategory.class);
         return createdSource.getBody().getId();
     }

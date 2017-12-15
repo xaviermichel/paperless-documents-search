@@ -19,7 +19,8 @@ public class EdmDocumentSearchResultWrapper {
 
     private long totalHitsCount;
 
-    private List<EdmDocumentSearchResult> searchResults = new ArrayList<>();;
+    private List<EdmDocumentSearchResult> searchResults = new ArrayList<>();
+    ;
 
     public void add(EdmDocumentSearchResult edmDocumentSearchResult) {
         searchResults.add(edmDocumentSearchResult);

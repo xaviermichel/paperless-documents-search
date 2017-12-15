@@ -5,11 +5,13 @@ import fr.simple.edm.crawler.url.UrlCrawler;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.service.EdmCrawlingService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 
 @Controller
@@ -46,6 +48,40 @@ public class EdmCrawlingController {
         log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
         try {
             FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, sourceName, categoryName, exclusionRegex);
+        } catch (IOException e) {
+            log.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
+        }
+
+        return "OK";
+    }
+
+    /*
+     * Crawl by assuming that each subdir is a different category, assuming  1 directory=1 source
+     * @warning This will auto-create categories !
+     */
+    @RequestMapping(value = "/filesystem/subdirectories", params = {"path"})
+    @ResponseBody
+    public String crawlFilesystemSubdirectories(
+        @RequestParam(value = "path") String path,
+        @RequestParam(value = "edmServerHttpAddress", defaultValue = "http://localhost:8053") String edmServerHttpAddress,
+        @RequestParam(value = "exclusionRegex", defaultValue = "") String exclusionRegex
+    ) {
+        log.info("[crawlFilesystem] Starting crawling on path : '{}'  (exclusion = '{}')", path, exclusionRegex);
+        try {
+            // crawl root files
+            String rootSanitizedSourceName = path.replaceAll(" ", "_").replaceAll("/", "_");
+            String rootCategoryName = FilenameUtils.getBaseName(path);
+            FilesystemCrawler.importFilesInDir(path, edmServerHttpAddress, rootSanitizedSourceName, rootCategoryName, exclusionRegex, false);
+
+            // crawl each subdirectory
+            String[] directories = new File(path).list((current, name) -> new File(current, name).isDirectory());
+            for (String directory : directories) {
+                log.debug("crawling directory {}", directory);
+                String sanitizedSourceName = (path + "/" + directory).replaceAll(" ", "_").replaceAll("/", "_");
+                String categoryName = FilenameUtils.getBaseName(directory);
+                FilesystemCrawler.importFilesInDir(path + "/" + directory, edmServerHttpAddress, sanitizedSourceName, categoryName, exclusionRegex);
+            }
+
         } catch (IOException e) {
             log.error("[crawlFilesystem] Failed to crawl '{}' with embedded crawler", path, e);
         }

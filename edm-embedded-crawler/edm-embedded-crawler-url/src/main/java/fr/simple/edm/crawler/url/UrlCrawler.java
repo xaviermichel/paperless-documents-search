@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
  * Crawl a resource which is behind an url
  *
  * @author xavier
- *
  */
 @Slf4j
 public class UrlCrawler {
@@ -31,15 +30,13 @@ public class UrlCrawler {
     private static final EdmConnector edmConnector = new EdmConnector();
 
     /**
-     *
-     * @param url             The path of the directory to crawl
+     * @param url                  The path of the directory to crawl
      *                             For example : https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/edm-webapp/src/test/resources/documents/demo_1/demo_pdf.pdf
      * @param edmServerHttpAddress The address of the EDM webapp HTTP address
      *                             For example : 127.0.0.1:8053
      * @param sourceName           A unique name for this source of documents
      *                             For example :
      * @param exclusionRegex       Documents names which match with this regex will be ignored
-     *
      * @throws IOException
      */
     public static void importFilesAtUrl(String url, final String edmServerHttpAddress, final String sourceName, final String categoryName, final String exclusionRegex) throws IOException {
@@ -98,8 +95,7 @@ public class UrlCrawler {
         try {
             document.setFileContentType(Files.probeContentType(file.toPath()));
             edmConnector.saveEdmDocument(edmServerHttpAddress, document, file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("failed to save edm docuement : {}", url);
         }
 

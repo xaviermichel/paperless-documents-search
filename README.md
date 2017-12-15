@@ -34,7 +34,7 @@ You can find the [latest release here](https://github.com/xaviermichel/paperless
 
 1. Download the zip, extract it and launch `start.bat` to start application !
 2. Start an elasticsearch (version 5) node (cluster `simple_data_search`).
-3. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem?path=D:\data\docs\Documents` (adapt the path ;))
+3. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem/subdirectories?path=D:\data\docs\Documents` (adapt the path ;))
 4. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
 
 
@@ -74,21 +74,14 @@ Great ! Now you can launch everythings :
 docker-compose up
 ```
 
-It's time to index your documents ! If you don't wan't to add a external crawler, just use embedded filesystem crawler :
+It's time to index your documents ! If you don't want to add a external crawler, just use embedded filesystem crawler :
 ```
-http://127.0.0.1:8080/crawl/filesystem?path=D:\data\docs\Documents
+http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\docs\Documents
 // or with more informations (see EdmCrawlingController) :
-http://127.0.0.1:8080/crawl/filesystem?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
+http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
 // you can also exclude some pattern
-http://127.0.0.1:8080/crawl/filesystem?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
+http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
 ```
-
-Mapping migration
------------------
-
-You should use the jenkins job `create-elastic-mapping` which is handling aliases.
-If you can't just take a look to the configuration (`automatic_document_managment/jenkins/jobs/create-elastic-mapping/config.xml`).
-
 
 Similar Projects
 ----------------

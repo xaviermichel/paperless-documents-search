@@ -23,8 +23,8 @@ import lombok.ToString;
 public class EdmSource implements Serializable {
 
     private String id;
-    
+
     private String name;
-    
+
     private String description;
 }

@@ -23,12 +23,12 @@ import lombok.ToString;
 public class EdmCategory implements Serializable {
 
     private String id;
-    
+
     private String name;
-    
+
     private String description;
-    
+
     private String color;
-    
+
     private String backgroundColor;
 }

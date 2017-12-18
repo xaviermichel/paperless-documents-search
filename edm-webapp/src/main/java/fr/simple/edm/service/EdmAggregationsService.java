@@ -2,6 +2,7 @@ package fr.simple.edm.service;
 
 import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmSuggestionsWrapper;
 import fr.simple.edm.repository.EdmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.util.automaton.RegExp;
@@ -68,13 +69,13 @@ public class EdmAggregationsService {
         return edmDocumentService.getEdmQueryForPattern(pattern);
     }
 
-    public List<EdmDocumentFile> getSuggestions(String wordPrefix) {
+    public EdmSuggestionsWrapper getSuggestions(String wordPrefix) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         qb.must(QueryBuilders.queryStringQuery(wordPrefix).defaultOperator(Operator.OR)
             .field("name.name").field("nodePath.autocomplete")
         );
         log.debug("The search query for pattern '{}' is : {}", wordPrefix, qb);
-        return createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList());
+        return new EdmSuggestionsWrapper(createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList()));
     }
 
     private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {

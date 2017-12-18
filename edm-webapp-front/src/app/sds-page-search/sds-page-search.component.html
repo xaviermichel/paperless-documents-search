@@ -1,0 +1,61 @@
+<div fxLayout="row">
+  <div fxFlex="30%">
+    <div class="left-col-margin-bottom"></div>
+    <div class="left-col-padded-left">
+
+      <sds-cloud-tags></sds-cloud-tags>
+
+      <sds-checkable-list></sds-checkable-list>
+
+      <sds-checkable-list-with-count></sds-checkable-list-with-count>
+
+      <sds-checkable-list-with-count></sds-checkable-list-with-count>
+
+    </div>
+  </div>
+  <div fxFlex="70%">
+
+    <form (ngSubmit)="onSubmitSearchForm()" class="sds-search-form form-margin-top" #searchForm="ngForm">
+      <mat-form-field class="field-input-pattern">
+        <input matInput type="search" focused="true" required="true" placeholder="Que voulez-vous chercher ?" [(ngModel)]="pattern" name="pattern" [matAutocomplete]="auto" />
+      </mat-form-field>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let document of suggestions.documents" [value]="document.name">
+          {{ document.name }}
+        </mat-option>
+      </mat-autocomplete>
+      <button type="submit" mat-raised-button color="primary" [disabled]="searchForm.invalid">Rechercher !</button>
+    </form>
+
+    <div class="text-search-info text-muted spec-doc-found-count" *ngIf="searchResult">
+      {{searchResult.totalHitsCount}} documents trouvés en {{searchResult.tookTime}} ms
+    </div>
+
+    <mat-card class="search-result-item-card" *ngFor="let sdsSearchResultItem of (searchResult ? searchResult.searchResults : [])">
+      <span class="pull-right">
+        <span [class]="'spec-search-icon icone-sprite ' + getDocumentIcon(sdsSearchResultItem.edmDocument)"></span>
+      </span>
+      <mat-card-header>
+        <mat-card-title>
+          <span [innerHTML]="sdsSearchResultItem.highlightedName || sdsSearchResultItem.edmDocument.name"></span>
+          &mdash;
+          <span class="spec-search-date text-muted">{{sdsSearchResultItem.edmDocument.fileDate | date: 'dd/MM/yyyy'}}</span>
+          &mdash;
+          <span *ngIf="getCategoryById(sdsSearchResultItem.edmDocument.categoryId) as currentCategory">
+            <span class="custom-chips" [style.background-color]="currentCategory.backgroundColor" [style.color]="currentCategory.color" >{{currentCategory.name}}</span>
+          </span>
+        </mat-card-title>
+        <mat-card-subtitle>
+          <a class="doc-link" [href]="linkToDocument(sdsSearchResultItem.edmDocument)">
+            <span [innerHTML]="sdsSearchResultItem.highlightedNodePath || sdsSearchResultItem.edmDocument.nodePath"></span>
+          </a>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <pre *ngIf="sdsSearchResultItem.highlightedFileContentMatching" [innerHTML]="sdsSearchResultItem.highlightedFileContentMatching">
+        </pre>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

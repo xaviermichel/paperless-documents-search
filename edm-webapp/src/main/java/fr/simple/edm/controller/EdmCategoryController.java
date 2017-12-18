@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 public class EdmCategoryController {
 

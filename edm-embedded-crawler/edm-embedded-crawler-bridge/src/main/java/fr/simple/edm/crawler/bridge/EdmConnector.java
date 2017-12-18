@@ -42,7 +42,7 @@ public class EdmConnector {
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#ff5722")); // Orange
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#4CAF50")); // Green
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#CDDC39")); // Lime
-        edmCategoryColor.add(new EdmCategoryColor("#FFF", "#FFEB3B")); // Yellow
+        edmCategoryColor.add(new EdmCategoryColor("#000", "#FFEB3B")); // Yellow
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#03a9f4")); // Light Blue
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#673AB7")); // Deep Purple
         edmCategoryColor.add(new EdmCategoryColor("#FFF", "#f44336")); // Red

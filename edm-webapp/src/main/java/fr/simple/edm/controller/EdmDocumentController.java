@@ -4,6 +4,7 @@ import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmAutoTidySuggestion;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
+import fr.simple.edm.domain.EdmSuggestionsWrapper;
 import fr.simple.edm.service.EdmAggregationsService;
 import fr.simple.edm.service.EdmDocumentService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @Slf4j
 public class EdmDocumentController {
 
@@ -46,7 +48,7 @@ public class EdmDocumentController {
 
     @RequestMapping(value = "/document/suggest", params = {"q"})
     @ResponseBody
-    public List<EdmDocumentFile> getSuggestions(@RequestParam(value = "q") String pattern) {
+    public EdmSuggestionsWrapper getSuggestions(@RequestParam(value = "q") String pattern) {
         log.debug("Suggestions pattern : '{}'", pattern);
         return edmAggregationsService.getSuggestions(pattern);
     }

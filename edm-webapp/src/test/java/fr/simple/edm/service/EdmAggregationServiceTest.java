@@ -5,6 +5,7 @@ import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
+import fr.simple.edm.domain.EdmSuggestionsWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class EdmAggregationServiceTest {
 
     @Test
     public void autocompleteShouldSuggestOnDocumentName() throws Exception {
-        List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("dipl");
+        List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("dipl").getDocuments();
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
             edmTestHelper.getDocBac()
@@ -95,7 +96,7 @@ public class EdmAggregationServiceTest {
         document = edmDocumentService.save(document);
         elasticsearchTestingHelper.flushIndexes();
 
-        List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("echea");
+        List<EdmDocumentFile> docs = edmAggregationsService.getSuggestions("echea").getDocuments();
 
         List<EdmDocumentFile> attemptedResult = Arrays.asList(new EdmDocumentFile[]{
             document

@@ -1,6 +1,7 @@
 package fr.simple.edm.service;
 
 import fr.simple.edm.domain.EdmAggregationItem;
+import fr.simple.edm.domain.EdmAggregationsWrapper;
 import fr.simple.edm.domain.EdmDocumentFile;
 import fr.simple.edm.domain.EdmSuggestionsWrapper;
 import fr.simple.edm.repository.EdmDocumentRepository;
@@ -52,8 +53,8 @@ public class EdmAggregationsService {
     private String edmTopTermsExlusionRegex;
 
 
-    public Map<String, List<EdmAggregationItem>> getAggregations(String pattern) {
-        Map<String, List<EdmAggregationItem>> aggregations = new HashMap<>();
+    public Map<String, EdmAggregationsWrapper> getAggregations(String pattern) {
+        Map<String, EdmAggregationsWrapper> aggregations = new HashMap<>();
         aggregations.put("fileExtension", getAggregationExtensions(pattern));
         aggregations.put("fileDate", getAggregationDate(pattern));
         return aggregations;
@@ -78,7 +79,7 @@ public class EdmAggregationsService {
         return new EdmSuggestionsWrapper(createStreamFromIterator(edmDocumentRepository.search(qb).iterator()).collect(toList()));
     }
 
-    private List<EdmAggregationItem> getAggregationExtensions(String relativeWordSearch) {
+    private EdmAggregationsWrapper getAggregationExtensions(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg_fileExtension").field("fileExtension").size(FILE_EXTENSIONS_MAX_COUNT);
 
@@ -90,20 +91,22 @@ public class EdmAggregationsService {
 
             Terms terms = response.getAggregations().get("agg_fileExtension");
 
-            return terms.getBuckets().stream()
+            return new EdmAggregationsWrapper(
+                terms.getBuckets().stream()
                 .map(
                     bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
                 )
-                .collect(toList());
+                .collect(toList())
+            );
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationExtensions, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return new ArrayList<>();
+        return new EdmAggregationsWrapper();
     }
 
-    private List<EdmAggregationItem> getAggregationDate(String relativeWordSearch) {
+    private EdmAggregationsWrapper getAggregationDate(String relativeWordSearch) {
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
         DateRangeAggregationBuilder aggregationBuilder = AggregationBuilders.dateRange("agg_date").field("fileDate");
 
@@ -124,25 +127,27 @@ public class EdmAggregationsService {
 
             InternalDateRange buckets = response.getAggregations().get("agg_date");
 
-            return buckets.getBuckets().stream()
+            return new EdmAggregationsWrapper(
+                buckets.getBuckets().stream()
                 .map(
                     bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
                 )
-                .collect(toList());
+                .collect(toList())
+            );
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit getAggregationDate, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return new ArrayList<>();
+        return new EdmAggregationsWrapper();
     }
 
 
-    public List<EdmAggregationItem> getTopTerms(String relativeWordSearch) {
+    public EdmAggregationsWrapper getTopTerms(String relativeWordSearch) {
         // the query
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
-        String filesExtensions = getAggregationExtensions(null).stream()
+        String filesExtensions = getAggregationExtensions(null).getAggregations().stream()
             .map(edmAggregationItem -> edmAggregationItem.getKey())
             .collect(joining("|"));
 
@@ -159,16 +164,18 @@ public class EdmAggregationsService {
 
             Terms terms = response.getAggregations().get("agg_nodePath");
 
-            return terms.getBuckets().stream()
+            return new EdmAggregationsWrapper(
+                terms.getBuckets().stream()
                 .map(
                     bucket -> new EdmAggregationItem(bucket.getKeyAsString(), bucket.getDocCount())
                 )
-                .collect(toList());
+                .collect(toList())
+            );
 
         } catch (SearchPhaseExecutionException e) {
             log.warn("Failed to submit top terms, empty result ; may failed to parse relativeWordSearch ({}, more log to debug it !) : {}", e.getMessage(), relativeWordSearch);
         }
 
-        return new ArrayList<>();
+        return new EdmAggregationsWrapper();
     }
 }

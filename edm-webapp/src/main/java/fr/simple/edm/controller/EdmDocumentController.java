@@ -1,10 +1,6 @@
 package fr.simple.edm.controller;
 
-import fr.simple.edm.domain.EdmAggregationItem;
-import fr.simple.edm.domain.EdmAutoTidySuggestion;
-import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmDocumentSearchResultWrapper;
-import fr.simple.edm.domain.EdmSuggestionsWrapper;
+import fr.simple.edm.domain.*;
 import fr.simple.edm.service.EdmAggregationsService;
 import fr.simple.edm.service.EdmDocumentService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,14 +51,14 @@ public class EdmDocumentController {
 
     @RequestMapping(value = "/document/top_terms")
     @ResponseBody
-    public List<EdmAggregationItem> getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    public EdmAggregationsWrapper getTerms(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationsService.getTopTerms(pattern);
     }
 
     @RequestMapping(value = "/document/aggregations")
     @ResponseBody
-    public Map<String, List<EdmAggregationItem>> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
+    public Map<String, EdmAggregationsWrapper> getAggregations(@RequestParam(value = "q", defaultValue = "") String pattern) {
         log.debug("Get relative terms for pattern : '{}'", pattern);
         return edmAggregationsService.getAggregations(pattern);
     }

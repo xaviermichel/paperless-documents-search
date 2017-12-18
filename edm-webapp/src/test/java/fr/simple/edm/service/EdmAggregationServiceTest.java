@@ -3,9 +3,9 @@ package fr.simple.edm.service;
 import fr.simple.edm.Application;
 import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
+import fr.simple.edm.domain.EdmAggregationsWrapper;
 import fr.simple.edm.domain.EdmAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
-import fr.simple.edm.domain.EdmSuggestionsWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +61,8 @@ public class EdmAggregationServiceTest {
         elasticsearchTestingHelper.flushIndexes();
     }
 
-    private List<String> extractAggregationValueFromAggregationWrapper(List<EdmAggregationItem> edmAggregationItems) {
-        return edmAggregationItems.stream()
+    private List<String> extractAggregationValueFromAggregationWrapper(EdmAggregationsWrapper edmAggregationsWrapper) {
+        return edmAggregationsWrapper.getAggregations().stream()
             .map(EdmAggregationItem::getKey)
             .collect(Collectors.toList());
     }
@@ -127,7 +127,7 @@ public class EdmAggregationServiceTest {
 
     @Test
     public void extensionShouldBeAggregated() {
-        Map<String, List<EdmAggregationItem>> aggregations = edmAggregationsService.getAggregations("paye");
+        Map<String, EdmAggregationsWrapper> aggregations = edmAggregationsService.getAggregations("paye");
         List<String> extensions = extractAggregationValueFromAggregationWrapper(aggregations.get("fileExtension"));
 
         List<String> attemptedResult = Arrays.asList(new String[]{

@@ -62,7 +62,7 @@ public class EdmAggregationServiceTest {
     }
 
     private List<String> extractAggregationValueFromAggregationWrapper(EdmAggregationsWrapper edmAggregationsWrapper) {
-        return edmAggregationsWrapper.getAggregations().stream()
+        return edmAggregationsWrapper.getAggregates().stream()
             .map(EdmAggregationItem::getKey)
             .collect(Collectors.toList());
     }

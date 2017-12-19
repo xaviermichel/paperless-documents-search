@@ -1,351 +1,298 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-        <modelVersion>4.0.0</modelVersion>
-        <parent>
-            <artifactId>paperless-documents-search</artifactId>
-            <groupId>fr.simple.edm</groupId>
-            <version>3.3.0-SNAPSHOT</version>
-            <relativePath>..</relativePath>
-        </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>paperless-documents-search</artifactId>
+        <groupId>fr.simple.edm</groupId>
+        <version>3.3.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
 
-        <artifactId>paperless-documents-search-webapp</artifactId>
-        <name>Paperless documents search webapp</name>
-        <description>One entry point to search in your data !</description>
+    <artifactId>paperless-documents-search-webapp</artifactId>
+    <name>Paperless documents search webapp</name>
+    <description>One entry point to search in your data !</description>
 
-        <packaging>jar</packaging>
+    <packaging>jar</packaging>
 
-        <properties>
-            <start-class>fr.simple.edm.Application</start-class>
-        </properties>
+    <properties>
+        <start-class>fr.simple.edm.Application</start-class>
+    </properties>
 
 
-        <dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <!-- Import dependency management from Spring Boot -->
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-dependencies</artifactId>
-                    <version>${org.springframework.springboot.version}</version>
-                    <type>pom</type>
-                    <scope>import</scope>
-                </dependency>
-            </dependencies>
-        </dependencyManagement>
-
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.github.eirslett</groupId>
-                    <artifactId>frontend-maven-plugin</artifactId>
-                    <version>1.3</version>
-                    <configuration>
-                        <installDirectory>target</installDirectory>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>install node and npm</id>
-                            <goals>
-                                <goal>install-node-and-npm</goal>
-                            </goals>
-                            <configuration>
-                                <nodeVersion>v6.11.0</nodeVersion>
-                                <npmVersion>3.10.10</npmVersion>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>npm install</id>
-                            <goals>
-                                <goal>npm</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>bower install</id>
-                            <goals>
-                                <goal>bower</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>gulp prettify-code</id>
-                            <goals>
-                                <goal>gulp</goal>
-                            </goals>
-                            <configuration>
-                                <arguments>prettify-code</arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>gulp minify-code</id>
-                            <goals>
-                                <goal>gulp</goal>
-                            </goals>
-                            <configuration>
-                                <arguments>minify-code</arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>gulp test</id>
-                            <goals>
-                                <goal>gulp</goal>
-                            </goals>
-                            <phase>test</phase>
-                            <configuration>
-                                <arguments>test --skipTests=${skipTests}</arguments>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>2.1.11</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>revision</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <verbose>false</verbose>
-                        <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
-                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.2.3</version>
-                    <configuration>
-                        <imageName>${project.artifactId}</imageName>
-                        <dockerDirectory>src/main/docker</dockerDirectory>
-                        <resources>
-                            <resource>
-                                <targetPath>/</targetPath>
-                                <directory>${project.build.directory}</directory>
-                                <include>${project.build.finalName}.jar</include>
-                            </resource>
-                        </resources>
-                    </configuration>
-                </plugin>
-
-            </plugins>
-
-            <resources>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <filtering>true</filtering>
-                    <includes>
-                        <include>**/*.properties</include>
-                    </includes>
-                </resource>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <filtering>false</filtering>
-                    <excludes>
-                        <exclude>**/*.properties</exclude>
-                    </excludes>
-                </resource>
-            </resources>
-
-        </build>
-
+    <dependencyManagement>
         <dependencies>
-
-            <!-- modules -->
-
             <dependency>
-                <groupId>fr.simple.edm</groupId>
-                <artifactId>paperless-documents-search-contracts</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>fr.simple.edm</groupId>
-                <artifactId>paperless-documents-search-embedded-crawler-filesystem</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>fr.simple.edm</groupId>
-                <artifactId>paperless-documents-search-embedded-crawler-url</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-
-            <!-- jaxax -->
-
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.persistence</groupId>
-                <artifactId>persistence-api</artifactId>
-            </dependency>
-
-
-            <!-- spring -->
-
-            <dependency>
+                <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${org.springframework.springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jetty</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>aopalliance</groupId>
-                        <artifactId>aopalliance</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-actuator</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-devtools</artifactId>
-                <optional>true</optional>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-            </dependency>
-
-            <!-- OCR -->
-
-            <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-parsers</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm-debug-all</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.cxf</groupId>
-                        <artifactId>cxf-rt-rs-client</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.levigo.jbig2</groupId>
-                <artifactId>levigo-jbig2-imageio</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.jai-imageio</groupId>
-                <artifactId>jai-imageio-core</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.jai-imageio</groupId>
-                <artifactId>jai-imageio-jpeg2000</artifactId>
-            </dependency>
-
-            <!-- test -->
-
-            <dependency>
-                <groupId>org.easytesting</groupId>
-                <artifactId>fest-assert-core</artifactId>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path-assert</artifactId>
-                <scope>test</scope>
-            </dependency>
-
-
-            <!-- tools -->
-
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-            </dependency>
-
-
-            <!-- file upload -->
-
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-fileupload</artifactId>
-            </dependency>
-
         </dependencies>
+    </dependencyManagement>
 
-    </project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution>
+                        <id>build docker image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--rm</argument>
+                                <argument>-t</argument>
+                                <argument>${project.artifactId}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.1.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <verbose>false</verbose>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+    </build>
+
+    <dependencies>
+
+        <!-- modules -->
+
+        <dependency>
+            <groupId>fr.simple.edm</groupId>
+            <artifactId>edm-webapp-front</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.simple.edm</groupId>
+            <artifactId>paperless-documents-search-contracts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.simple.edm</groupId>
+            <artifactId>paperless-documents-search-embedded-crawler-filesystem</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.simple.edm</groupId>
+            <artifactId>paperless-documents-search-embedded-crawler-url</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <!-- jaxax -->
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+        </dependency>
+
+
+        <!-- spring -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>aopalliance</groupId>
+                    <artifactId>aopalliance</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+        <!-- OCR -->
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-debug-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-rs-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.levigo.jbig2</groupId>
+            <artifactId>levigo-jbig2-imageio</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-jpeg2000</artifactId>
+        </dependency>
+
+        <!-- test -->
+
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-assert-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- tools -->
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+
+        <!-- file upload -->
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

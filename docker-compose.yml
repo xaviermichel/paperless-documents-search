@@ -27,7 +27,7 @@ services:
       - back
 
   elasticsearch:
-    image: paperless-documents-search-db
+    image: paperless-documents-search-elasticsearch
     ports:
       - 9200
       - 9300

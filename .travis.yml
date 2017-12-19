@@ -16,21 +16,18 @@ jdk:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y tesseract-ocr
+  - npm install -g @angular/cli
 
 # build database and prepare for UI tests
 before_script:
-  - "cd docker_elastic_image/"
-  - "make build"
+  - "cd edm-elasticsearch-docker-image/"
   - "make drun"
   - "cd -"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - "cd edm-webapp"
-  - "mvn package docker:build -DskipTests"
-  - "cd -"
 
 after_script:
-  - "cd docker_elastic_image/"
+  - "cd edm-elasticsearch-docker-image/"
   - "make drm"
   - "cd -"
 

@@ -10,8 +10,7 @@ This program is used in order to tidy your documents and provide an unique entry
 - Use scheduler for download and tidy your monthly documents ;
 - Use smart engine for (auto-)tidying your scanned documents ;
 - Index your documents from from your local drive (or anywhere else) and take benefice of OCR ;
-- Search in your files content with a powerfull search engine !
-
+- Search in your files content with a powerful search engine !
 
 Screenshot
 ----------
@@ -28,60 +27,33 @@ Screenshot
 Quick start
 -----------
 
-**Software**
-
-You can find the [latest release here](https://github.com/xaviermichel/paperless-documents-search/releases).
-
-1. Download the zip, extract it and launch `start.bat` to start application !
-2. Start an elasticsearch (version 5) node (cluster `simple_data_search`).
-3. Index your documents. The fastest way is to open you browser, and go to `http://127.0.0.1:8053/crawl/filesystem/subdirectories?path=D:\data\docs\Documents` (adapt the path ;))
-4. Open you browser on `http://127.0.0.1:8053`, you can now search in your documents !
-
-
-Solution stack
---------------
-
 ![Solution stack](https://docs.google.com/drawings/d/1TRDdSgP6r0zwp2dezgcPhncy-NdKfb9r6bKF52U0QUE/pub?w=939&amp;h=643)
-
 
 **Compilation**
 
-Wanna compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi) and docker (if you don't want to install elasticsearch).
+You want to compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi), a recent node version (with angular cli) and docker
 
-First, clone the project
-```bash
-git clone https://github.com/xaviermichel/paperless-documents-search.git
-cd paperless-documents-search
-```
-
-Prepare the elastic database :
-```bash
-cd docker_elastic_image
-make build
-cd -
-```
-
-Then, you can compile the project core and run it !
+You can compile the project core and run it !
 ```bash
 mvn clean install -DskipTests
-cd edm-webapp
-mvn package docker:build -DskipTests
-cd -
 ```
 
-Great ! Now you can launch everythings :
+**Start the stack**
+
+Great ! Now you can launch everything :
 ```bash
 docker-compose up
 ```
 
-It's time to index your documents ! If you don't want to add a external crawler, just use embedded filesystem crawler :
-```
-http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\docs\Documents
-// or with more informations (see EdmCrawlingController) :
-http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\docs\Documents&sourceName=Mes documents&categoryName=Documents
-// you can also exclude some pattern
-http://127.0.0.1:8080/crawl/filesystem/subdirectories?path=D:\data\dossier_personnel\github\alerts-app&exclusionRegex=\.git|\.vagrant
-```
+**Index your documents**
+
+It's time to index your documents ! If you don't want to add a external crawler, just use embedded filesystem crawler.
+Hit `http://127.0.0.1:8054/crawl/filesystem/subdirectories?path=D:\data\docs\Documents` (adapt the path ;)).
+
+**Explore your documents**
+
+Open you browser on `http://127.0.0.1:8054`, you can now search in your documents !
+
 
 Similar Projects
 ----------------
@@ -104,18 +76,29 @@ mvn clean install
 mvn sonar:sonar
 ```
 
-**Debug mode (non minified js)**
+**Useful commands**
 
-To work with un-merged resources, you can activate `local` profile :
+To start an external elasticsearch :
+```bash
+cd edm-elasticsearch-docker-image/
+make drun
+cd -
+```
+
+To start a standalone webapp server :
+```
+docker run --rm --name paperless-documents-search-webapp --link paperless-documents-search-elasticsearch -p 8053:8053 -e 'SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes": "paperless-documents-search-elasticsearch:9300" }' -v /media/documents/Documents:/media/documents:ro -d paperless-documents-search-webapp
+```
+
+Basic integration with curl :
+```
+curl -w '%{time_total}' 'http://127.0.0.1:8053/crawl/filesystem/subdirectories?path=/media/documents'
+```
+
+To work without integrate all documents content (which can be slow), you can activate `local` profile :
 ```code:bash
 mvn spring-boot:run -Drun.profiles=local
 # or
 java -jar -Dspring.profiles.active=local target/paperless-documents-search-webapp*.jar
 ```
 
-**Front tests with casperjs**
-
-This tests are run on travis. If you wanna run them localy, you have to start the webapp (`mvn spring-boot:run`) and then run :
-```code:bash
-gulp test-casperjs
-```

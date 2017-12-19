@@ -147,7 +147,7 @@ public class EdmAggregationsService {
         // the query
         QueryBuilder query = getEdmQueryForPattern(relativeWordSearch);
 
-        String filesExtensions = getAggregationExtensions(null).getAggregations().stream()
+        String filesExtensions = getAggregationExtensions(null).getAggregates().stream()
             .map(edmAggregationItem -> edmAggregationItem.getKey())
             .collect(joining("|"));
 

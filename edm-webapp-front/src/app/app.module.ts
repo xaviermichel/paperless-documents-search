@@ -8,24 +8,23 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule, MatIconModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatCardModule } from '@angular/material';
 
-import { SdsSearchService } from './services/sds-search.service';
-import { SdsDocumentService } from './services/sds-document.service';
-import { SdsCategoryService } from './services/sds-category.service';
+import { PdsSearchService } from './services/pds-search.service';
+import { PdsDocumentService } from './services/pds-document.service';
+import { PdsCategoryService } from './services/pds-category.service';
 
-import { SdsPageSearchComponent } from './sds-page-search/sds-page-search.component';
-import { SdsToolbarComponent } from './sds-toolbar/sds-toolbar.component';
-import { SdsCloudTagsComponent } from './sds-cloud-tags/sds-cloud-tags.component';
-import { SdsCheckableListComponent } from './sds-checkable-list/sds-checkable-list.component';
-import { SdsCheckableListWithCountComponent } from './sds-checkable-list-with-count/sds-checkable-list-with-count.component';
-
+import { PdsPageSearchComponent } from './pds-page-search/pds-page-search.component';
+import { PdsToolbarComponent } from './pds-toolbar/pds-toolbar.component';
+import { PdsCloudTagsComponent } from './pds-cloud-tags/pds-cloud-tags.component';
+import { PdsCheckableListWithCountComponent } from './pds-checkable-list-with-count/pds-checkable-list-with-count.component';
+import { PdsCheckableCategoriesListComponent } from './pds-checkable-categories-list/pds-checkable-categories-list.component';
 
 @NgModule({
   declarations: [
-    SdsPageSearchComponent,
-    SdsToolbarComponent,
-    SdsCloudTagsComponent,
-    SdsCheckableListComponent,
-    SdsCheckableListWithCountComponent
+    PdsPageSearchComponent,
+    PdsToolbarComponent,
+    PdsCloudTagsComponent,
+    PdsCheckableCategoriesListComponent,
+    PdsCheckableListWithCountComponent
   ],
   imports: [
     BrowserModule,
@@ -42,10 +41,10 @@ import { SdsCheckableListWithCountComponent } from './sds-checkable-list-with-co
     MatCardModule
   ],
   providers: [
-    SdsSearchService,
-    SdsDocumentService,
-    SdsCategoryService
+    PdsSearchService,
+    PdsDocumentService,
+    PdsCategoryService
   ],
-  bootstrap: [SdsToolbarComponent, SdsPageSearchComponent]
+  bootstrap: [PdsToolbarComponent, PdsPageSearchComponent]
 })
-export class SdsModule { }
+export class PdsModule { }

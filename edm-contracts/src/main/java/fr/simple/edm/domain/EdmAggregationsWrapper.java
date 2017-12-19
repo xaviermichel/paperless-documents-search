@@ -14,6 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class EdmAggregationsWrapper {
 
-    private List<EdmAggregationItem> aggregations = new ArrayList<>();
+    private List<EdmAggregationItem> aggregates = new ArrayList<>();
 
 }

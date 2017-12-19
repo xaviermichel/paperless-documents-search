@@ -202,7 +202,9 @@
 
 
     <modules>
+        <module>edm-elasticsearch-docker-image</module>
         <module>edm-webapp</module>
+        <module>edm-webapp-front</module>
         <module>edm-contracts</module>
         <module>edm-embedded-crawler</module>
     </modules>

@@ -1,9 +1,9 @@
 <div fxLayout="row">
   <div fxFlex="30%">
     <div class="left-col-margin-bottom"></div>
-    <div class="left-col-padded-left">
+    <div class="left-col-padded-left left-col-padded-right">
 
-      <pds-cloud-tags></pds-cloud-tags>
+      <pds-cloud-tags [pattern]="pattern" (tagClicked)="onCloudTagClicked($event)"></pds-cloud-tags>
 
       <pds-checkable-categories-list></pds-checkable-categories-list>
 

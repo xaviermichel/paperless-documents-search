@@ -61,4 +61,12 @@ export class PdsPageSearchComponent implements OnInit {
   getCategoryById(categoryId: string): PdsCategoryModel {
     return this.sdsCategoryService.findById(categoryId);
   }
+
+  onCloudTagClicked(tagKey) {
+    if (this.pattern === "") {
+      this.pattern = tagKey;
+      return;
+    }
+    this.pattern = this.pattern + " AND " + tagKey;
+  }
 }

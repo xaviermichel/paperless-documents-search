@@ -42,6 +42,10 @@ mat-card {
   padding-left: 2cm;
 }
 
+.left-col-padded-right {
+  padding-right: 1cm;
+}
+
 .right-col-padded-right {
   padding-right: 2cm;
 }

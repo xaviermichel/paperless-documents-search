@@ -1,0 +1,27 @@
+.filter-title {
+  margin-bottom: 0px;
+}
+
+.filter-title .filter-title-text {
+  vertical-align: super;
+}
+
+.chips-count {
+  background-color: #e0e0e0;
+  color: #212121;
+  padding: 4px 6px;
+  border-radius: 24px;
+  align-items: center;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.custom-chips {
+  background-color: #FAFAFA;
+  color: #212121;
+  padding: 4px 6px;
+  border-radius: 24px;
+  align-items: center;
+  font-size: 13px;
+  line-height: 18px;
+}

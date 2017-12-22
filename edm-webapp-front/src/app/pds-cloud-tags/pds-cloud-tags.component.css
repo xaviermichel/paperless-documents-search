@@ -1,21 +1,12 @@
-.filter-title {
-  margin-bottom: 0px;
-}
-
 .tags-list {
   line-height: 150%;
 }
 
 .tag-key:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
-.chips-count {
-  background-color: #e0e0e0;
-  color: #212121;
-  padding: 4px 6px;
-  border-radius: 24px;
-  align-items: center;
-  font-size: 13px;
-  line-height: 18px;
+.tag {
+  margin-right: 10px;
 }

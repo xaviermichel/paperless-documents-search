@@ -1,3 +1,16 @@
-<p>
-  checkable-categories-list works!
-</p>
+<h4 class="filter-title">
+  <mat-icon [color]="'primary'" aria-hidden="true">folder</mat-icon>
+  <span class="filter-title-text">Catégories</span>
+</h4>
+<hr/>
+
+<span *ngFor="let category of categories">
+  <mat-checkbox [(ngModel)]="category.checkableCategoriesListComponentStatus.checked" (change)="categorySelectionUpdated()">
+    <span class="custom-chips" [style.background-color]="category.checkableCategoriesListComponentStatus.checked ? category.backgroundColor : '#EEEEEE'"  >
+      &nbsp;
+    </span>
+    &nbsp;
+    {{ category.name }}
+  </mat-checkbox>
+  <br/>
+</span>

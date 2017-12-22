@@ -31,7 +31,7 @@ mat-card {
 }
 
 .form-margin-top {
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 .left-col-margin-bottom {
@@ -43,7 +43,7 @@ mat-card {
 }
 
 .left-col-padded-right {
-  padding-right: 1cm;
+  padding-right: 1.4cm;
 }
 
 .right-col-padded-right {
@@ -92,14 +92,4 @@ mat-card {
 
 .icone-sprite.unknown {
   background-position: 0 -144px;
-}
-
-.custom-chips {
-  background-color: #FAFAFA;
-  color: #212121;
-  padding: 4px 6px;
-  border-radius: 24px;
-  align-items: center;
-  font-size: 13px;
-  line-height: 18px;
 }

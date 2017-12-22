@@ -3,13 +3,17 @@
     <div class="left-col-margin-bottom"></div>
     <div class="left-col-padded-left left-col-padded-right">
 
-      <pds-cloud-tags [pattern]="pattern" (tagClicked)="onCloudTagClicked($event)"></pds-cloud-tags>
+      <pds-cloud-tags [pattern]="pattern" (tagClicked)="onCloudTagClicked($event)">
+      </pds-cloud-tags>
 
-      <pds-checkable-categories-list></pds-checkable-categories-list>
+      <pds-checkable-categories-list (selectionChanged)="onCheckableCategoriesListSelectionChanged($event)">
+      </pds-checkable-categories-list>
 
-      <pds-checkable-list-with-count></pds-checkable-list-with-count>
+      <pds-radio-list-with-count [blockIconName]="'date_range'" [blockTitle]="'Date du document'" [filterAggregate]="filterFileDate">
+      </pds-radio-list-with-count>
 
-      <pds-checkable-list-with-count></pds-checkable-list-with-count>
+      <pds-checkable-list-with-count [blockIconName]="'extension'" [blockTitle]="'Type de document'">
+      </pds-checkable-list-with-count>
 
     </div>
   </div>

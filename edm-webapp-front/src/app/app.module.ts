@@ -6,7 +6,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatToolbarModule, MatIconModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatCardModule } from '@angular/material';
+import { MatToolbarModule, MatIconModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatCardModule, MatRadioModule } from '@angular/material';
 
 import { PdsSearchService } from './services/pds-search.service';
 import { PdsDocumentService } from './services/pds-document.service';
@@ -17,6 +17,7 @@ import { PdsToolbarComponent } from './pds-toolbar/pds-toolbar.component';
 import { PdsCloudTagsComponent } from './pds-cloud-tags/pds-cloud-tags.component';
 import { PdsCheckableListWithCountComponent } from './pds-checkable-list-with-count/pds-checkable-list-with-count.component';
 import { PdsCheckableCategoriesListComponent } from './pds-checkable-categories-list/pds-checkable-categories-list.component';
+import { RadioListWithCountComponent } from './pds-radio-list-with-count/pds-radio-list-with-count.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { PdsCheckableCategoriesListComponent } from './pds-checkable-categories-
     PdsToolbarComponent,
     PdsCloudTagsComponent,
     PdsCheckableCategoriesListComponent,
-    PdsCheckableListWithCountComponent
+    PdsCheckableListWithCountComponent,
+    RadioListWithCountComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +40,8 @@ import { PdsCheckableCategoriesListComponent } from './pds-checkable-categories-
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatCardModule
+    MatCardModule,
+    MatRadioModule
   ],
   providers: [
     PdsSearchService,

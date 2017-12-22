@@ -1,0 +1,14 @@
+<h4 class="filter-title">
+  <mat-icon [color]="'primary'" aria-hidden="true">{{ blockIconName }}</mat-icon>
+  <span class="filter-title-text">{{ blockTitle }}</span>
+</h4>
+<hr/>
+
+<mat-radio-group [(ngModel)]="aggregateSelected">
+  <span *ngFor="let aggregate of filterAggregate.aggregates">
+    <mat-radio-button [value]="aggregate">
+      {{ aggregate.key }}
+    </mat-radio-button>
+    <br/>
+  </span>
+</mat-radio-group>

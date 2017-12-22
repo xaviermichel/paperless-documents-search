@@ -10,14 +10,18 @@ import { environment } from '../../environments/environment';
 export class PdsCategoryService {
 
   // categories cache
-  categories: Array<PdsCategoryModel> = null;
+  categoriesCache: Array<PdsCategoryModel> = null;
 
   constructor(private http: HttpClient) {
     http.get<PdsCategoryModel>(`${environment.sdsApiBaseUrl}/category`)
-      .subscribe((categories: any) => this.categories = categories);
+      .subscribe((categories: any) => this.categoriesCache = categories);
   }
 
   findById(id: string): PdsCategoryModel {
-    return this.categories.filter(c => c.id === id)[0];
+    return this.categoriesCache.filter(c => c.id === id)[0];
+  }
+
+  findAll(): Observable<Array<PdsCategoryModel>> {
+    return this.http.get<Array<PdsCategoryModel>>(`${environment.sdsApiBaseUrl}/category`);
   }
 }

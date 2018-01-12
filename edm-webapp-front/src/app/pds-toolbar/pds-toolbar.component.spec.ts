@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PdsToolbarComponent } from './pds-toolbar.component';
 
@@ -8,7 +9,8 @@ describe('PdsToolbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PdsToolbarComponent ]
+      declarations: [ PdsToolbarComponent ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
   }));

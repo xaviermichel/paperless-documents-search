@@ -8,6 +8,7 @@ node
 node_modules
 build
 bower_inc
+package-lock.json
 
 # eclipse
 .project

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from "@angular/flex-layout";
 
@@ -31,6 +31,7 @@ import { RadioListWithCountComponent } from './pds-radio-list-with-count/pds-rad
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     FlexLayoutModule,
     BrowserAnimationsModule,
@@ -48,6 +49,9 @@ import { RadioListWithCountComponent } from './pds-radio-list-with-count/pds-rad
     PdsDocumentService,
     PdsCategoryService
   ],
-  bootstrap: [PdsToolbarComponent, PdsPageSearchComponent]
+  bootstrap: [
+    PdsToolbarComponent,
+    PdsPageSearchComponent
+  ]
 })
 export class PdsModule { }

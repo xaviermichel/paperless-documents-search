@@ -52,7 +52,7 @@
                         <configuration>
                             <executable>ng</executable>
                             <arguments>
-                                <argument>tests</argument>
+                                <argument>test</argument>
                                 <argument>--watch=false</argument>
                             </arguments>
                         </configuration>

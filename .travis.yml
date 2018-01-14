@@ -17,6 +17,8 @@ jdk:
 #
 
 before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
   - sudo apt-get -qq update
   - sudo apt-get install -y tesseract-ocr
   - npm install -g @angular/cli
@@ -26,8 +28,6 @@ before_script:
   - "cd edm-elasticsearch-docker-image/"
   - "make drun"
   - "cd -"
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 
 after_script:
   - "cd edm-elasticsearch-docker-image/"

@@ -118,6 +118,8 @@ public class EdmAggregationsService {
         aggregationBuilder.addUnboundedFrom("last_6_months", "now-6M/M");
         // last year
         aggregationBuilder.addUnboundedFrom("last_year", "now-12M/M");
+        // until now
+        aggregationBuilder.addUnboundedTo("until_now", "now");
 
         try {
             SearchResponse response = elasticsearchClient.prepareSearch("document_file").setTypes("document_file")

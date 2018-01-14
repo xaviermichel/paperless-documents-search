@@ -22,11 +22,14 @@ export class RadioListWithCountComponent implements OnInit {
   aggregateSelected: PdsAggregationResultModel;
 
   @Output()
-  selectedAggregateChanged = new EventEmitter<string>();
+  selectionChanged = new EventEmitter<PdsAggregationResultModel>();
 
   constructor() { }
 
   ngOnInit() {
   }
 
+  onSelectionChange() {
+    this.selectionChanged.emit(this.aggregateSelected);
+  }
 }

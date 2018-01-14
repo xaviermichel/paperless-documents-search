@@ -29,6 +29,8 @@ export class PdsCheckableCategoriesListComponent implements OnInit {
   }
 
   categorySelectionUpdated() {
-    this.selectionChanged.emit(this.categories);
+    this.selectionChanged.emit(
+      this.categories.filter(c => c.checkableCategoriesListComponentStatus.checked === true)
+    );
   }
 }

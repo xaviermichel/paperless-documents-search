@@ -9,7 +9,7 @@
       <pds-checkable-categories-list (selectionChanged)="onCheckableCategoriesListSelectionChanged($event)">
       </pds-checkable-categories-list>
 
-      <pds-radio-list-with-count [blockIconName]="'date_range'" [blockTitle]="'Date du document'" [filterAggregate]="filterFileDate">
+      <pds-radio-list-with-count [blockIconName]="'date_range'" [blockTitle]="'Date du document'" [filterAggregate]="filterFileDate" (selectionChanged)="onRadioDocumentDateSelectionChanged($event)">
       </pds-radio-list-with-count>
 
       <pds-checkable-list-with-count [blockIconName]="'extension'" [blockTitle]="'Type de document'">

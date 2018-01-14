@@ -4,10 +4,11 @@
 </h4>
 <hr/>
 
-<mat-radio-group [(ngModel)]="aggregateSelected">
+<mat-radio-group [ngModel]="aggregateSelected" (change)="onSelectionChange()">
   <span *ngFor="let aggregate of filterAggregate.aggregates">
     <mat-radio-button [value]="aggregate">
-      {{ aggregate.key }}
+      {{ aggregate.pdsAggregationItem.prettyLabel }}
+      <span class="chips-count">{{ aggregate.docCount }}</span>
     </mat-radio-button>
     <br/>
   </span>

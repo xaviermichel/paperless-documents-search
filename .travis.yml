@@ -3,6 +3,9 @@ sudo: required
 services:
   - docker
 
+addons:
+  chrome: stable
+
 language: java
 jdk:
   - oraclejdk8

@@ -43,6 +43,20 @@
                             </arguments>
                         </configuration>
                     </execution>
+                     <execution>
+                        <id>test angular code</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>ng</executable>
+                            <arguments>
+                                <argument>tests</argument>
+                                <argument>--watch=false</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

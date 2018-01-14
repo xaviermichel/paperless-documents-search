@@ -13,7 +13,7 @@ import { PdsCategoryModel } from '../models/pds-category.model';
 import { PdsSearchSuggestionsModel } from '../models/pds-search-suggestions.model';
 import { PdsGlobalAggregationsWrapperModel } from '../models/pds-global-aggregations.model';
 import { PdsAggregationsModel } from '../models/pds-aggregations.model';
-import { PdsAggregationResultModel, PdsAggregationItem } from '../models/pds-aggregation-item.model';
+import { PdsAggregationResultModel, PdsAggregationResultModelAdditionalFields } from '../models/pds-aggregation-item.model';
 
 @Component({
   selector: 'pds-page-search',
@@ -31,7 +31,11 @@ export class PdsPageSearchComponent implements OnInit {
   searchResult: PdsSearchResultModel = null;
 
   filterCategories: Array<PdsCategoryModel> = new Array<PdsCategoryModel>();
+  selectedCategories: Array<PdsCategoryModel> = null;
+
   filterFileDate: PdsAggregationsModel = new PdsAggregationsModel();
+  selectedDateFilter: PdsAggregationResultModel = null;
+
   filterFileExtension: PdsAggregationsModel = new PdsAggregationsModel();
 
   ngOnInit() {
@@ -40,11 +44,11 @@ export class PdsPageSearchComponent implements OnInit {
   ngAfterViewInit() {
     this.searchForm.control.valueChanges.debounceTime(800).distinctUntilChanged()
     .subscribe(
-        data => this.sdsSearchService.getSuggestionsForPattern(data.pattern)
-          .subscribe((sdsSearchSuggestionsModel: PdsSearchSuggestionsModel) => this.suggestions = sdsSearchSuggestionsModel)
-    );
+      data => this.sdsSearchService.getSuggestionsForPattern(data.pattern)
+      .subscribe((sdsSearchSuggestionsModel: PdsSearchSuggestionsModel) => this.suggestions = sdsSearchSuggestionsModel)
+      );
     this.searchForm.control.valueChanges.debounceTime(400).distinctUntilChanged()
-      .subscribe(data => this.onSubmitSearchForm());
+    .subscribe(data => this.onSubmitSearchForm());
   }
 
   linkToDocument(edmDocument: PdsDocumentModel) {
@@ -72,7 +76,12 @@ export class PdsPageSearchComponent implements OnInit {
   }
 
   onCheckableCategoriesListSelectionChanged(categories: Array<PdsCategoryModel>) {
-    this.filterCategories = categories;
+    this.selectedCategories = categories;
+    this.submitSearch();
+  }
+
+  onRadioDocumentDateSelectionChanged(selectedDate: PdsAggregationResultModel) {
+    this.selectedDateFilter = selectedDate;
     this.submitSearch();
   }
 
@@ -84,34 +93,42 @@ export class PdsPageSearchComponent implements OnInit {
       this.searchResult = null;
       return;
     }
-    this.sdsSearchService.searchForPattern(this.pattern, this.filterCategories)
-      .subscribe((searchResult: PdsSearchResultModel) => this.searchResult = searchResult);
+    this.sdsSearchService.searchForPattern(this.pattern, this.selectedCategories, this.selectedDateFilter)
+    .subscribe((searchResult: PdsSearchResultModel) => this.searchResult = searchResult);
   }
 
   private refreshAggregations() {
     this.sdsSearchService.getAggregationsForPattern(this.pattern)
-      .subscribe((globalAggregations: PdsGlobalAggregationsWrapperModel) => {
-        for (let aggregate of globalAggregations.fileDate.aggregates) {
-          switch (aggregate.key) {
-            case "last_year":
-              aggregate.pdsAggregationItem = new PdsAggregationItem("Depuis l'année dernière");
-              break;
-            case "last_6_months":
-              aggregate.pdsAggregationItem = new PdsAggregationItem("Depuis les 6 derniers mois");
-              break;
-            case "last_2_months":
-              aggregate.pdsAggregationItem = new PdsAggregationItem("Depuis les 2 derniers mois");
-              break;
-            case "last_month":
-              aggregate.pdsAggregationItem = new PdsAggregationItem("Durant le mois qui vient de s'écouler");
-              break;
-          }
+    .subscribe((globalAggregations: PdsGlobalAggregationsWrapperModel) => {
+      for (let aggregate of globalAggregations.fileDate.aggregates) {
+        switch (aggregate.key) {
+          case "last_year":
+          aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("Depuis l'année dernière");
+          aggregate.pdsAggregationItem.filterValue = 12;
+          break;
+          case "last_6_months":
+          aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("Depuis les 6 derniers mois");
+          aggregate.pdsAggregationItem.filterValue = 6;
+          break;
+          case "last_2_months":
+          aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("Depuis les 2 derniers mois");
+          aggregate.pdsAggregationItem.filterValue = 2;
+          break;
+          case "last_month":
+          aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("Durant le mois qui vient de s'écouler");
+          aggregate.pdsAggregationItem.filterValue = 1;
+          break;
+          case "until_now":
+          aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("Jusqu'à maintenant");
+          aggregate.pdsAggregationItem.filterValue = 0;
+          break;
         }
-        this.filterFileDate = globalAggregations.fileDate;
+      }
+      this.filterFileDate = globalAggregations.fileDate;
 
 
-        this.filterFileExtension = globalAggregations.fileExtension;
-      });
+      this.filterFileExtension = globalAggregations.fileExtension;
+    });
   }
 
 }

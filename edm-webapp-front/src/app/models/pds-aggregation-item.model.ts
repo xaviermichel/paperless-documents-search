@@ -1,8 +1,9 @@
 export class PdsAggregationResultModelAdditionalFields {
   prettyLabel: string;
   filterValue: any;
+  checked: boolean = true;
 
-  constructor(prettyLabel: string, filterValue: any = 0) {
+  constructor(prettyLabel: string = "", filterValue: any = 0) {
     this.prettyLabel = prettyLabel;
   }
 }

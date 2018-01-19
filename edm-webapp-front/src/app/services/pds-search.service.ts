@@ -21,7 +21,8 @@ export class PdsSearchService {
   searchForPattern(
     pattern: string,
     categoriesFilter: Array<PdsCategoryModel> = new Array<PdsCategoryModel>(),
-    selectedDateFilter: PdsAggregationResultModel = null
+    selectedDateFilter: PdsAggregationResultModel = null,
+    fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): Observable<PdsSearchResultModel> {
     let query: string = this.constructFinalQuery(pattern, categoriesFilter, selectedDateFilter);
     const params = new HttpParams().set('q', query);
@@ -31,7 +32,8 @@ export class PdsSearchService {
   constructFinalQuery(
     pattern: string,
     categoriesFilter: Array<PdsCategoryModel> = new Array<PdsCategoryModel>(),
-    selectedDateFilter: PdsAggregationResultModel = null
+    selectedDateFilter: PdsAggregationResultModel = null,
+    fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): string {
 
     let queryCategoriesFilter: string = "";
@@ -50,7 +52,15 @@ export class PdsSearchService {
       }
     }
 
-    return pattern + queryCategoriesFilter + dateFilter;
+    let extensionFilter: string = "";
+    if (fileExtensionFilter != null) {
+      let extensionFilterStringQuery: string = this.fileExtensionFilterToStringQuery(fileExtensionFilter);
+      if (extensionFilterStringQuery != "") {
+        extensionFilter += " AND (" + extensionFilterStringQuery + ")";
+      }
+    }
+
+    return pattern + queryCategoriesFilter + dateFilter + extensionFilter;
   }
 
   private computeDateFilterValue(monthToRemove: any): string {
@@ -63,6 +73,14 @@ export class PdsSearchService {
     return categoryFilter
     .map(function formatedQuery(c: PdsCategoryModel) {
       return "categoryId:" + c.id;
+    })
+    .join(" OR ");
+  }
+
+  private fileExtensionFilterToStringQuery(fileExtensionFilter: Array<PdsAggregationResultModel>): string {
+    return fileExtensionFilter
+    .map(function formatedQuery(c: PdsAggregationResultModel) {
+      return "fileExtension:" + c.key;
     })
     .join(" OR ");
   }

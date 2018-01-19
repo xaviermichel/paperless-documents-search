@@ -59,7 +59,17 @@ describe('PdsSearchService', () => {
     expect(queryString).toBe("query AND " + dateFilter);
   }));
 
-  it('should construct the right query for search with category and date filter', inject([PdsSearchService], (service: PdsSearchService) => {
+  it('should construct the right query for search with file extension filter', inject([PdsSearchService], (service: PdsSearchService) => {
+    let extensions: Array<PdsAggregationResultModel>  = new Array<PdsAggregationResultModel>();
+    extensions.push(new PdsAggregationResultModel("txt"));
+    extensions.push(new PdsAggregationResultModel("pdf"));
+
+    let queryString = service.constructFinalQuery("query", new Array<PdsCategoryModel>(), null, extensions);
+
+    expect(queryString).toBe("query AND (fileExtension:txt OR fileExtension:pdf)");
+  }));
+
+  it('should construct the right query for search with category and date filter and extensions', inject([PdsSearchService], (service: PdsSearchService) => {
     let categories: Array<PdsCategoryModel>  = new Array<PdsCategoryModel>();
     categories.push(new PdsCategoryModel("CAT_1", "Category 1"));
     categories.push(new PdsCategoryModel("CAT_2", "Category 2"));
@@ -67,12 +77,16 @@ describe('PdsSearchService', () => {
     let selectedDateFilter: PdsAggregationResultModel = new PdsAggregationResultModel("FOREVER", 1);
     selectedDateFilter.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields("pretty name", 1);
 
-    let queryString = service.constructFinalQuery("query", categories, selectedDateFilter);
+    let extensions: Array<PdsAggregationResultModel>  = new Array<PdsAggregationResultModel>();
+    extensions.push(new PdsAggregationResultModel("txt"));
+    extensions.push(new PdsAggregationResultModel("pdf"));
+
+    let queryString = service.constructFinalQuery("query", categories, selectedDateFilter, extensions);
 
     let fromDate: string = moment().subtract(0, 'months').startOf("month").format('YYYY-MM-DD');
     let toDate: string = moment().endOf("month").format('YYYY-MM-DD'); // can be removed for '*' ?
     let dateFilter:string =  "(fileDate:[" + fromDate + " TO " + toDate + "])";
-    expect(queryString).toBe("query AND (categoryId:CAT_1 OR categoryId:CAT_2) AND " + dateFilter);
+    expect(queryString).toBe("query AND (categoryId:CAT_1 OR categoryId:CAT_2) AND " + dateFilter + " AND (fileExtension:txt OR fileExtension:pdf)");
   }));
 
 });

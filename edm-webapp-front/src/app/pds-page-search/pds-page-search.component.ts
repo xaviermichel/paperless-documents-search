@@ -126,7 +126,9 @@ export class PdsPageSearchComponent implements OnInit {
       }
       this.filterFileDate = globalAggregations.fileDate;
 
-
+      for (let aggregate of globalAggregations.fileExtension.aggregates) {
+        aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields();
+      }
       this.filterFileExtension = globalAggregations.fileExtension;
     });
   }

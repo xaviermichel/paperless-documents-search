@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { PdsAggregationsModel } from '../models/pds-aggregations.model';
-import { PdsAggregationResultModel } from '../models/pds-aggregation-item.model';
+import { PdsAggregationResultModel, PdsAggregationResultModelAdditionalFields } from '../models/pds-aggregation-item.model';
 
 @Component({
   selector: 'pds-checkable-list-with-count',

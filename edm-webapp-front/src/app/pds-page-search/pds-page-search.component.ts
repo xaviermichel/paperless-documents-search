@@ -37,6 +37,7 @@ export class PdsPageSearchComponent implements OnInit {
   selectedDateFilter: PdsAggregationResultModel = null;
 
   filterFileExtension: PdsAggregationsModel = new PdsAggregationsModel();
+  selectedFileExtensions: Array<PdsAggregationResultModel> = null;
 
   ngOnInit() {
   }
@@ -49,6 +50,7 @@ export class PdsPageSearchComponent implements OnInit {
       );
     this.searchForm.control.valueChanges.debounceTime(400).distinctUntilChanged()
     .subscribe(data => this.onSubmitSearchForm());
+    this.refreshAggregations();
   }
 
   linkToDocument(edmDocument: PdsDocumentModel) {
@@ -80,21 +82,24 @@ export class PdsPageSearchComponent implements OnInit {
     this.submitSearch();
   }
 
+  onCheckableDocumentExtensionSelectionChanged(extensions: Array<PdsAggregationResultModel>) {
+    this.selectedFileExtensions = extensions;
+    this.submitSearch();
+  }
+
   onRadioDocumentDateSelectionChanged(selectedDate: PdsAggregationResultModel) {
     this.selectedDateFilter = selectedDate;
     this.submitSearch();
   }
 
   private submitSearch() {
-    this.refreshAggregations();
-
-    if (this.pattern === "") {
+    if (this.pattern.trim() === "") {
       this.suggestions = new PdsSearchSuggestionsModel();
       this.searchResult = null;
       return;
     }
-    this.sdsSearchService.searchForPattern(this.pattern, this.selectedCategories, this.selectedDateFilter)
-    .subscribe((searchResult: PdsSearchResultModel) => this.searchResult = searchResult);
+    this.sdsSearchService.searchForPattern(this.pattern, this.selectedCategories, this.selectedDateFilter, this.selectedFileExtensions)
+      .subscribe((searchResult: PdsSearchResultModel) => this.searchResult = searchResult);
   }
 
   private refreshAggregations() {

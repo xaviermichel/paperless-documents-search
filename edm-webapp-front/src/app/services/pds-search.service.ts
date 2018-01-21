@@ -24,7 +24,7 @@ export class PdsSearchService {
     selectedDateFilter: PdsAggregationResultModel = null,
     fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): Observable<PdsSearchResultModel> {
-    let query: string = this.constructFinalQuery(pattern, categoriesFilter, selectedDateFilter);
+    let query: string = this.constructFinalQuery(pattern, categoriesFilter, selectedDateFilter, fileExtensionFilter);
     const params = new HttpParams().set('q', query);
     return this.http.get<PdsSearchResultModel>(`${environment.sdsApiBaseUrl}/document`, { params });
   }

@@ -5,7 +5,7 @@
 <hr/>
 
 <span *ngFor="let aggregate of filterAggregate.aggregates">
-  <mat-checkbox [(ngModel)]="aggregate.pdsAggregationItem.checked" (change)="onSelectionChange()">
+  <mat-checkbox *ngIf="aggregate.pdsAggregationItem" [(ngModel)]="aggregate.pdsAggregationItem.checked" (change)="onSelectionChange()">
     <span class="tag-key">{{ aggregate.key }}</span>
     <span class="chips-count">{{ aggregate.docCount }}</span>
   </mat-checkbox>

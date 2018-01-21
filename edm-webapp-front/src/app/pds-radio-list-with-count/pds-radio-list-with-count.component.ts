@@ -19,7 +19,8 @@ export class RadioListWithCountComponent implements OnInit {
   @Input()
   filterAggregate: PdsAggregationsModel;
 
-  aggregateSelected: string;
+  @Input()
+  aggregateSelected: string = "";
 
   @Output()
   selectionChanged = new EventEmitter<PdsAggregationResultModel>();

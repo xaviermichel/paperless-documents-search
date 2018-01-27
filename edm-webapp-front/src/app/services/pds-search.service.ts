@@ -24,7 +24,7 @@ export class PdsSearchService {
     selectedDateFilter: PdsAggregationResultModel = null,
     fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): Observable<PdsSearchResultModel> {
-    let query: string = this.constructFinalQuery(pattern, categoriesFilter, selectedDateFilter, fileExtensionFilter);
+    const query: string = this.constructFinalQuery(pattern, categoriesFilter, selectedDateFilter, fileExtensionFilter);
     const params = new HttpParams().set('q', query);
     return this.http.get<PdsSearchResultModel>(`${environment.sdsApiBaseUrl}/document`, { params });
   }
@@ -36,27 +36,27 @@ export class PdsSearchService {
     fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): string {
 
-    let queryCategoriesFilter: string = "";
+    let queryCategoriesFilter: string = '';
     if (categoriesFilter != null) {
-      let categoryFilterStringQuery: string = this.categoryFilterToStringQuery(categoriesFilter);
-      if (categoryFilterStringQuery != "") {
-        queryCategoriesFilter += " AND (" + categoryFilterStringQuery + ")";
+      const categoryFilterStringQuery: string = this.categoryFilterToStringQuery(categoriesFilter);
+      if (categoryFilterStringQuery !== '') {
+        queryCategoriesFilter += ' AND (' + categoryFilterStringQuery + ')';
       }
     }
 
-    let dateFilter: string = "";
-    if (selectedDateFilter != null && selectedDateFilter.pdsAggregationItem.filterValue != 0) {
-      let categoryFilterStringQuery: string = this.computeDateFilterValue(selectedDateFilter.pdsAggregationItem.filterValue);
-      if (categoryFilterStringQuery != "") {
-        dateFilter += " AND (" + categoryFilterStringQuery + ")";
+    let dateFilter: string = '';
+    if (selectedDateFilter != null && selectedDateFilter.pdsAggregationItem.filterValue !== 0) {
+      const categoryFilterStringQuery: string = this.computeDateFilterValue(selectedDateFilter.pdsAggregationItem.filterValue);
+      if (categoryFilterStringQuery !== '') {
+        dateFilter += ' AND (' + categoryFilterStringQuery + ')';
       }
     }
 
-    let extensionFilter: string = "";
+    let extensionFilter: string = '';
     if (fileExtensionFilter != null) {
-      let extensionFilterStringQuery: string = this.fileExtensionFilterToStringQuery(fileExtensionFilter);
-      if (extensionFilterStringQuery != "") {
-        extensionFilter += " AND (" + extensionFilterStringQuery + ")";
+      const extensionFilterStringQuery: string = this.fileExtensionFilterToStringQuery(fileExtensionFilter);
+      if (extensionFilterStringQuery !== '') {
+        extensionFilter += ' AND (' + extensionFilterStringQuery + ')';
       }
     }
 
@@ -64,25 +64,25 @@ export class PdsSearchService {
   }
 
   private computeDateFilterValue(monthToRemove: any): string {
-    let fromDate: string = moment().subtract(monthToRemove, 'months').startOf("month").format('YYYY-MM-DD');
-    let toDate: string = moment().endOf("month").format('YYYY-MM-DD'); // can be removed for '*' ?
-    return "fileDate:[" + fromDate + " TO " + toDate + "]";
+    const fromDate: string = moment().subtract(monthToRemove, 'months').startOf('month').format('YYYY-MM-DD');
+    const toDate: string = moment().endOf('month').format('YYYY-MM-DD'); // can be removed for '*' ?
+    return 'fileDate:[' + fromDate + ' TO ' + toDate + ']';
   }
 
   private categoryFilterToStringQuery(categoryFilter: Array<PdsCategoryModel>): string {
     return categoryFilter
     .map(function formatedQuery(c: PdsCategoryModel) {
-      return "categoryId:" + c.id;
+      return 'categoryId:' + c.id;
     })
-    .join(" OR ");
+    .join(' OR ');
   }
 
   private fileExtensionFilterToStringQuery(fileExtensionFilter: Array<PdsAggregationResultModel>): string {
     return fileExtensionFilter
     .map(function formatedQuery(c: PdsAggregationResultModel) {
-      return "fileExtension:" + c.key;
+      return 'fileExtension:' + c.key;
     })
-    .join(" OR ");
+    .join(' OR ');
   }
 
   getSuggestionsForPattern(pattern: string): Observable<PdsSearchSuggestionsModel> {

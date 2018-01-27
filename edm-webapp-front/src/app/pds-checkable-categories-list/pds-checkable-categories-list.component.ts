@@ -22,7 +22,7 @@ export class PdsCheckableCategoriesListComponent implements OnInit {
       .subscribe((categories: Array<PdsCategoryModel>) => {
         this.categories = categories;
         // init all as selected
-        for (let category of this.categories) {
+        for (const category of this.categories) {
           category.checkableCategoriesListComponentStatus = new PdsCheckableCategoriesListComponentStatus();
         }
       });

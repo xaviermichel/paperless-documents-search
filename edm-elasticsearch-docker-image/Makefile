@@ -11,6 +11,11 @@ help:
 	@echo "    all      to build docker image $(IMAGE_NAME) - Present by convention, call build target"
 	@echo "    build    to build docker image $(IMAGE_NAME)"
 	@echo "    clean    to remove docker image $(IMAGE_NAME)"
+	@echo "    drun     to run docker image $(IMAGE_NAME)"
+	@echo "    dstart   to start docker image $(IMAGE_NAME)"
+	@echo "    dstop    to stop docker image $(IMAGE_NAME)"
+	@echo "    drm      to REMOVE docker image $(IMAGE_NAME)"
+	@echo "    dlogs    to tail logs of docker image $(IMAGE_NAME)"
 
 clean:
 	docker rmi $(IMAGE_NAME)

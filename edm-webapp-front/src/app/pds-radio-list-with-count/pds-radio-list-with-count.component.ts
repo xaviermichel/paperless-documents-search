@@ -20,7 +20,7 @@ export class RadioListWithCountComponent implements OnInit {
   filterAggregate: PdsAggregationsModel;
 
   @Input()
-  aggregateSelected: string = "";
+  aggregateSelected: string = '';
 
   @Output()
   selectionChanged = new EventEmitter<PdsAggregationResultModel>();
@@ -32,7 +32,7 @@ export class RadioListWithCountComponent implements OnInit {
 
   onSelectionChange() {
     // find aggregate from it's key
-    let selectedAggregate: PdsAggregationResultModel = this.filterAggregate.aggregates.filter(aggregate => aggregate.key == this.aggregateSelected)[0];
+    const selectedAggregate: PdsAggregationResultModel = this.filterAggregate.aggregates.filter(aggregate => aggregate.key === this.aggregateSelected)[0];
     this.selectionChanged.emit(selectedAggregate);
   }
 }

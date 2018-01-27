@@ -29,14 +29,14 @@ describe('PdsCheckableListWithCountComponent', () => {
 
   it('should fill template dynamic title', () => {
     // given
-    component.blockTitle = "Testing title";
+    component.blockTitle = 'Testing title';
 
     // when
     fixture.detectChanges();
 
     // then
     const element = fixture.nativeElement;
-    expect(element.querySelector('.filter-title-text').textContent).toBe("Testing title");
+    expect(element.querySelector('.filter-title-text').textContent).toBe('Testing title');
   });
 
 });

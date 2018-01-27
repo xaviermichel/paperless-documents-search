@@ -145,24 +145,24 @@ public class EdmDocumentService {
                 if (highlightFields.get("name") != null) {
                     edmDocumentSearchResult.setHighlightedName(
                         Arrays.stream(highlightFields.get("name").fragments())
-                            .map(t -> t.string())
-                            .collect(Collectors.joining("\n\n"))
+                            .map(t -> t.string().trim())
+                            .collect(Collectors.joining("\n<i>[...]</i>\n"))
                     );
                 }
 
                 if (highlightFields.get("fileContent") != null) {
                     edmDocumentSearchResult.setHighlightedFileContentMatching(
                         Arrays.stream(highlightFields.get("fileContent").fragments())
-                            .map(t -> t.string())
-                            .collect(Collectors.joining("\n\n"))
+                            .map(t -> t.string().trim())
+                            .collect(Collectors.joining("\n<i>[...]</i>\n"))
                     );
                 }
 
                 if (highlightFields.get("nodePath") != null) {
                     edmDocumentSearchResult.setHighlightedNodePath(
                         Arrays.stream(highlightFields.get("nodePath").fragments())
-                            .map(t -> t.string())
-                            .collect(Collectors.joining("\n\n"))
+                            .map(t -> t.string().trim())
+                            .collect(Collectors.joining("\n<i>[...]</i>\n"))
                     );
                 }
 

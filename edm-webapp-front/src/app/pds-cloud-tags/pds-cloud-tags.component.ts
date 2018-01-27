@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
+import { Subject } from 'rxjs/Subject';
+
 import { PdsSearchService } from '../services/pds-search.service';
 import { PdsAggregationsModel } from '../models/pds-aggregations.model';
 
@@ -10,17 +12,24 @@ import { PdsAggregationsModel } from '../models/pds-aggregations.model';
 })
 export class PdsCloudTagsComponent implements OnInit {
 
+  modelChanged: Subject<string> = new Subject<string>();
+
   @Input()
   set pattern(pattern: string) {
-  	this.pdsSearchService.getTopTermsRelatedToPattern(pattern)
-    .subscribe((pdsAggregationsModel: PdsAggregationsModel) => this.aggregationTopTerms = pdsAggregationsModel);
+    this.modelChanged.next(pattern);
   }
 
   @Output() tagClicked = new EventEmitter<string>();
 
   aggregationTopTerms: PdsAggregationsModel = new PdsAggregationsModel();
 
-  constructor(private pdsSearchService: PdsSearchService) { }
+  constructor(private pdsSearchService: PdsSearchService) {
+    this.modelChanged.debounceTime(500).distinctUntilChanged()
+      .subscribe(pattern => {
+        this.pdsSearchService.getTopTermsRelatedToPattern(pattern)
+          .subscribe((pdsAggregationsModel: PdsAggregationsModel) => this.aggregationTopTerms = pdsAggregationsModel);
+    });
+  }
 
   ngOnInit() {
   }

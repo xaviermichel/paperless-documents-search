@@ -17,11 +17,11 @@ Screenshot
 
 ### Frontend, search in your documents !
 
-![application web](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/screenshots/edm_webapp.png)
+![application web](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/develop/screenshots/edm_webapp.png)
 
 ### Backend (optionnal), manage document indexation, automatic crawling, ...
 
-![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/master/screenshots/edm_jenkins.png)
+![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/develop/screenshots/edm_jenkins.png)
 
 
 Quick start

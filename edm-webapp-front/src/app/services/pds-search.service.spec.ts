@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { PdsSearchService } from './pds-search.service';
 import { PdsAggregationResultModel, PdsAggregationResultModelAdditionalFields } from '../models/pds-aggregation-item.model';
 import { PdsCategoryModel } from '../models/pds-category.model';
+import { PdsCategoryAggregationResultModel } from '../models/pds-category-aggregation-item.model';
 
 import { environment } from '../../environments/environment';
 import * as moment from 'moment';
@@ -37,9 +38,13 @@ describe('PdsSearchService', () => {
   }));
 
   it('should construct the right query for search with category filter', inject([PdsSearchService], (service: PdsSearchService) => {
-    const categories: Array<PdsCategoryModel>  = new Array<PdsCategoryModel>();
-    categories.push(new PdsCategoryModel('CAT_1', 'Category 1'));
-    categories.push(new PdsCategoryModel('CAT_2', 'Category 2'));
+    const categories: Array<PdsCategoryAggregationResultModel>  = new Array<PdsCategoryAggregationResultModel>();
+    const cat1: PdsCategoryAggregationResultModel = new PdsCategoryAggregationResultModel();
+    cat1.category = new PdsCategoryModel('CAT_1', 'Category 1');
+    categories.push(cat1);
+    const cat2: PdsCategoryAggregationResultModel = new PdsCategoryAggregationResultModel();
+    cat2.category = new PdsCategoryModel('CAT_2', 'Category 2');
+    categories.push(cat2);
 
     const queryString = service.constructFinalQuery('query', categories);
 
@@ -47,7 +52,7 @@ describe('PdsSearchService', () => {
   }));
 
   it('should construct the right query for search with date filter', inject([PdsSearchService], (service: PdsSearchService) => {
-    const categories: Array<PdsCategoryModel>  = new Array<PdsCategoryModel>();
+    const categories: Array<PdsCategoryAggregationResultModel>  = new Array<PdsCategoryAggregationResultModel>();
     const selectedDateFilter: PdsAggregationResultModel = new PdsAggregationResultModel('FOREVER', 1);
     selectedDateFilter.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields('pretty name', 1);
 
@@ -64,15 +69,19 @@ describe('PdsSearchService', () => {
     extensions.push(new PdsAggregationResultModel('txt'));
     extensions.push(new PdsAggregationResultModel('pdf'));
 
-    const queryString = service.constructFinalQuery('query', new Array<PdsCategoryModel>(), null, extensions);
+    const queryString = service.constructFinalQuery('query', new Array<PdsCategoryAggregationResultModel>(), null, extensions);
 
     expect(queryString).toBe('query AND (fileExtension:txt OR fileExtension:pdf)');
   }));
 
   it('should construct the right query for search with category and date filter and extensions', inject([PdsSearchService], (service: PdsSearchService) => {
-    const categories: Array<PdsCategoryModel>  = new Array<PdsCategoryModel>();
-    categories.push(new PdsCategoryModel('CAT_1', 'Category 1'));
-    categories.push(new PdsCategoryModel('CAT_2', 'Category 2'));
+    const categories: Array<PdsCategoryAggregationResultModel>  = new Array<PdsCategoryAggregationResultModel>();
+    const cat1: PdsCategoryAggregationResultModel = new PdsCategoryAggregationResultModel();
+    cat1.category = new PdsCategoryModel('CAT_1', 'Category 1');
+    categories.push(cat1);
+    const cat2: PdsCategoryAggregationResultModel = new PdsCategoryAggregationResultModel();
+    cat2.category = new PdsCategoryModel('CAT_2', 'Category 2');
+    categories.push(cat2);
 
     const selectedDateFilter: PdsAggregationResultModel = new PdsAggregationResultModel('FOREVER', 1);
     selectedDateFilter.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields('pretty name', 1);

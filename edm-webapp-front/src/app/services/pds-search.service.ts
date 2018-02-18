@@ -8,6 +8,7 @@ import { PdsAggregationsModel } from '../models/pds-aggregations.model';
 import { PdsCategoryModel } from '../models/pds-category.model';
 import { PdsGlobalAggregationsWrapperModel } from '../models/pds-global-aggregations.model';
 import { PdsAggregationResultModel } from '../models/pds-aggregation-item.model';
+import { PdsCategoryAggregationResultModel } from '../models/pds-category-aggregation-item.model';
 
 import * as moment from 'moment';
 
@@ -20,7 +21,7 @@ export class PdsSearchService {
 
   searchForPattern(
     pattern: string,
-    categoriesFilter: Array<PdsCategoryModel> = new Array<PdsCategoryModel>(),
+    categoriesFilter: Array<PdsCategoryAggregationResultModel> = new Array<PdsCategoryAggregationResultModel>(),
     selectedDateFilter: PdsAggregationResultModel = null,
     fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): Observable<PdsSearchResultModel> {
@@ -31,7 +32,7 @@ export class PdsSearchService {
 
   constructFinalQuery(
     pattern: string,
-    categoriesFilter: Array<PdsCategoryModel> = new Array<PdsCategoryModel>(),
+    categoriesFilter: Array<PdsCategoryAggregationResultModel> = new Array<PdsCategoryAggregationResultModel>(),
     selectedDateFilter: PdsAggregationResultModel = null,
     fileExtensionFilter: Array<PdsAggregationResultModel> = new Array<PdsAggregationResultModel>()
     ): string {
@@ -69,10 +70,10 @@ export class PdsSearchService {
     return 'fileDate:[' + fromDate + ' TO ' + toDate + ']';
   }
 
-  private categoryFilterToStringQuery(categoryFilter: Array<PdsCategoryModel>): string {
+  private categoryFilterToStringQuery(categoryFilter: Array<PdsCategoryAggregationResultModel>): string {
     return categoryFilter
-    .map(function formatedQuery(c: PdsCategoryModel) {
-      return 'categoryId:' + c.id;
+    .map(function formatedQuery(c: PdsCategoryAggregationResultModel) {
+      return 'categoryId:' + c.category.id;
     })
     .join(' OR ');
   }

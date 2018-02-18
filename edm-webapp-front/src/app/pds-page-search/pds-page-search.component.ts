@@ -4,7 +4,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 
-import { Observable } from 'rxjs/Observable';
 
 import { PdsSearchService } from '../services/pds-search.service';
 import { PdsDocumentService } from '../services/pds-document.service';
@@ -16,6 +15,8 @@ import { PdsSearchSuggestionsModel } from '../models/pds-search-suggestions.mode
 import { PdsGlobalAggregationsWrapperModel } from '../models/pds-global-aggregations.model';
 import { PdsAggregationsModel } from '../models/pds-aggregations.model';
 import { PdsAggregationResultModel, PdsAggregationResultModelAdditionalFields } from '../models/pds-aggregation-item.model';
+import { PdsCategoryAggregationsModel } from '../models/pds-category-aggregations.model';
+import { PdsCategoryAggregationResultModel } from '../models/pds-category-aggregation-item.model';
 
 @Component({
   selector: 'pds-page-search',
@@ -33,8 +34,8 @@ export class PdsPageSearchComponent implements OnInit {
   suggestions: PdsSearchSuggestionsModel = new PdsSearchSuggestionsModel();
   searchResult: PdsSearchResultModel = null;
 
-  filterCategories: Array<PdsCategoryModel> = new Array<PdsCategoryModel>();
-  selectedCategories: Array<PdsCategoryModel> = null;
+  filterCategories: PdsCategoryAggregationsModel = new PdsCategoryAggregationsModel();
+  selectedCategories: Array<PdsCategoryAggregationResultModel> = null;
 
   filterFileDate: PdsAggregationsModel = new PdsAggregationsModel();
   selectedDateFilter: PdsAggregationResultModel = null;
@@ -75,7 +76,7 @@ export class PdsPageSearchComponent implements OnInit {
     this.pattern = this.pattern + ' AND ' + tagKey;
   }
 
-  onCheckableCategoriesListSelectionChanged(categories: Array<PdsCategoryModel>) {
+  onCheckableCategoriesListSelectionChanged(categories: Array<PdsCategoryAggregationResultModel>) {
     this.selectedCategories = categories;
     this.submitSearch(false);
   }
@@ -141,6 +142,11 @@ export class PdsPageSearchComponent implements OnInit {
         aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields();
       }
       this.filterFileExtension = globalAggregations.fileExtension;
+
+      for (const aggregate of globalAggregations.fileCategory.aggregates) {
+        aggregate.pdsAggregationItem = new PdsAggregationResultModelAdditionalFields();
+      }
+      this.filterCategories = globalAggregations.fileCategory;
     });
   }
 

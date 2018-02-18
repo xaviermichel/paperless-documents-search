@@ -4,13 +4,13 @@
 </h4>
 <hr/>
 
-<span *ngFor="let category of categories">
-  <mat-checkbox [(ngModel)]="category.checkableCategoriesListComponentStatus.checked" (change)="categorySelectionUpdated()">
-    <span class="custom-chips" [style.background-color]="category.checkableCategoriesListComponentStatus.checked ? category.backgroundColor : '#EEEEEE'"  >
-      &nbsp;
+<span *ngFor="let aggregate of filterCategory.aggregates">
+  <mat-checkbox *ngIf="aggregate.pdsAggregationItem" [(ngModel)]="aggregate.pdsAggregationItem.checked" (change)="categorySelectionUpdated()">
+    <span class="custom-chips" [style.background-color]="aggregate.pdsAggregationItem.checked ? aggregate.category.backgroundColor : '#EEEEEE'" [style.color]="aggregate.pdsAggregationItem.checked ? aggregate.category.color : '#000'" >
+      {{ aggregate.docCount }}
     </span>
     &nbsp;
-    {{ category.name }}
+    {{ aggregate.category.name }}
   </mat-checkbox>
   <br/>
 </span>

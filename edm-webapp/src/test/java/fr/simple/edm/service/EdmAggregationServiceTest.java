@@ -137,4 +137,18 @@ public class EdmAggregationServiceTest {
         assertThat(extensions.size()).isEqualTo(attemptedResult.size());
         assertThat(extensions).containsAll(attemptedResult);
     }
+
+    @Test
+    public void categoryShouldBeAggregated() {
+        Map<String, EdmAggregationsWrapper> aggregations = edmAggregationsService.getAggregations("paye OR brevet OR bac");
+        List<EdmAggregationItem> aggregates = aggregations.get("fileCategory").getAggregates();
+
+        List<EdmAggregationItem> attemptedResult = Arrays.asList(new EdmAggregationItem[]{
+            new EdmAggregationItem("category 1", 3),
+            new EdmAggregationItem("category 2", 1)
+        });
+
+        assertThat(aggregates.size()).isEqualTo(attemptedResult.size());
+        assertThat(aggregates).containsAll(attemptedResult);
+    }
 }

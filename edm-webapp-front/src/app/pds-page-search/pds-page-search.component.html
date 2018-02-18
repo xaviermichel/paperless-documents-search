@@ -6,7 +6,7 @@
       <pds-cloud-tags [pattern]="pattern" (tagClicked)="onCloudTagClicked($event)">
       </pds-cloud-tags>
 
-      <pds-checkable-categories-list (selectionChanged)="onCheckableCategoriesListSelectionChanged($event)">
+      <pds-checkable-categories-list (selectionChanged)="onCheckableCategoriesListSelectionChanged($event)" [filterCategory]="filterCategories">
       </pds-checkable-categories-list>
 
       <pds-radio-list-with-count [blockIconName]="'date_range'" [blockTitle]="'Date du document'" [filterAggregate]="filterFileDate" [aggregateSelected]="'until_now'" (selectionChanged)="onRadioDocumentDateSelectionChanged($event)">

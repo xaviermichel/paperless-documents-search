@@ -1,8 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 
 import { PdsCategoryService } from '../services/pds-category.service';
 
 import { PdsCategoryModel, PdsCheckableCategoriesListComponentStatus } from '../models/pds-category.model';
+import { PdsCategoryAggregationsModel } from '../models/pds-category-aggregations.model';
+import { PdsCategoryAggregationResultModel } from '../models/pds-category-aggregation-item.model';
 
 @Component({
   selector: 'pds-checkable-categories-list',
@@ -11,26 +13,19 @@ import { PdsCategoryModel, PdsCheckableCategoriesListComponentStatus } from '../
 })
 export class PdsCheckableCategoriesListComponent implements OnInit {
 
-  constructor(private pdsCategoryService: PdsCategoryService) { }
+  constructor() { }
 
-  categories: Array<PdsCategoryModel>;
+  @Input()
+  filterCategory: PdsCategoryAggregationsModel;
 
-  @Output() selectionChanged = new EventEmitter<Array<PdsCategoryModel>>();
+  @Output() selectionChanged = new EventEmitter<Array<PdsCategoryAggregationResultModel>>();
 
   ngOnInit() {
-    this.pdsCategoryService.findAll()
-      .subscribe((categories: Array<PdsCategoryModel>) => {
-        this.categories = categories;
-        // init all as selected
-        for (const category of this.categories) {
-          category.checkableCategoriesListComponentStatus = new PdsCheckableCategoriesListComponentStatus();
-        }
-      });
   }
 
   categorySelectionUpdated() {
     this.selectionChanged.emit(
-      this.categories.filter(c => c.checkableCategoriesListComponentStatus.checked === true)
+      this.filterCategory.aggregates.filter(c => c.pdsAggregationItem.checked === true)
     );
   }
 }

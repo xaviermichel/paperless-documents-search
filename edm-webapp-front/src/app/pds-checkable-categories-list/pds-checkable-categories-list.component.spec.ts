@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 
 import { PdsCategoryService } from '../services/pds-category.service';
 import { PdsCheckableCategoriesListComponent } from './pds-checkable-categories-list.component';
+import { PdsCategoryAggregationsModel } from '../models/pds-category-aggregations.model';
 
 describe('PdsCheckableCategoriesListComponent', () => {
   let component: PdsCheckableCategoriesListComponent;
@@ -24,6 +25,7 @@ describe('PdsCheckableCategoriesListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PdsCheckableCategoriesListComponent);
     component = fixture.componentInstance;
+    component.filterCategory = new PdsCategoryAggregationsModel();
     fixture.detectChanges();
   });
 

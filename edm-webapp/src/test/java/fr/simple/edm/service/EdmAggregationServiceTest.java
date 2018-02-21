@@ -5,6 +5,7 @@ import fr.simple.edm.EdmTestHelper;
 import fr.simple.edm.ElasticsearchTestingHelper;
 import fr.simple.edm.domain.EdmAggregationsWrapper;
 import fr.simple.edm.domain.EdmAggregationItem;
+import fr.simple.edm.domain.EdmCategoryAggregationItem;
 import fr.simple.edm.domain.EdmDocumentFile;
 import org.junit.After;
 import org.junit.Before;
@@ -143,9 +144,9 @@ public class EdmAggregationServiceTest {
         Map<String, EdmAggregationsWrapper> aggregations = edmAggregationsService.getAggregations("paye OR brevet OR bac");
         List<EdmAggregationItem> aggregates = aggregations.get("fileCategory").getAggregates();
 
-        List<EdmAggregationItem> attemptedResult = Arrays.asList(new EdmAggregationItem[]{
-            new EdmAggregationItem("category 1", 3),
-            new EdmAggregationItem("category 2", 1)
+        List<EdmCategoryAggregationItem> attemptedResult = Arrays.asList(new EdmCategoryAggregationItem[]{
+            EdmCategoryAggregationItem.builder().key(edmTestHelper.getCategory1().getId()).docCount(3).category(edmTestHelper.getCategory1()).build(),
+            EdmCategoryAggregationItem.builder().key(edmTestHelper.getCategory2().getId()).docCount(1).category(edmTestHelper.getCategory2()).build()
         });
 
         assertThat(aggregates.size()).isEqualTo(attemptedResult.size());

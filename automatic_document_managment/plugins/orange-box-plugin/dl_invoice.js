@@ -34,7 +34,7 @@ casper.then(function() {
 
 casper.wait(SLEEP_TIME, function() {});
 
-casper.thenClick(x('//h3[contains(text(),"facture")]'), function() {
+casper.thenClick(x('//h3[contains(text(),"Factures")]'), function() {
     this.echo('Consultation de l\'espace client');
 });
 

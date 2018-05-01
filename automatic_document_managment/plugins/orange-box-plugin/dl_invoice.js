@@ -26,9 +26,17 @@ casper.wait(SLEEP_TIME, function() {});
 
 casper.then(function() {
     this.echo('Connection avec le compte : ' + login);
-    this.fill('#AuthentForm', {
-        'credential': login,
-        'password': pass
+    this.fillSelectors('#euiForm', {
+        '#login': login
+    }, true);
+});
+
+casper.wait(SLEEP_TIME, function() {});
+
+casper.then(function() {
+    this.echo('Connection avec le mot de passe : ' + "*****");
+    this.fillSelectors('#euiForm', {
+        '#password': pass
     }, true);
 });
 

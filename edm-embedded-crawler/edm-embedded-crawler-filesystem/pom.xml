@@ -4,7 +4,7 @@
     <parent>
         <artifactId>paperless-documents-search-embedded-crawler</artifactId>
         <groupId>fr.simple.edm</groupId>
-        <version>4.0.0</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 

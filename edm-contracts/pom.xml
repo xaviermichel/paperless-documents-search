@@ -4,7 +4,7 @@
     <parent>
         <artifactId>paperless-documents-search</artifactId>
         <groupId>fr.simple.edm</groupId>
-        <version>3.3.0-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>..</relativePath>
     </parent>
 

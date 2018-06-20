@@ -31,7 +31,11 @@ Quick start
 
 **Compilation**
 
-You want to compile and run it in two minutes ? You just need [maven](http://maven.apache.org/download.cgi), a recent node version (with angular cli) and docker
+You want to compile and run it in two minutes ? You just need :
+- [maven](http://maven.apache.org/download.cgi)
+- [nodejs](https://nodejs.org/en/)
+- [angular cli](https://cli.angular.io/)
+- [docker, with docker-compose](https://docs.docker.com/install/).
 
 You can compile the project core and run it !
 ```bash
@@ -48,11 +52,11 @@ docker-compose up
 **Index your documents**
 
 It's time to index your documents ! If you don't want to add a external crawler, just use embedded filesystem crawler.
-Hit `http://127.0.0.1:8054/crawl/filesystem/subdirectories?path=D:\data\docs\Documents` (adapt the path ;)).
+Hit `http://localhost/crawl/filesystem/subdirectories?path=/media/documents` (adapt the path ;)).
 
 **Explore your documents**
 
-Open you browser on `http://127.0.0.1:8054`, you can now search in your documents !
+Open you browser on `http://localhost`, you can now search in your documents !
 
 
 Similar Projects

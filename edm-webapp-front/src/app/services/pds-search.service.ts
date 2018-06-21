@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { PdsSearchResultModel } from '../models/pds-search-result.model';
 import { PdsSearchSuggestionsModel } from '../models/pds-search-suggestions.model';

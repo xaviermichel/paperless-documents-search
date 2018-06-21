@@ -1,5 +1,6 @@
 .tags-list {
   line-height: 150%;
+  overflow-wrap: break-word;
 }
 
 .tag-key:hover {

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { PdsSearchService } from '../services/pds-search.service';
 import { PdsAggregationsModel } from '../models/pds-aggregations.model';
@@ -24,7 +25,7 @@ export class PdsCloudTagsComponent implements OnInit {
   aggregationTopTerms: PdsAggregationsModel = new PdsAggregationsModel();
 
   constructor(private pdsSearchService: PdsSearchService) {
-    this.modelChanged.debounceTime(500).distinctUntilChanged()
+    this.modelChanged.pipe(debounceTime(500), distinctUntilChanged())
       .subscribe(pattern => {
         this.pdsSearchService.getTopTermsRelatedToPattern(pattern)
           .subscribe((pdsAggregationsModel: PdsAggregationsModel) => this.aggregationTopTerms = pdsAggregationsModel);

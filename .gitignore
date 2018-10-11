@@ -69,3 +69,6 @@ casper-fail-*
 # docker
 docker_elastic_image/Dockerfile_*
 
+# plugins data
+**/konnector-dev-config.json
+

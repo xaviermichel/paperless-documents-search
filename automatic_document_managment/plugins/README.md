@@ -1,6 +1,9 @@
 Plugins
 -------
 
+Independant module
+------------------
+
 Plugins needs casperjs. First, install python 2.7 and add `C:\Python27` to your PATH environment var.
 Then, just run :
 ```bash
@@ -12,3 +15,9 @@ If you're on windows, you need sh in your path (install git bash for example, an
 
 
 To run a plugin, just run `run.sh` in the plugin directory (you can enter your credentials in `configuration.cfg`).
+
+Submodule
+---------
+
+Depends of module configuration
+

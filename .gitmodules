@@ -1,0 +1,3 @@
+[submodule "automatic_document_managment/plugins/orange-box-plugin/cozy-konnector-orange"]
+	path = automatic_document_managment/plugins/orange-box-plugin/cozy-konnector-orange
+	url = https://github.com/xaviermichel/cozy-konnector-orange.git

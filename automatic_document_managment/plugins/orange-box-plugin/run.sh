@@ -3,14 +3,23 @@
 . ../commons.sh
 . ./configuration.cfg
 
-SYNTHESE_TMP_FILE=synthese.pdf
+cp -v konnector-dev-config.json cozy-konnector-orange/
+cd cozy-konnector-orange
 
 # remove potential old files
-rm -fv ${SYNTHESE_TMP_FILE}
+if [ -d ./data ] ; then
+    rm -fvr ./data/
+fi
 
-# download new files
-casperjs --ignore-ssl-errors=true --ssl-protocol=tlsv1 dl_invoice.js "${orange_user}" "${orange_pass}" "${SYNTHESE_TMP_FILE}"
-sleep 60
+# init
+yarn
+
+# download invoice
+yarn standalone
+
+cd -
+
+SYNTHESE_TMP_FILE=$(find ./cozy-konnector-orange/data -name '*.pdf')
 
 if grep -qv "%PDF" <<< $(head -c 6 "${SYNTHESE_TMP_FILE}" 2>&1 | tail -1); then
     echo "${SYNTHESE_TMP_FILE} ne semble pas etre un PDF, abandon"

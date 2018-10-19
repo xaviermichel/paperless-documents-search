@@ -16,7 +16,7 @@ console.log(`Getting data for user ${bouyguesUser}`);
     const browser = await puppeteer.launch({
         executablePath: '/usr/bin/chromium-browser',
         /*headless: false,*/
-        slowMo: 250
+        slowMo: 2500
     });
     const page = await browser.newPage();
     await page.setViewport({

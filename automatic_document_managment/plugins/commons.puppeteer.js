@@ -20,7 +20,7 @@ async function clickByText(page, text, selectorName = "a", index = 0, hideLogTex
 }
 
 async function hoverByText(page, text, selectorName = "a", index = 0) {
-    const escapedText = escapeXpathString(text);
+    const escapedText = await escapeXpathString(text);
     console.log(`Looking for //${selectorName}[contains(text(), ${escapedText})] #${index}`);
     const linkHandlers = await page.$x(`//${selectorName}[contains(text(), ${escapedText})]`);
     await linkHandlers[index].hover();

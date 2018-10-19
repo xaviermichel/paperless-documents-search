@@ -2,13 +2,12 @@ const puppeteer = require('puppeteer');
 const pupeeteerUtils = require('../commons.puppeteer.js');
 
 if (process.argv.length <= 3) {
-    console.log("Usage: " + __filename + " bouygues_user bouygues_pass pdf_file_target");
+    console.log("Usage: " + __filename + " bouygues_user bouygues_pass");
     process.exit(-1);
 }
 
 var bouyguesUser = new String(process.argv[2]);
 var bouyguesPass = new String(process.argv[3]);
-var bouyguesPdfFileTarget = new String(process.argv[4]);
 
 console.log(`Getting data for user ${bouyguesUser}`);
 

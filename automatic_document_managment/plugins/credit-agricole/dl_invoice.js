@@ -1,140 +1,71 @@
-var casper = require("casper").create({
-     viewportSize: {
-         width: 1920,
-         height: 1080
-     }
-});
-var x = require('casper').selectXPath;
+const puppeteer = require('puppeteer');
+const pupeeteerUtils = require('../commons.puppeteer');
+const log = require('./logger').logger;
 
-var login = new String(casper.cli.raw.get(0));
-var pass = new String(casper.cli.raw.get(1));
-var targetFile = casper.cli.raw.get(2);
-var targetFile2 = casper.cli.raw.get(3);
-
-var passArray = pass.split('').map(function (e) {
-	return e;
-});
-
-var lienFactureGlobale = "";
-var lienFactureGlobale2 = "";
-
-var SLEEP_TIME = 2000;
-
-// debug
-var debugNavigation = false;
-
-var fs = require('fs');
-var currentDebugIndex = 0;
-function dumpPage(casperObject) {
-	if (! debugNavigation) {
-		return;
-	}
-	casperObject.echo("Debugging point " + currentDebugIndex, 'INFO');
-	fs.write('debug/' + currentDebugIndex + '.html', casperObject.getPageContent());
-	casperObject.captureSelector('debug/' + currentDebugIndex + '.png', 'html');
-	currentDebugIndex++;
-}
-// end of debug
-
-function getLinks() {
-	var links = document.querySelectorAll('#panneau1 .ca-table td a');
-	return Array.prototype.map.call(links, function(e) {
-		var href = e.getAttribute('href');
-		var extractUrlRegex = /ouvreTelechargement(.*)majDateConsultation/g;
-		var res = href.match(extractUrlRegex)[0];
-		var url = 'https://www.franchecomte-g4-enligne.credit-agricole.fr/stb/' + res.replace("ouvreTelechargement('", "").replace("');majDateConsultation", "") + '&typeaction=telechargement';
-		return url;
-	});
+if (process.argv.length <= 3) {
+    log.error("Usage: " + __filename + " ca_user ca_pass");
+    process.exit(-1);
 }
 
-casper.start();
-casper.clear();
-phantom.clearCookies();
+var caUser = new String(process.argv[2]);
+var caPass = new String(process.argv[3]);
 
-casper.thenOpen('https://www.ca-franchecomte.fr/', function() {
-	this.echo("Ouverture du site du CA");
-});
+log.info(`Getting data for user ${caUser}`);
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
+(async () => {
 
-casper.thenClick(x('//span[contains(text(),"Accéder à mes comptes")]'), function() {
-    this.echo('Ouverture page de connexion');
-});
+    const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium-browser',
+        headless: true,
+        slowMo: 250
+    });
+    const page = await browser.newPage();
+    await page.setViewport({
+        width: 1920,
+        height: 600
+    });
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
+    log.info("Going to CA website");
+    await page.goto('https://www.ca-franchecomte.fr/');
+    await pupeeteerUtils.clickByText(page, 'Accéder à mes comptes', 'span');
 
-casper.then(function() {
-	this.echo("Remplissage du numéro de compte");
-	this.sendKeys('input[name=CCPTE]', login.toString());
-});
+    await page.waitForNavigation();
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
+    log.info("Filling form");
+    await page.waitForSelector("input[name=CCPTE]");
+    await page.type('input[name=CCPTE]', caUser, {delay: 25});
+    async function fillPasswordGrid(passwordArray) {
+        for (const e of passwordArray) {
+            //console.log(`clicking on ${e}`);
+            await pupeeteerUtils.clickByText(page, e, 'a', 0, true);
+        }
+    }
+    await fillPasswordGrid(caPass.split(''));
+    await pupeeteerUtils.clickByText(page, 'Confirmer');
 
-casper.eachThen(passArray, function(numberToClick) {
-	//this.echo('Clicking on ' + numberToClick.data);
-	this.click(x('//a[contains(text(),"' + numberToClick.data  + '")]'));
-	this.wait(SLEEP_TIME, function() {});
-});
+    await page.waitForNavigation();
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
+    log.info("Going on e-document page");
+    await pupeeteerUtils.clickByText(page, 'Consultation', 'a');
 
-casper.then(function() {
-	this.echo('Validation du formulaire de connexion');
-	this.clickLabel('Confirmer');
-});
+    log.info("Expending document list");
+    await page.waitForXPath("//a[contains(text(), concat('RELEVES DE COMPTES', ''))]");
+    await pupeeteerUtils.clickByText(page, 'RELEVES DE COMPTES', 'a');
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
+    browser.on('targetcreated', async(target) => {
+        log.verbose(`Created target type ${target.type()} , url ${target.url()}`);
+        if (target.type() !== 'page') {
+            return;
+        }
+        let newPage = await target.page();
+        await pupeeteerUtils.allowDownloadInData(newPage);
+        log.verbose(`Download allowed`);
+    });
 
-casper.then(function() {
-	this.echo('Navigation vers la page e-documents');
-	this.clickLabel('E-Documents', 'a');
-});
+    log.info("Opening the download link");
+    await page.click('img[title="Téléchargez votre document"]');
 
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
-
-casper.then(function() {
-	this.echo('Recuperation des liens');
-	links = this.evaluate(getLinks);
-	lienFactureGlobale = links[0];
-	lienFactureGlobale2 = links[1];
-	this.echo('- Compte 1 : ' + lienFactureGlobale);
-	this.echo('- Compte 2 : ' + lienFactureGlobale);
-});
-
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
-
-casper.then(function() {
-	this.echo('Telechargement facture globale dans ' + targetFile);
-	this.download(lienFactureGlobale, targetFile);
-});
-
-casper.wait(SLEEP_TIME, function() {
-	dumpPage(this);
-});
-
-casper.then(function() {
-	if (targetFile2 == '') {
-		this.echo("Le lien globale2 est vide, on considere un seul document et on ignore et on ne telecharge rien d'autre");
-	} else {
-		this.echo('Telechargement facture globale 2 dans ' + targetFile2);
-		this.download(lienFactureGlobale2, targetFile2);
-	}
-	this.echo('Va attendre 60 secondes avant de continuer...');
-});
-
-casper.run();
-
+    log.info("Wait for download to be finished before closing browser");
+    await page.waitFor(20000);
+    await browser.close();
+})();

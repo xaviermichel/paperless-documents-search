@@ -47,3 +47,25 @@ function replace_var_in_var_current_month() {
     varValue=$(customReplacement ${varValue})
     echo ${varValue}
 }
+
+# check if the given file seems to be a PDF
+#   $1 the file name
+#   output : exit if fail
+function assert_is_valid_pdf() {
+    potentialPdf=$1
+    if grep -qv "%PDF" <<< $(head -c 6 "${potentialPdf}" 2>&1 | tail -1); then
+        echo "${potentialPdf} ne semble pas etre un PDF, abandon"
+        echo "* Exact reason : "
+        head -c 6 "${potentialPdf}" 2>&1 | tail -1
+        exit 1
+    fi
+}
+
+# cleaning data folder, and recreate an empty one
+function clean_data_directory() {
+    if [ -d ./data ] ; then
+        rm -vfr ./data
+    fi
+    mkdir -v ./data
+}
+

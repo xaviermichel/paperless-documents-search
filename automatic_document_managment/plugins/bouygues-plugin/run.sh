@@ -3,8 +3,6 @@
 . ../commons.sh
 . ./configuration.cfg
 
-SYNTHESE_TMP_FILE=synthese.pdf
-
 # cleaning
 if [ -d ./data ] ; then
     rm -vfr ./data

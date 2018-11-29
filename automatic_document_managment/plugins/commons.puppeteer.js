@@ -33,8 +33,15 @@ async function allowDownloadInData(page) {
     });
 }
 
+async function clearInput(page, selector) {
+    await page.focus(selector);
+    await page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
+    return page.keyboard.press('Backspace');
+}
+
 module.exports.escapeXpathString = escapeXpathString;
 module.exports.clickByText = clickByText;
 module.exports.hoverByText = hoverByText;
 module.exports.allowDownloadInData = allowDownloadInData;
+module.exports.clearInput = clearInput;
 

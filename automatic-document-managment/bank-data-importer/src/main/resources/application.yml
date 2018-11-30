@@ -1,0 +1,57 @@
+
+spring:
+    main:
+        web-application-type: NONE
+
+logging:
+    level:
+        fr.simple.edm: INFO
+
+ca:
+    csvFilePath: /tmp/export.CSV
+    accountsLabel:
+        - Compte personnel
+        - Compte commun
+
+google:
+    sheet:
+        appName: Account Importer
+        credentialsFilePath: /credentials.json
+        tokenDirectoryPath: /tmp/tokens
+        spreadsheetId: xxxxx-xxxxxxxxxx-xxxxxxx
+        smartInsertSheet:
+            name: Insertions intelligentes
+            firstCol: A
+            firstRow: 7
+            lastCol: F
+            lastRow: 100
+        smartInsertSheetFormulaSource:
+            name: Insertions intelligentes
+            firstCol: 5
+            firstRow: 4
+            lastCol: 5
+            lastRow: 4
+        smartInsertSheetFormulaDestination:
+            name: Insertions intelligentes
+            firstCol: 5
+            firstRow: 6
+            lastCol: 5
+            lastRow: 100
+        smartInsertSheetFullRangeCopy:
+            name: Insertions intelligentes
+            firstCol: 0
+            firstRow: 6
+            lastCol: 5
+            lastRow: 100
+        nextMonthSheet:
+            name: M+1
+            firstCol: A
+            firstRow: 21
+            lastCol: F
+            lastRow: 100
+        nextMonthSheetPaste:
+            name: M+1
+            firstCol: 0
+            firstRow: 20
+            lastCol: 5
+            lastRow: 100

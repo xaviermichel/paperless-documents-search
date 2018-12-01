@@ -207,5 +207,6 @@
         <module>edm-webapp-front</module>
         <module>edm-contracts</module>
         <module>edm-embedded-crawler</module>
+        <module>automatic-document-managment/bank-data-importer</module>
     </modules>
 </project>

@@ -62,6 +62,7 @@ logback.xml
 *.appref-ms
 *.xlsx
 *.versionsBackup
+credentials.json
 
 # debug tests
 casper-fail-*

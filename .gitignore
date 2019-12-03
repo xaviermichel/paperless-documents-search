@@ -63,6 +63,8 @@ logback.xml
 *.xlsx
 *.versionsBackup
 credentials.json
+ca-csv-credential.json
+data/
 
 # debug tests
 casper-fail-*

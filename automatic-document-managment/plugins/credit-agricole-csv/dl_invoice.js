@@ -17,7 +17,7 @@ log.info(`Getting data for user ${caUser}`);
 (async () => {
 
     const browser = await puppeteer.launch({
-        executablePath: '/usr/bin/chromium-browser',
+        executablePath: '/bin/chromium',
         headless: true,
         slowMo: 250
     });
@@ -88,6 +88,10 @@ log.info(`Getting data for user ${caUser}`);
     await page.waitForNavigation();
 
     log.info("Downloading file");
+    await pupeeteerUtils.clickByText(page, 'Télécharger', 'a');
+
+    await page.waitFor(10000);
+    log.info("Re-downloading file");
     await pupeeteerUtils.clickByText(page, 'Télécharger', 'a');
 
     log.info("Wait for download to be finished before closing browser");

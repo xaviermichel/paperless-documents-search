@@ -11,18 +11,24 @@ async function clickByText(page, text, selectorName = "a", index = 0, hideLogTex
     const escapedText = await escapeXpathString(text);
     if (hideLogText) {
         let hiddenText = replaceByStar(text);
-        console.log(`Looking for //${selectorName}[contains(text(), ${hiddenText})] #${index}`);
+        console.log(`Looking for $x("//${selectorName}[contains(text(), ${hiddenText})] #${index}")`);
     } else {
-        console.log(`Looking for //${selectorName}[contains(text(), ${escapedText})] #${index}`);
+        console.log(`Looking for $x("//${selectorName}[contains(text(), ${escapedText})] #${index}")`);
     }
     const linkHandlers = await page.$x(`//${selectorName}[contains(text(), ${escapedText})]`);
+    if (index === -1) {
+        index = linkHandlers.length - 1;
+    }
     await linkHandlers[index].click();
 }
 
 async function hoverByText(page, text, selectorName = "a", index = 0) {
     const escapedText = await escapeXpathString(text);
-    console.log(`Looking for //${selectorName}[contains(text(), ${escapedText})] #${index}`);
+    console.log(`Looking for $x("//${selectorName}[contains(text(), ${escapedText})] #${index}")`);
     const linkHandlers = await page.$x(`//${selectorName}[contains(text(), ${escapedText})]`);
+    if (index === -1) {
+        index = linkHandlers.length - 1;
+    }
     await linkHandlers[index].hover();
 }
 

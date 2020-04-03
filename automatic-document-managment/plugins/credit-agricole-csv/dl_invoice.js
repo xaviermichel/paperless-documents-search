@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const pupeeteerUtils = require('../commons.puppeteer');
+const pupeeteerDownloadUtils = require('./download.puppeteer');
 const log = require('./logger').logger;
 
 if (process.argv.length <= 5) {
@@ -27,16 +28,6 @@ log.info(`Getting data for user ${caUser}`);
         height: 800
     });
 
-    browser.on('targetcreated', async(target) => {
-        log.verbose(`Created target type ${target.type()} , url ${target.url()}`);
-        if (target.type() !== 'page') {
-            return;
-        }
-        let newPage = await target.page();
-        await pupeeteerUtils.allowDownloadInData(newPage);
-        log.verbose(`Download allowed`);
-    });
-
     log.info("Going to CA website");
     await page.goto('https://www.credit-agricole.fr/ca-franchecomte/particulier/acceder-a-mes-comptes.html');
 
@@ -48,7 +39,7 @@ log.info(`Getting data for user ${caUser}`);
     async function fillPasswordGrid(passwordArray) {
         for (const e of passwordArray) {
             //console.log(`clicking on ${e}`);
-            await pupeeteerUtils.clickByText(page, e, 'div', 0, true);
+            await pupeeteerUtils.clickByText(page, e, 'div', -1, true);
         }
     }
 
@@ -80,13 +71,7 @@ log.info(`Getting data for user ${caUser}`);
     await page.type('#dateTo', dateTo, {delay: 25});
 
     log.info("Downloading file");
-    await pupeeteerUtils.clickByText(page, 'Valider', 'button');
+    await pupeeteerDownloadUtils.download(page, '.FormActions-btn.FormActions-btn--submit');
 
-    await page.waitFor(10000);
-    log.info("Re-downloading file");
-    await pupeeteerUtils.clickByText(page, 'Valider', 'button');
-
-    log.info("Wait for download to be finished before closing browser");
-    await page.waitFor(20000);
     await browser.close();
 })();

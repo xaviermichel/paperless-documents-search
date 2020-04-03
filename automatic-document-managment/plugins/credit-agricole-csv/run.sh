@@ -20,7 +20,7 @@ fi
 node dl_invoice.js "${ca_account_number}" "${ca_account_pass}" "${fromDate}" "${toDate}"
 sleep 5
 
-accountCsv=$(find ./data -name '*.CSV')
+accountCsv=$(find ./data -name '*.csv')
 if [ -z "${accountCsv}" ]; then
     echo "Failed to download CSV"
     exit 1

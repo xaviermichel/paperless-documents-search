@@ -13,6 +13,7 @@ public class GoogleSheetImporterConfiguration {
     private String credentialsFilePath;
     private String tokenDirectoryPath;
     private String spreadsheetId;
+    private String oauthCallbackIP = "127.0.0.1";
     private Sheet smartInsertSheet;
     private Sheet nextMonthSheet;
     private Sheet smartInsertSheetFormulaSource;

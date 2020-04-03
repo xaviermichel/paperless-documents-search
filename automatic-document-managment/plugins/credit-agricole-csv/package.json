@@ -4,6 +4,7 @@
   "description": "",
   "author": "",
   "dependencies": {
+    "expect-puppeteer": "^4.4.0",
     "puppeteer": "^1.8.0",
     "winston": "^3.1.0"
   }

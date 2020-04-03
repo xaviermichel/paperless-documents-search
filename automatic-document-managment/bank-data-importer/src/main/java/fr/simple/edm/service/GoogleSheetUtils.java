@@ -60,7 +60,7 @@ public class GoogleSheetUtils {
             .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(googleSheetImporterConfiguration.getTokenDirectoryPath())))
             .setAccessType("offline")
             .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(googleSheetImporterConfiguration.getOauthCallbackIP()).setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 

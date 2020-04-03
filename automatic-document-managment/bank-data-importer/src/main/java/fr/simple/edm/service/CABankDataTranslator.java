@@ -77,12 +77,12 @@ public class CABankDataTranslator implements BankDataTranslator {
                 }
 
                 ArrayUtils.reverse(splittedLine);
-                boolean isCredit = line.contains(";;");
+                boolean isCredit = ! line.endsWith(";;");
                 if (isCredit) {
-                    currentOperation.setCreditValue(Double.valueOf(splittedLine[0].replace(",", ".")));
+                    currentOperation.setCreditValue(Double.valueOf(splittedLine[0].replaceAll("[^0-9,]+", "").replace(",", ".")));
                 }
                 else {
-                    currentOperation.setDebitValue(Double.valueOf(splittedLine[0].replace(",", ".")));
+                    currentOperation.setDebitValue(Double.valueOf(splittedLine[0].replaceAll("[^0-9,]+", "").replace(",", ".")));
                 }
 
                 currentOperation.setAccountLabel(caConfiguration.getAccountsLabel().get(currentAccountIndex));

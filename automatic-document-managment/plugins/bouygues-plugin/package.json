@@ -1,9 +1,0 @@
-{
-  "name": "bouygues-plugin",
-  "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "dependencies": {
-    "puppeteer": "^1.8.0"
-  }
-}

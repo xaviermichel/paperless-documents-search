@@ -12,17 +12,7 @@ This program is used in order to tidy your documents and provide an unique entry
 - Index your documents from from your local drive (or anywhere else) and take benefice of OCR ;
 - Search in your files content with a powerful search engine !
 
-Screenshot
-----------
-
-### Frontend, search in your documents !
-
-![application web](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/develop/screenshots/edm_webapp.png)
-
-### Backend (optionnal), manage document indexation, automatic crawling, ...
-
-![gestionnaire d'indexation](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/develop/screenshots/edm_jenkins.png)
-
+![application web](https://raw.githubusercontent.com/xaviermichel/paperless-documents-search/develop/.documentation-resources/edm_webapp.png)
 
 Quick start
 -----------
@@ -37,22 +27,25 @@ You want to compile and run it in two minutes ? You just need :
 - [angular cli](https://cli.angular.io/)
 - [docker, with docker-compose](https://docs.docker.com/install/).
 
-You can compile the project core and run it !
+You can compile the projects :
 ```bash
-mvn clean install -DskipTests
+./scripts/run-build.sh
+./scripts/run-build-images.sh
 ```
 
 **Start the stack**
 
 Great ! Now you can launch everything :
 ```bash
+cd docker/edm_stack/
 docker-compose up
 ```
 
-**Index your documents**
+**Index some documents**
 
-It's time to index your documents ! If you don't want to add a external crawler, just use embedded filesystem crawler.
-Hit `http://localhost/crawl/filesystem/subdirectories?path=/media/documents` (adapt the path ;)).
+```bash
+java -jar edm-services/edm-filesystem-crawler/target/edm-filesystem-crawler-*.jar --edm.crawler.fs.edmServerHttpAddress=http://127.0.0.1:80 --edm.crawler.fs.rootPath=/media
+```
 
 **Explore your documents**
 
@@ -66,43 +59,8 @@ You can also take a look at :
 - https://github.com/danielquinn/paperless
 - https://github.com/dadoonet/fscrawler
 
-Other
------
+How to...
+---------
 
-**Code quality with sonar**
-
-1. [Download sonar](http://www.sonarqube.org/downloads/)
-2. Extract the zip and launch the adapted bin (you should have access to http://127.0.0.1:9000/)
-3. In the "paperless-documents-search" directory, [launch sonar analysis](http://docs.codehaus.org/display/SONAR/Analyzing+with+Maven) :
-
-```code:bash
-mvn clean install
-mvn sonar:sonar
-```
-
-**Useful commands**
-
-To start an external elasticsearch :
-```bash
-cd edm-elasticsearch-docker-image/
-make drun
-cd -
-```
-
-To start a standalone webapp server :
-```
-docker run --rm --name paperless-documents-search-webapp --link paperless-documents-search-elasticsearch -p 8053:8053 -e 'SPRING_APPLICATION_JSON={"spring.data.elasticsearch.cluster-nodes": "paperless-documents-search-elasticsearch:9300" }' -v /media/documents/Documents:/media/documents:ro -d paperless-documents-search-webapp
-```
-
-Basic integration with curl :
-```
-curl -w '%{time_total}' 'http://127.0.0.1:8053/crawl/filesystem/subdirectories?path=/media/documents'
-```
-
-To work without integrate all documents content (which can be slow), you can activate `local` profile :
-```code:bash
-mvn spring-boot:run -Drun.profiles=local
-# or
-java -jar -Dspring.profiles.active=local target/paperless-documents-search-webapp*.jar
-```
+To *enable OCR*, you need to install tesseract (`apt install -y tesseract-ocr tesseract-ocr-fra`) locally (is used by java app).
 

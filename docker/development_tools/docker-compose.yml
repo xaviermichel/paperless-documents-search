@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:1.17-alpine
+    volumes:
+      - ./nginx/config:/etc/nginx/conf.d
+      - ./nginx/edm-ui/dist:/media/edm-ui-dist
+    ports:
+      - 80:80
+    cap_add:
+      - NET_ADMIN
+
+  elasticsearch:
+    image: paperless-documents-search-elasticsearch
+    build: ./elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.8.8
+    ports:
+      - 5601:5601
+
+  elasticsearch-head:
+    image: mobz/elasticsearch-head:5-alpine
+    ports:
+      - 9100:9100
+

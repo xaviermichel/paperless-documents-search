@@ -8,7 +8,6 @@ node
 node_modules
 build
 bower_inc
-package-lock.json
 
 # eclipse
 .project
@@ -23,55 +22,10 @@ package-lock.json
 target
 .factorypath
 
-# elastic search
-es
-*/data
-
 # others
 *.swp
 *.tmp
 
-# windows dependencies
-*.dll
-
 # logs
 *.log
 *.log.zip
-edm-webapp/paperless_documents_search.log.*
-
-#vagrant
-.vagrant
-
-# temp dir for releases
-files-to-release
-
-# edm dir ! Do not uncomment this because edm is also the package name
-#edm
-
-# logback
-logback.xml
-
-# do not release my data !
-*.pdf
-*.jpg
-*.jpeg
-*.doc
-*.docx
-*.zip
-*.lnk
-*.appref-ms
-*.xlsx
-*.versionsBackup
-credentials.json
-ca-csv-credential.json
-data/
-
-# debug tests
-casper-fail-*
-
-# docker
-docker_elastic_image/Dockerfile_*
-
-# plugins data
-**/konnector-dev-config.json
-

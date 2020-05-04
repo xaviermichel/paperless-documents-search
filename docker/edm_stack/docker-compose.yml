@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:1.17-alpine
+    depends_on:
+      - edm-ui
+      - edm-document-repository-app
+      - edm-document-ingest-app
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    cap_add:
+      - NET_ADMIN
+
+  elasticsearch:
+    image: paperless-documents-search-elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  edm-document-repository-app:
+    depends_on:
+      - elasticsearch
+    image: edm-document-repository-app
+    environment:
+      - SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES=elasticsearch:9300
+      - SPRING_DATA_ELASTICSEARCH_CLUSTER_NAME=simple_data_search
+      - SPRING_ELASTICSEARCH_REST_URIS=elasticsearch:9200
+    ports:
+      - 9001:9001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  edm-document-ingest-app:
+    depends_on:
+      - edm-document-repository-app
+    image: edm-document-ingest-app
+    environment:
+      - EDM_TIKA_OCR_INDEXED_CHAR=-1
+      - EDM_DOCUMENT_REPOSITORY_APP_URI=http://edm-document-repository-app:9001
+    ports:
+      - 9002:9002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  edm-ui:
+    image: edm-ui
+

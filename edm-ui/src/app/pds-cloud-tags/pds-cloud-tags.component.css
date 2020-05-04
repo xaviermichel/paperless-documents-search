@@ -1,0 +1,13 @@
+.tags-list {
+  line-height: 150%;
+  overflow-wrap: break-word;
+}
+
+.tag-key:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tag {
+  margin-right: 10px;
+}

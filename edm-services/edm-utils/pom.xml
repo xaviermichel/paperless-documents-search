@@ -10,7 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.springframework.springboot.version>2.1.13.RELEASE
+		<org.springframework.springboot.version>2.2.7.RELEASE
 		</org.springframework.springboot.version>
 		<edm-contracts.version>1.0.0-SNAPSHOT</edm-contracts.version>
 		<commons-io.version>2.4</commons-io.version>

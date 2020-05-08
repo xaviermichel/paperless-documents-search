@@ -10,6 +10,7 @@ spec:
   - port: 80
     targetPort: 9002
     protocol: TCP
+    name: http
   selector:
     app: edm-document-ingest-app
 ---
@@ -35,6 +36,6 @@ spec:
             - containerPort: 9002
           env:
             - name: EDM_DOCUMENT_REPOSITORY_APP_URI
-              value: http://edm-document-repository-app:9001
+              value: http://edm-document-repository-app:80
           imagePullPolicy: Always
 

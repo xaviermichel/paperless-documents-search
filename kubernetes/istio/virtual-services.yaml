@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edm-document-ingest-app
+  namespace: edm
+spec:
+  hosts:
+    - edm-document-ingest-app
+  http:
+  - route:
+    - destination:
+        host: edm-document-ingest-app
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edm-document-repository-app
+  namespace: edm
+spec:
+  hosts:
+    - edm-document-repository-app
+  http:
+  - route:
+    - destination:
+        host: edm-document-repository-app
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edm-elasticsearch
+  namespace: edm
+spec:
+  hosts:
+    - edm-elasticsearch
+  http:
+  - route:
+    - destination:
+        host: edm-elasticsearch
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edm-spring-boot-admin-app
+  namespace: edm
+spec:
+  hosts:
+    - edm-spring-boot-admin-app
+  http:
+  - route:
+    - destination:
+        host: edm-spring-boot-admin-app
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edm-ui
+  namespace: edm
+spec:
+  hosts:
+    - edm-ui
+  http:
+  - route:
+    - destination:
+        host: edm-ui
+

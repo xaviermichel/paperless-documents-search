@@ -10,6 +10,7 @@ spec:
   - port: 80
     targetPort: 9001
     protocol: TCP
+    name: http
   selector:
     app: edm-document-repository-app
 ---

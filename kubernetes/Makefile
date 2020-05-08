@@ -6,20 +6,23 @@ prepare-minikube:
 	minikube addons enable ingress
 	grep -q "$$(minikube ip)" /etc/hosts || echo "Please add this line in /etc/hosts : $$(minikube ip) edm.local edm-admin.local"
 
+edm:
+	$(KUBECTL) apply -f edm/edm-namespace.yaml
+	$(KUBECTL) apply -f edm/edm-role.yaml
+	$(KUBECTL) apply -f edm/edm-elasticsearch.yaml
+	$(KUBECTL) apply -f edm/edm-document-ingest-app.yaml
+	$(KUBECTL) apply -f edm/edm-document-repository-app.yaml
+	$(KUBECTL) apply -f edm/edm-ui.yaml
+	$(KUBECTL) apply -f edm/edm-spring-boot-admin-app-config.yaml
+	$(KUBECTL) apply -f edm/edm-spring-boot-admin-app.yaml
+	$(KUBECTL) apply -f edm/edm-ingress.yaml
+
 istio:
 	$(ISTIOCTL) manifest apply --set profile=demo
-	#$(KUBECTL) label --overwrite namespace edm istio-injection=enabled
+	$(KUBECTL) apply -f istio/
 
-edm:
-	$(KUBECTL) apply -f edm-namespace.yaml
-	$(KUBECTL) apply -f edm-role.yaml
-	$(KUBECTL) apply -f edm-elasticsearch.yaml
-	$(KUBECTL) apply -f edm-document-ingest-app.yaml
-	$(KUBECTL) apply -f edm-document-repository-app.yaml
-	$(KUBECTL) apply -f edm-ui.yaml
-	$(KUBECTL) apply -f ingress.yaml
-	$(KUBECTL) apply -f edm-spring-boot-admin-app-config.yaml
-	$(KUBECTL) apply -f edm-spring-boot-admin-app.yaml
+elk:
+	echo "TODO"
 
-.PHONY: prepare-minikube istio edm
+.PHONY: prepare-minikube edm istio elk
 

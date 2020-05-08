@@ -26,6 +26,10 @@ if $buildBack; then
     cd edm-services/edm-document-ingest-app
     docker build -t edm-document-ingest-app .
     cd -
+
+    cd edm-services/edm-spring-boot-admin-app
+    docker build -t edm-spring-boot-admin-app .
+    cd -
 fi
 
 if $buildFront; then

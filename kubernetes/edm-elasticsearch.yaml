@@ -1,0 +1,40 @@
+# done this way for facilities, should use PV/PVC
+apiVersion: v1
+kind: Service
+metadata:
+  name: edm-elasticsearch
+  namespace: edm
+spec:
+  ports:
+  - port: 9200
+    name: http
+    protocol: TCP
+  - port: 9300
+    name: tcp
+    protocol: TCP
+  selector:
+    app: edm-elasticsearch
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edm-elasticsearch
+  namespace: edm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edm-elasticsearch
+  template:
+    metadata:
+      labels:
+        app: edm-elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: localhost:5000/paperless-documents-search-elasticsearch
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          imagePullPolicy: Always
+

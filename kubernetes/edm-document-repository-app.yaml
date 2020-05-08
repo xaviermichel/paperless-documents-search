@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: edm-document-repository-app
+  namespace: edm
+  labels:
+    spring-boot: "true"
+spec:
+  ports:
+  - port: 80
+    targetPort: 9001
+    protocol: TCP
+  selector:
+    app: edm-document-repository-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edm-document-repository-app
+  namespace: edm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edm-document-repository-app
+  template:
+    metadata:
+      labels:
+        app: edm-document-repository-app
+    spec:
+      containers:
+        - name: app
+          image: localhost:5000/edm-document-repository-app
+          ports:
+            - containerPort: 9001
+          env:
+            - name: SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES
+              value: edm-elasticsearch:9300
+            - name: SPRING_DATA_ELASTICSEARCH_CLUSTER_NAME
+              value: simple_data_search
+            - name: SPRING_ELASTICSEARCH_REST_URIS
+              value: edm-elasticsearch:9200
+          imagePullPolicy: Always
+

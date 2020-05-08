@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  sdsApiBaseUrl: 'http://localhost/api'
+  sdsApiBaseUrl: '/api'
 };

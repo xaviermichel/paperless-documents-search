@@ -10,7 +10,7 @@ elif [[ "$*" == *SKIP_FRONT* ]]; then
 fi
 
 if $buildBack; then
-    for s in edm-contracts edm-utils edm-document-ingest-app edm-document-repository-app edm-filesystem-crawler
+    for s in edm-contracts edm-utils edm-document-ingest-app edm-document-repository-app edm-filesystem-crawler edm-spring-boot-admin-app
     do
         cd edm-services/$s
         mvn test -B

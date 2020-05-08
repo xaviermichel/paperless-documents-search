@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: edm-document-ingest-app
+  namespace: edm
+  labels:
+    spring-boot: "true"
+spec:
+  ports:
+  - port: 80
+    targetPort: 9002
+    protocol: TCP
+  selector:
+    app: edm-document-ingest-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edm-document-ingest-app
+  namespace: edm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edm-document-ingest-app
+  template:
+    metadata:
+      labels:
+        app: edm-document-ingest-app
+    spec:
+      containers:
+        - name: app
+          image: localhost:5000/edm-document-ingest-app
+          ports:
+            - containerPort: 9002
+          env:
+            - name: EDM_DOCUMENT_REPOSITORY_APP_URI
+              value: http://edm-document-repository-app:9001
+          imagePullPolicy: Always
+

@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: edm-ingress
+  namespace: edm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: edm.local
+    http:
+      paths:
+      - path: /api/(.*)
+        backend:
+          serviceName: edm-document-repository-app
+          servicePort: 80
+      - path: /api/crawling/(.*)
+        backend:
+          serviceName: edm-document-ingest-app
+          servicePort: 80
+      - path: /(.*)
+        backend:
+          serviceName: edm-ui
+          servicePort: 80
+  - host: edm-admin.local
+    http:
+      paths:
+      - path: /(.*)
+        backend:
+          serviceName: edm-spring-boot-admin-app
+          servicePort: 8080
+

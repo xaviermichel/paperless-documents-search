@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: edm-spring-boot-admin-app
+  namespace: edm
+  labels:
+    spring-boot: "true"
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: edm-spring-boot-admin-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edm-spring-boot-admin-app
+  namespace: edm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edm-spring-boot-admin-app
+  template:
+    metadata:
+      labels:
+        app: edm-spring-boot-admin-app
+    spec:
+      containers:
+        - name: app
+          image: localhost:5000/edm-spring-boot-admin-app
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+

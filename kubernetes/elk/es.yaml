@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: elk
+  name: elasticsearch
+  labels:
+    name: elasticsearch
+    tier: storage
+spec:
+  ports:
+  - port: 9200
+    targetPort: 9200
+  selector:
+    name: elasticsearch
+    tier: storage
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: elk
+spec:
+  serviceName: "elasticsearch"
+  selector:
+    matchLabels:
+      name: elasticsearch
+      tier: storage
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: elasticsearch
+        tier: storage
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+          name: db
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        env:
+        - name: "NUMBER_OF_MASTERS"
+          value: "1"
+        - name: "ES_JAVA_OPTS"
+          value: "-Xms512m -Xmx512m"
+        - name: "discovery.zen.minimum_master_nodes"
+          value: "1"
+        - name: discovery.type
+          value: "single-node"
+        - name: "NETWORK_HOST"
+          value: "0.0.0.0"
+        - name: MINIMUM_MASTER_NODES
+          value: "1"
+      initContainers:
+        - image: alpine:3.6
+          command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
+          name: elasticsearch-logging-init
+          securityContext:
+            privileged: true
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: elasticsearch-data
+

@@ -25,6 +25,7 @@
 		</javax.persistence.persistence-api.version>
 		<org.easytesting.version>2.0M10</org.easytesting.version>
 		<model-mapper.version>2.3.7</model-mapper.version>
+		<logstash-encoder.version>4.11</logstash-encoder.version>
 	</properties>
 
 	<build>
@@ -100,6 +101,13 @@
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>${model-mapper.version}</version>
+		</dependency>
+
+		<!-- log in json format -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logstash-encoder.version}</version>
 		</dependency>
 
 		<!-- test -->

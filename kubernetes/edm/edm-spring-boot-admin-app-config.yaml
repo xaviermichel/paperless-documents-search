@@ -6,10 +6,12 @@ metadata:
 data:
   application.yml: |-
     spring:
-     cloud:
-      kubernetes:
-        discovery:
-          all-namespaces: false
-          service-labels:
-            spring-boot: true
+      main:
+        banner-mode: "off"
+      cloud:
+        kubernetes:
+          discovery:
+            all-namespaces: false
+            service-labels:
+              spring-boot: true
 

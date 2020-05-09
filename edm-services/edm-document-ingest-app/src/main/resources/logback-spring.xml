@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true">
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+	<springProperty name="appName" scope="context" source="spring.application.name"/>
+
+	<jmxConfigurator/>
+
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+	<appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+	</appender>
+
+	<springProfile name="kubernetes">
+		<logger name="fr.simple.edm" level="INFO" additivity="false">
+			<appender-ref ref="jsonConsoleAppender"/>
+		</logger>
+		<root level="INFO">
+			<appender-ref ref="jsonConsoleAppender"/>
+		</root>
+	</springProfile>
+
+	<springProfile name="!kubernetes">
+		<logger name="fr.simple.edm" level="INFO" additivity="false">
+			<appender-ref ref="CONSOLE"/>
+		</logger>
+		<root level="INFO">
+			<appender-ref ref="CONSOLE"/>
+		</root>
+	</springProfile>
+</configuration>
+

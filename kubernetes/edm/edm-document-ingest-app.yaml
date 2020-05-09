@@ -38,4 +38,11 @@ spec:
             - name: EDM_DOCUMENT_REPOSITORY_APP_URI
               value: http://edm-document-repository-app:80
           imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9002
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            failureThreshold: 3
 

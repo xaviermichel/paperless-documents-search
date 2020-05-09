@@ -42,4 +42,11 @@ spec:
             - name: SPRING_ELASTICSEARCH_REST_URIS
               value: edm-elasticsearch:9200
           imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9001
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            failureThreshold: 3
 

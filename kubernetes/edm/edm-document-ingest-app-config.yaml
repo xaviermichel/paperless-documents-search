@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: edm-document-ingest-app
+  namespace: edm
+data:
+  application.yml: |-
+    spring:
+      main:
+        banner-mode: "off"
+

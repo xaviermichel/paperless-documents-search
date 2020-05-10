@@ -5,6 +5,7 @@ metadata:
   namespace: edm
   labels:
     spring-boot: "true"
+    name: edm-spring-boot-admin-app
 spec:
   ports:
   - port: 8080
@@ -18,6 +19,8 @@ kind: Deployment
 metadata:
   name: edm-spring-boot-admin-app
   namespace: edm
+  labels:
+    app: edm-spring-boot-admin-app
 spec:
   replicas: 1
   selector:
@@ -29,7 +32,7 @@ spec:
         app: edm-spring-boot-admin-app
     spec:
       containers:
-        - name: app
+        - name: edm-spring-boot-admin-app
           image: localhost:5000/edm-spring-boot-admin-app
           ports:
             - containerPort: 8080

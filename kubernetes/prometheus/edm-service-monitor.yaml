@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: edm-document-ingest-app
+  namespace: edm
+spec:
+  selector:
+    matchLabels:
+      app: edm-document-ingest-app
+  endpoints:
+  - port: http
+    path: '/actuator/prometheus'
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_service_label_app]
+      targetLabel: application
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: edm-document-repository-app
+  namespace: edm
+spec:
+  selector:
+    matchLabels:
+      app: edm-document-repository-app
+  endpoints:
+  - port: http
+    path: '/actuator/prometheus'
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_service_label_app]
+      targetLabel: application

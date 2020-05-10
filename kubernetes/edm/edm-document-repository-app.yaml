@@ -5,6 +5,7 @@ metadata:
   namespace: edm
   labels:
     spring-boot: "true"
+    app: edm-document-repository-app
 spec:
   ports:
   - port: 80
@@ -19,6 +20,8 @@ kind: Deployment
 metadata:
   name: edm-document-repository-app
   namespace: edm
+  labels:
+    app: edm-document-repository-app
 spec:
   replicas: 1
   selector:
@@ -30,7 +33,7 @@ spec:
         app: edm-document-repository-app
     spec:
       containers:
-        - name: app
+        - name: edm-document-repository-app
           image: localhost:5000/edm-document-repository-app
           ports:
             - containerPort: 9001

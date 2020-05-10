@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: elk-ingress
+  namespace: monitoring
+spec:
+  rules:
+  - host: edm-prometheus.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prometheus-k8s
+          servicePort: 9090
+  - host: edm-grafana.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: grafana
+          servicePort: 3000
+  - host: edm-alertmanager.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: alertmanager-main
+          servicePort: 9093

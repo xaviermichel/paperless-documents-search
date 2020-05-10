@@ -5,6 +5,7 @@ metadata:
   namespace: edm
   labels:
     spring-boot: "true"
+    app: edm-document-ingest-app
 spec:
   ports:
   - port: 80
@@ -19,6 +20,8 @@ kind: Deployment
 metadata:
   name: edm-document-ingest-app
   namespace: edm
+  labels:
+    app: edm-document-ingest-app
 spec:
   replicas: 1
   selector:
@@ -30,7 +33,7 @@ spec:
         app: edm-document-ingest-app
     spec:
       containers:
-        - name: app
+        - name: edm-document-ingest-app
           image: localhost:5000/edm-document-ingest-app
           ports:
             - containerPort: 9002

@@ -2,9 +2,16 @@ KUBECTL=kubectl --context minikube
 ISTIOCTL=istioctl --context minikube
 
 prepare-minikube:
+	minikube start \
+		--kubernetes-version=v1.18.1 \
+		--extra-config=kubelet.authentication-token-webhook=true \
+		--extra-config=kubelet.authorization-mode=Webhook \
+		--extra-config=scheduler.address=0.0.0.0 \
+		--extra-config=controller-manager.address=0.0.0.0
+	minikube addons disable metrics-server
 	minikube addons enable registry
 	minikube addons enable ingress
-	grep -q "$$(minikube ip)" /etc/hosts || echo "Please add this line in /etc/hosts : $$(minikube ip) edm.local edm-admin.local edm-logs.local"
+	grep -q "$$(minikube ip)" /etc/hosts || echo "Please add this line in /etc/hosts : $$(minikube ip) edm.local edm-admin.local edm-logs.local edm-prometheus.local edm-grafana.local edm-alertmanager.local"
 
 edm:
 	# main
@@ -38,5 +45,13 @@ elk:
 	$(KUBECTL) apply -f ./elk/curator.yaml
 	$(KUBECTL) apply -f ./elk/elk-ingress.yaml
 
-.PHONY: prepare-minikube edm istio remove-istio elk
+prometheus:
+	$(KUBECTL) apply -f ./prometheus/manifests/setup
+	until $(KUBECTL) get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+	$(KUBECTL) create -f ./prometheus/manifests/
+	$(KUBECTL) apply -f ./prometheus/prom-ingress.yaml
+	$(KUBECTL) apply -f ./prometheus/edm-service-monitor.yaml
+	# https://grafana.com/grafana/dashboards/4701
+
+.PHONY: prepare-minikube edm istio remove-istio elk prometheus
 
